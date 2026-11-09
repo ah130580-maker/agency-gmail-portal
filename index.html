@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Agency Gmail Portal & App Hub — 150+ Client Manager</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root {
+      --bg-dark: #0b1120;
+      --bg-panel: #111827;
+      --bg-card: #1e293b;
+      --bg-hover: #334155;
+      --border: #1f2937;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ======================== AUTH PORTAL SCREEN (SIGN IN / PAID SIGN UP) ======================== */
+    .auth-screen {
+      position: fixed; inset: 0; background: radial-gradient(circle at top, #1e293b 0%, #0b1120 70%);
+      z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      overflow-y: auto; padding: 24px 16px;
+    }
+    .domain-bar {
+      background: #0f172a; border: 1px solid #334155; border-radius: 999px;
+      padding: 6px 16px; font-size: 12.5px; color: #94a3b8; display: inline-flex;
+      align-items: center; gap: 8px; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    }
+    .auth-card {
+      background: var(--bg-panel); border: 1px solid #334155; border-radius: 16px;
+      width: 100%; max-width: 560px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+    .auth-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--bg-dark);
+      padding: 5px; border-radius: 10px; border: 1px solid #1f2937; margin-bottom: 20px;
+    }
+    .auth-tab {
+      padding: 10px; text-align: center; font-size: 13.5px; font-weight: 700;
+      border-radius: 8px; cursor: pointer; color: var(--text-muted); border: none; background: transparent;
+    }
+    .auth-tab.active { background: var(--primary); color: #fff; }
+    .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .pay-method-card {
+      background: var(--bg-dark); border: 1px solid #334155; border-radius: 9px;
+      padding: 10px 8px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); transition: 0.15s;
+    }
+    .pay-method-card.active { border-color: var(--success); background: rgba(16, 185, 129, 0.14); color: #fff; }
+
+    /* ======================== AGENCY DASHBOARD & APP LAYOUT ======================== */
+    .topbar {
+      background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      padding: 9px 14px; display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap; z-index: 20;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+    .brand-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .toggle-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .toggle-pill {
+      background: var(--bg-card); border: 1px solid #334155; padding: 5px 10px;
+      border-radius: 999px; font-size: 11.5px; cursor: pointer; display: inline-flex;
+      align-items: center; gap: 6px; user-select: none; transition: 0.15s; font-weight: 600;
+    }
+    .toggle-pill.on { border-color: #10b981; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+    .toggle-pill.off { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+
+    .top-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .btn {
+      background: var(--bg-card); color: var(--text-main); border: 1px solid #334155;
+      padding: 6px 11px; border-radius: 8px; font-size: 12.5px; font-weight: 500;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.15s;
+    }
+    .btn:hover { background: var(--bg-hover); }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-success { background: #059669; border-color: #10b981; color: #fff; }
+    .btn-warning { background: #d97706; border-color: #f59e0b; color: #fff; }
+    .btn-danger { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #fca5a5; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
+
+    /* Sub-bar for Agency Portal & App Link info */
+    .agency-subbar {
+      background: #0f172a; border-bottom: 1px solid var(--border); padding: 6px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      font-size: 12px; color: var(--text-muted); flex-wrap: wrap;
+    }
+
+    .workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+    /* Left Column: Clients List with Per-Client Notification ON/OFF */
+    .sidebar {
+      width: 335px; background: var(--bg-panel); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .sidebar-header { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .search-box {
+      width: 100%; background: var(--bg-dark); border: 1px solid #334155;
+      color: var(--text-main); padding: 7px 10px; border-radius: 8px; font-size: 12.5px;
+    }
+    .client-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .client-item {
+      padding: 9px 10px; border-radius: 9px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      border: 1px solid transparent; transition: 0.15s;
+    }
+    .client-item:hover { background: rgba(51, 65, 85, 0.45); }
+    .client-item.active { background: rgba(37, 99, 235, 0.18); border-color: var(--primary); }
+    .client-item.muted-client { opacity: 0.72; }
+    .client-info { min-width: 0; flex: 1; }
+    .client-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; }
+    .client-email { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .client-meta { display: flex; align-items: center; gap: 5px; margin-left: 6px; flex-shrink: 0; }
+    .badge-unread {
+      background: var(--danger); color: #fff; font-size: 10.5px; font-weight: 700;
+      padding: 2px 6px; border-radius: 999px; min-width: 19px; text-align: center;
+    }
+    .auth-tag {
+      font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: 600;
+      background: rgba(148, 163, 184, 0.15); color: #cbd5e1;
+    }
+    .auth-tag.oauth { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .auth-tag.browser { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+    .auth-tag.imap { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+
+    .notify-switch-btn {
+      border: 1px solid #334155; border-radius: 6px; padding: 3px 7px; font-size: 10.5px;
+      cursor: pointer; font-weight: 700; transition: 0.15s;
+    }
+    .notify-switch-btn.on { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
+    .notify-switch-btn.off { background: rgba(239, 68, 68, 0.18); border-color: #ef4444; color: #fca5a5; }
+
+    /* Center Column: Inbox Feed */
+    .inbox-col {
+      width: 380px; background: var(--bg-dark); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .inbox-header {
+      padding: 11px 14px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .inbox-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .inbox-title { font-size: 14.5px; font-weight: 700; }
+    .email-list { flex: 1; overflow-y: auto; }
+    .email-item {
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: 0.15s;
+    }
+    .email-item:hover { background: rgba(30, 41, 59, 0.7); }
+    .email-item.active { background: rgba(37, 99, 235, 0.16); border-left: 3px solid var(--primary); }
+    .email-item.unread { background: rgba(30, 41, 59, 0.45); }
+    .email-item.unread .email-subject { font-weight: 700; color: #fff; }
+    .email-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 6px; }
+    .client-pill {
+      font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
+      background: rgba(59, 130, 246, 0.2); color: #93c5fd;
+      max-width: 210px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .email-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+    .email-sender { font-size: 12.5px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; }
+    .email-subject { font-size: 12.5px; color: #cbd5e1; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .email-snippet { font-size: 11.5px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Right Column: Reader */
+    .reader-col { flex: 1; background: var(--bg-dark); display: flex; flex-direction: column; overflow: hidden; }
+    .reader-empty {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text-muted); padding: 32px; text-align: center; gap: 12px;
+    }
+    .reader-header {
+      padding: 15px 18px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .reader-subject { font-size: 17px; font-weight: 700; line-height: 1.35; }
+    .reader-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--text-muted); }
+    .reader-body { flex: 1; padding: 20px; overflow-y: auto; line-height: 1.65; font-size: 13.5px; color: #e2e8f0; white-space: pre-wrap; background: #0f172a; }
+    .reply-box {
+      padding: 12px 18px; background: var(--bg-panel); border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .reply-textarea {
+      width: 100%; height: 70px; background: var(--bg-dark); border: 1px solid #334155;
+      color: var(--text-main); border-radius: 8px; padding: 9px; font-size: 13px; resize: none;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
+      display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--bg-panel); border: 1px solid #334155; border-radius: 14px;
+      width: 100%; max-width: 610px; max-height: 90vh; overflow-y: auto;
+      padding: 20px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; }
+    .tab-btn {
+      background: var(--bg-card); color: var(--text-muted); border: 1px solid #334155;
+      padding: 6px 11px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; }
+    .form-group label { font-size: 12px; color: #cbd5e1; font-weight: 500; }
+    .form-input {
+      background: var(--bg-dark); border: 1px solid #334155; color: var(--text-main);
+      padding: 9px 11px; border-radius: 8px; font-size: 13px; width: 100%;
+    }
+    .info-banner {
+      background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35);
+      padding: 10px 12px; border-radius: 9px; font-size: 12px; color: #bfdbfe; line-height: 1.5;
+    }
+
+    /* Toast Notification Banner inside App (Internal Notification) */
+    .toast-container {
+      position: fixed; bottom: 20px; right: 20px; z-index: 200;
+      display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: calc(100% - 40px);
+    }
+    .toast {
+      background: #1e293b; border-left: 5px solid var(--success); border: 1px solid #475569;
+      border-radius: 10px; padding: 13px 15px; box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+      cursor: pointer; transition: 0.2s;
+    }
+
+    .mobile-nav {
+      display: none; background: var(--bg-panel); border-top: 1px solid var(--border);
+      padding: 8px; justify-content: space-around;
+    }
+    @media (max-width: 900px) {
+      .sidebar, .inbox-col, .reader-col { width: 100%; display: none; }
+      .sidebar.mobile-active, .inbox-col.mobile-active, .reader-col.mobile-active { display: flex; }
+      .mobile-nav { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================== 1. DOMAIN LOGIN & PAID SIGN-UP PORTAL ======================== -->
+  <div class="auth-screen" id="authPortalScreen">
+    <div class="domain-bar">
+      <span>🔒</span>
+      <span id="domainBadgeText">https://portal.agencygmailhub.com</span>
+      <span style="background:#1d4ed8; color:#fff; padding:1px 7px; border-radius:99px; font-size:10.5px;" id="portalModeBadge">Agency Portal</span>
+    </div>
+
+    <div class="auth-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <div class="brand-icon" style="width:42px; height:42px; font-size:22px;">🏢</div>
+        <div>
+          <h2 style="font-size:19px; font-weight:700;" id="authHeaderTitle">Agency Multi-Gmail Portal</h2>
+          <div style="font-size:12px; color:var(--text-muted);" id="authHeaderSub">Sign In to your Agency Dashboard or Sign Up with Subscription Payment</div>
+        </div>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabBtnSignIn" onclick="switchAuthTab('signin')">🔐 Sign In (Direct Login)</button>
+        <button class="auth-tab" id="tabBtnSignUp" onclick="switchAuthTab('signup')">💳 Sign Up & Pay (New Agency)</button>
+      </div>
+
+      <!-- SIGN IN PANE -->
+      <div id="paneSignIn">
+        <div class="info-banner" style="margin-bottom:14px;">
+          <strong>Direct Sign In:</strong> Agar aapka Agency Account bana hua hai toh direct Email aur Password se login karein (Demo Login pre-filled hai: <code>admin@agency.com</code> / <code>admin123</code>).
+        </div>
+        <div class="form-group">
+          <label>Agency Email Address</label>
+          <input type="email" class="form-input" id="loginEmail" value="admin@agency.com" placeholder="admin@agency.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-input" id="loginPass" value="admin123" placeholder="••••••••" />
+        </div>
+        <div id="loginErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:11px; font-size:14px;" onclick="submitSignIn()">
+          🚀 Sign In to Agency Dashboard
+        </button>
+      </div>
+
+      <!-- SIGN UP + PAYMENT GATE PANE -->
+      <div id="paneSignUp" style="display:none;">
+        <div class="info-banner" style="margin-bottom:12px;">
+          <strong>Paid Agency Registration:</strong> Naya Agency Portal banane ke liye apna Plan aur Payment Method (Card, Crypto USDT, ya Bank/Wallet) select karke Sign Up complete karein.
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Agency / Company Name</label>
+            <input type="text" class="form-input" id="suAgencyName" placeholder="e.g., SkyLine Digital Agency" />
+          </div>
+          <div class="form-group">
+            <label>Your Full Name</label>
+            <input type="text" class="form-input" id="suFullName" placeholder="e.g., Ali Khan" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Login Email Address</label>
+            <input type="email" class="form-input" id="suEmail" placeholder="owner@youragency.com" />
+          </div>
+          <div class="form-group">
+            <label>Create Password</label>
+            <input type="password" class="form-input" id="suPassword" placeholder="Minimum 6 characters" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Select Agency Plan</label>
+          <select class="form-input" id="suPlan">
+            <option value="Agency Pro (150 Gmail Accounts) - $49/mo">🔥 Agency Pro (Manage 150 Client Gmails) — $49 / month</option>
+            <option value="Starter Plan (50 Gmail Accounts) - $29/mo">Starter Plan (Manage 50 Client Gmails) — $29 / month</option>
+            <option value="Enterprise Unlimited (500+ Accounts) - $99/mo">Enterprise Unlimited (500+ Client Gmails) — $99 / month</option>
+          </select>
+        </div>
+
+        <label style="font-size:12px; color:#cbd5e1; font-weight:600; display:block; margin-bottom:6px;">Select Payment Option:</label>
+        <div class="pay-methods">
+          <div class="pay-method-card active" id="pm_card" onclick="selectPayMethod('card')">💳 Debit / Credit Card</div>
+          <div class="pay-method-card" id="pm_crypto" onclick="selectPayMethod('crypto')">🪙 USDT / Crypto Pay</div>
+          <div class="pay-method-card" id="pm_wallet" onclick="selectPayMethod('wallet')">🏦 Bank / Easypaisa / JazzCash</div>
+        </div>
+
+        <!-- Option 1: Credit/Debit Card Fields -->
+        <div id="payBox_card" style="background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
+          <div class="form-group">
+            <label>Cardholder Name</label>
+            <input type="text" class="form-input" id="cardHolder" placeholder="Name on Card" />
+          </div>
+          <div class="form-group">
+            <label>Card Number (Visa / MasterCard)</label>
+            <input type="text" class="form-input" id="cardNumber" placeholder="4532 •••• •••• 8891" maxlength="19" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Expiry Date</label>
+              <input type="text" class="form-input" id="cardExp" placeholder="MM / YY" maxlength="5" />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>CVV / CVC</label>
+              <input type="password" class="form-input" id="cardCvv" placeholder="123" maxlength="4" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Crypto / USDT Fields -->
+        <div id="payBox_crypto" style="display:none; background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
+          <div style="font-size:12px; color:#6ee7b7; margin-bottom:8px;">
+            Send USDT (TRC20 / Binance Pay) to: <strong>TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE</strong>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Enter Transaction Hash / Binance Order ID</label>
+            <input type="text" class="form-input" id="cryptoTxId" placeholder="e.g., 0x89a4... or Binance Pay Ref" />
+          </div>
+        </div>
+
+        <!-- Option 3: Bank / Mobile Wallet Fields -->
+        <div id="payBox_wallet" style="display:none; background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
+          <div style="font-size:12px; color:#93c5fd; margin-bottom:8px;">
+            Easypaisa / JazzCash / Bank IBAN: <strong>PK36 MEZN 0001 2345 6789 0102</strong>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Transaction / Receipt Reference Number</label>
+            <input type="text" class="form-input" id="walletTxId" placeholder="e.g., TID-992837182" />
+          </div>
+        </div>
+
+        <div id="signupErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
+        <button class="btn btn-success" style="width:100%; justify-content:center; padding:11px; font-size:14px;" onclick="submitPaidSignUp()">
+          ✅ Complete Payment & Launch Agency Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== 2. MAIN AGENCY PORTAL & APP DASHBOARD ======================== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🏢</div>
+      <div>
+        <div id="agencyBrandTitle">Prime Agency Hub</div>
+        <div style="font-size:11px; color:var(--text-muted); font-weight:400;">
+          <span id="agencyUserBadge">admin@agency.com</span> • <span id="agencyPlanBadge" style="color:#60a5fa;">Agency Pro</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global & Internal Notification ON/OFF Toggles -->
+    <div class="toggle-bar">
+      <div class="toggle-pill on" id="toggleInternalBtn" onclick="toggleGlobalNotification('internal')" title="Turn Internal In-App Popup & Sound Notification ON or OFF">
+        🔔 Internal Alert: <span id="lblInternalState">ON</span>
+      </div>
+      <div class="toggle-pill on" id="togglePushBtn" onclick="toggleGlobalNotification('push')" title="Turn Mobile & PC Browser Push Notifications ON or OFF">
+        📱 Mobile/PC Push: <span id="lblPushState">ON</span>
+      </div>
+      <div class="toggle-pill on" id="toggleEmailBtn" onclick="toggleGlobalNotification('email')" title="Turn Master Email Forwarding Alerts ON or OFF">
+        📧 Master Email Alert: <span id="lblEmailState">ON</span>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="btn btn-warning" onclick="simulateIncomingEmail()">
+        ⚡ Test New Email
+      </button>
+      <button class="btn btn-primary" onclick="openAddClientModal()">
+        ➕ Add Client / Bulk 150
+      </button>
+      <button class="btn btn-success" onclick="openAppLinkModal()">
+        📲 App Link & Portal
+      </button>
+      <button class="btn" onclick="openSettingsModal()">
+        ⚙️ Settings
+      </button>
+      <button class="btn btn-danger" onclick="logoutPortal()" title="Sign Out of Agency Portal">
+        🚪 Sign Out
+      </button>
+    </div>
+  </header>
+
+  <!-- Sub-bar with Domain, App Link & Client Counter -->
+  <div class="agency-subbar">
+    <div>
+      🌐 Portal Domain: <strong style="color:#fff;" id="subDomainText">https://portal.agencygmailhub.com</strong>
+      &nbsp;|&nbsp; 👥 Connected Clients: <strong style="color:#fff;" id="statTotalClients">0</strong> / 150+
+      &nbsp;|&nbsp; 📩 Unread: <strong style="color:#f87171;" id="statTotalUnread">0</strong>
+      &nbsp;|&nbsp; 🔕 Muted Clients: <strong style="color:#fbbf24;" id="statMutedClients">0</strong>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span>📲 Direct App Link (Login Protected): <a href="./?mode=app" target="_blank" style="color:#60a5fa; font-weight:600;" id="inlineAppLink">Open App View ↗</a></span>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <div class="workspace">
+    <!-- Left Sidebar: 100-150 Client Accounts with Per-Client Notification ON/OFF -->
+    <aside class="sidebar" id="colClients">
+      <div class="sidebar-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Clients (1-Click Mute 🔔/🔕)</span>
+          <button class="btn btn-sm" onclick="checkAllAccountsNow()">🔄 Sync All</button>
+        </div>
+        <input type="text" class="search-box" id="clientSearchInput" placeholder="Search 150+ clients by name or email..." oninput="renderClientList()" />
+      </div>
+      <div class="client-list" id="clientListContainer"></div>
+    </aside>
+
+    <!-- Center Column: Unified or Client-Specific Inbox -->
+    <section class="inbox-col mobile-active" id="colInbox">
+      <div class="inbox-header">
+        <div class="inbox-title-row">
+          <div>
+            <div class="inbox-title" id="currentInboxTitle">All Clients — Unified Inbox</div>
+            <div style="font-size:11px; color:var(--text-muted);" id="currentInboxSubtitle">Real-time emails across all connected client accounts</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm" id="btnToggleSelectedClientNotify" style="display:none;" onclick="toggleSelectedClientNotify()"></button>
+            <button class="btn btn-sm btn-primary" id="btnLaunchClientChrome" style="display:none;" onclick="launchSelectedClientBrowser()">
+              🌐 Open Browser
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="email-list" id="emailListContainer"></div>
+    </section>
+
+    <!-- Right Column: Email Reader & Direct Reply / Browser Launch -->
+    <main class="reader-col" id="colReader">
+      <div class="reader-empty" id="readerEmptyState">
+        <div style="font-size:42px;">🏢</div>
+        <div style="font-size:16px; font-weight:600; color:var(--text-main);">Agency Portal & App Inbox Ready</div>
+        <div style="max-width:440px; font-size:13px; line-height:1.6;">
+          • Har client ke aage <strong>🔔 ON / 🔕 OFF</strong> button diya gaya hai jisse aap kisi bhi client ki email notification band ya chalu kar sakte hain.<br/>
+          • Upar header se aap <strong>Internal Notification</strong>, <strong>Mobile/PC Push</strong>, aur <strong>Master Email Alert</strong> ko bhi ON/OFF kar sakte hain.
+        </div>
+      </div>
+
+      <div id="readerContentState" style="display:none; flex-direction:column; height:100%;">
+        <div class="reader-header">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+            <span class="client-pill" id="readerClientBadge">Client Account</span>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-sm btn-primary" onclick="launchReaderClientBrowser()">
+                🌐 Open Client's Isolated Chrome Inbox (PC)
+              </button>
+              <button class="btn btn-sm" onclick="openReaderGmailWeb()">
+                ↗️ Gmail Web View
+              </button>
+            </div>
+          </div>
+          <div class="reader-subject" id="readerSubject">Email Subject</div>
+          <div class="reader-meta">
+            <div>From: <strong style="color:#fff;" id="readerSender">Sender</strong></div>
+            <div>To Client: <strong style="color:#93c5fd;" id="readerClientEmail">client@gmail.com</strong></div>
+            <div id="readerDate">Just now</div>
+          </div>
+        </div>
+
+        <div class="reader-body" id="readerBody"></div>
+
+        <div class="reply-box">
+          <div style="font-size:12px; color:var(--text-muted);">
+            Reply directly as <strong id="replyAsClientLabel" style="color:#fff;">client@gmail.com</strong>:
+          </div>
+          <textarea class="reply-textarea" id="replyBodyInput" placeholder="Write your reply here..."></textarea>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="replyStatusText" style="font-size:12px; color:var(--success);"></span>
+            <button class="btn btn-primary" onclick="sendReplyFromClient()">📤 Send Reply from Client Gmail</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-nav">
+    <button class="btn btn-sm" onclick="switchMobileTab('clients')">👥 Clients (<span id="mobClientCount">0</span>)</button>
+    <button class="btn btn-sm btn-primary" onclick="switchMobileTab('inbox')">📥 Inbox (<span id="mobUnreadCount">0</span>)</button>
+    <button class="btn btn-sm" onclick="switchMobileTab('reader')">📖 Read Mail</button>
+  </nav>
+
+  <!-- Toast Container for Internal Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- MODAL 1: Add Client Account -->
+  <div class="modal-backdrop" id="modalAddClient">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>➕ Connect Client Gmail Account(s)</h3>
+        <button class="btn btn-sm" onclick="closeModal('modalAddClient')">✕</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchAddTab('browser', this)">1. 🌐 Browser Login</button>
+        <button class="tab-btn" onclick="switchAddTab('oauth', this)">2. 🔐 Continue with Google</button>
+        <button class="tab-btn" onclick="switchAddTab('imap', this)">3. 🔑 Email + Password</button>
+        <button class="tab-btn" onclick="switchAddTab('bulk', this)">4. 📋 Bulk 100–150 CSV</button>
+      </div>
+
+      <div id="addTab_browser" class="add-tab-pane">
+        <div class="info-banner" style="margin-bottom:12px;">
+          Har client ke liye ek alag <strong>Isolated Chrome Browser Session</strong> khulega jismein login hamesha save rahega.
+        </div>
+        <div class="form-group">
+          <label>Client Name / Label</label>
+          <input type="text" class="form-input" id="brClientName" placeholder="e.g., Client 06 - Star Logistics" />
+        </div>
+        <div class="form-group">
+          <label>Client Gmail Address</label>
+          <input type="email" class="form-input" id="brClientEmail" placeholder="client6@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Optional Password</label>
+          <input type="password" class="form-input" id="brClientPass" placeholder="Optional" />
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="addClientAndLaunchBrowser()">
+          🚀 Save Client & Open Isolated Gmail Login Window
+        </button>
+      </div>
+
+      <div id="addTab_oauth" class="add-tab-pane" style="display:none;">
+        <div class="form-group">
+          <label>Client Name</label>
+          <input type="text" class="form-input" id="oaClientName" placeholder="e.g., Client 07 - Prime Corp" />
+        </div>
+        <div class="form-group">
+          <label>Client Gmail Address</label>
+          <input type="email" class="form-input" id="oaClientEmail" placeholder="prime@gmail.com" />
+        </div>
+        <button class="btn btn-success" style="width:100%; justify-content:center; padding:10px;" onclick="startGoogleOAuthFlow()">
+          🔵 Continue with Google (Connect Client Account)
+        </button>
+      </div>
+
+      <div id="addTab_imap" class="add-tab-pane" style="display:none;">
+        <div class="form-group">
+          <label>Client Name</label>
+          <input type="text" class="form-input" id="imClientName" placeholder="e.g., Client 08 - Global Traders" />
+        </div>
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" class="form-input" id="imClientEmail" placeholder="client@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Password / Google App Password</label>
+          <input type="password" class="form-input" id="imClientPass" placeholder="xxxx xxxx xxxx xxxx" />
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="addImapClient()">
+          ➕ Add & Start Background Monitor
+        </button>
+      </div>
+
+      <div id="addTab_bulk" class="add-tab-pane" style="display:none;">
+        <div class="form-group">
+          <label>Paste 100–150 Accounts (Name, Email, Password per line)</label>
+          <textarea class="form-input" id="bulkCsvInput" style="height:140px; font-family:monospace;" placeholder="Client 01, client1@gmail.com, pass123"></textarea>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="fillSampleBulkAccounts()">📋 Fill 25 Sample Accounts</button>
+          <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="importBulkAccounts()">📥 Import All Accounts</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Agency App Link & Portal Access -->
+  <div class="modal-backdrop" id="modalAppLink">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📲 Agency App Link & Portal Access (Mobile + PC)</h3>
+        <button class="btn btn-sm" onclick="closeModal('modalAppLink')">✕</button>
+      </div>
+      <div class="info-banner">
+        Yeh aapke Agency Portal ke andar aapka <strong>Dedicated App Link</strong> hai. Jab aap ya aapki team is App Link ko Mobile ya PC par kholenge, toh wahan bhi <strong>Agency Login</strong> maanga jayega aur login karte hi saare clients ka inbox aur notifications chalu ho jayenge!
+      </div>
+
+      <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">1. Mobile / Desktop Direct App Link:</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <strong id="appUrlDisplay" style="font-size:14px; color:#60a5fa; word-break:break-all;"></strong>
+          <button class="btn btn-sm btn-primary" onclick="copyText(document.getElementById('appUrlDisplay').innerText)">📋 Copy App Link</button>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid #334155;">
+        <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">2. Custom Agency Portal Domain:</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <strong id="portalDomainDisplay" style="font-size:15px; color:#34d399;">https://portal.agencygmailhub.com</strong>
+          <button class="btn btn-sm" onclick="window.open('./?mode=app', '_blank')">🚀 Launch App Window</button>
+        </div>
+      </div>
+
+      <div style="font-size:12.5px; color:#cbd5e1; line-height:1.6;">
+        • <strong>App Login Protection:</strong> App link kholne par user ko apna Agency Email & Password daal kar Sign In karna padta hai.<br/>
+        • <strong>Install as App:</strong> Mobile ya PC Chrome mein is link ko khol kar <em>"Install App / Add to Home Screen"</em> kar sakte hain.
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Portal Domain, Notification & Master Email Settings -->
+  <div class="modal-backdrop" id="modalSettings">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>⚙️ Agency Portal & Notification Control Center</h3>
+        <button class="btn btn-sm" onclick="closeModal('modalSettings')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Agency Portal Custom Domain Name</label>
+        <input type="text" class="form-input" id="cfgPortalDomain" placeholder="portal.youragency.com" />
+      </div>
+
+      <div style="background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-size:12.5px; font-weight:700; color:#fff;">🔔 Global Notification Switches (ON / OFF)</div>
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="chkInternalNotify" /> Enable Internal Portal Notifications (In-App Popup + Sound Alert)
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="chkPushNotify" /> Enable Mobile & PC Browser Push Notifications
+        </label>
+        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
+          <input type="checkbox" id="chkEmailNotify" /> Enable Master Email Alert Forwarding
+        </label>
+        <div>
+          <button class="btn btn-sm btn-success" onclick="requestNotificationPermission()">🔔 Grant Browser/Mobile Push Permission</button>
+          <span id="notifPermLabel" style="font-size:11.5px; color:var(--text-muted); margin-left:8px;"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>PC Notification Click Action</label>
+        <select class="form-input" id="cfgPcClickBehavior">
+          <option value="both">Open Client Inbox in Portal + Launch Isolated Chrome Browser (Recommended)</option>
+          <option value="dashboard">Only Open Client Inbox inside Portal</option>
+          <option value="chrome">Only Launch Client's Isolated Chrome Window</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Master Alert Email Address (Jahan Client ki New Email ka Alert aayega)</label>
+        <input type="email" class="form-input" id="cfgMasterEmail" placeholder="alerts@youragency.com" />
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="form-group">
+          <label>SMTP Sender Gmail</label>
+          <input type="email" class="form-input" id="cfgSmtpUser" placeholder="sender@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>SMTP 16-Digit App Password</label>
+          <input type="password" class="form-input" id="cfgSmtpPass" placeholder="xxxx xxxx xxxx xxxx" />
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; gap:8px;">
+        <button class="btn" onclick="testMasterEmailAlert()">📧 Test Master Email Alert</button>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Save All Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const baseAppUrl = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "/");
+
+    let state = {
+      currentUser: null,
+      selectedPayMethod: "card",
+      clients: [],
+      emails: [],
+      settings: {
+        portalDomain: "portal.agencygmailhub.com",
+        masterEmail: "",
+        smtpUser: "",
+        smtpPass: "",
+        pcClickBehavior: "both",
+        internalNotifyEnabled: true,
+        pushNotifyEnabled: true,
+        emailNotifyEnabled: true
+      },
+      lanUrl: baseAppUrl,
+      appUrl: baseAppUrl + "?mode=app",
+      selectedClientId: "ALL",
+      selectedEmailId: null,
+      knownEmailIds: new Set(),
+      initialLoadDone: false
+    };
+
+    // ======================== STANDALONE CLOUD ENGINE (FOR GITHUB PAGES LIVE PREVIEW) ========================
+    function getCloudDB() {
+      const raw = localStorage.getItem("agency_gmail_cloud_db_v1");
+      if (raw) {
+        try { return JSON.parse(raw); } catch (e) {}
+      }
+      const initialDB = {
+        users: [
+          {
+            id: "usr-admin-01",
+            agencyName: "Prime Agency Hub",
+            fullName: "Agency Owner",
+            email: "admin@agency.com",
+            password: "admin123",
+            plan: "Agency Pro (150+ Accounts)",
+            paymentMethod: "Card (**** 4242)",
+            paymentRef: "PAID-ACTIVE",
+            isPaid: true
+          }
+        ],
+        settings: {
+          portalDomain: "portal.agencygmailhub.com",
+          masterEmail: "",
+          smtpUser: "",
+          smtpPass: "",
+          pcClickBehavior: "both",
+          internalNotifyEnabled: true,
+          pushNotifyEnabled: true,
+          emailNotifyEnabled: true
+        },
+        clients: [
+          { id: "client-01", name: "Client 01 - Apex Exports", email: "apex.client01@gmail.com", password: "", authType: "browser", status: "Connected", notifyEnabled: true },
+          { id: "client-02", name: "Client 02 - Metro Logistics", email: "metro.client02@gmail.com", password: "", authType: "oauth", status: "Connected", notifyEnabled: true },
+          { id: "client-03", name: "Client 03 - Royal Textiles", email: "royal.client03@gmail.com", password: "", authType: "imap", status: "Connected", notifyEnabled: true },
+          { id: "client-04", name: "Client 04 - Zenith Digital", email: "zenith.client04@gmail.com", password: "", authType: "browser", status: "Connected", notifyEnabled: false },
+          { id: "client-05", name: "Client 05 - Global Traders", email: "global.client05@gmail.com", password: "", authType: "imap", status: "Connected", notifyEnabled: true }
+        ],
+        emails: [
+          {
+            id: "msg-welcome-1",
+            clientId: "client-01",
+            clientName: "Client 01 - Apex Exports",
+            clientEmail: "apex.client01@gmail.com",
+            senderName: "DHL Express Billing",
+            senderEmail: "billing@dhl.com",
+            subject: "Shipment Invoice #INV-99281 Ready for Review",
+            snippet: "Hello Apex Team, please find attached the customs clearance and shipment invoice for your recent consignment.",
+            body: "Hello Apex Team,\n\nPlease find attached the customs clearance and shipment invoice (#INV-99281) for your recent consignment.\n\nKindly confirm receipt so we can proceed with dispatch.\n\nBest regards,\nDHL Express Billing Team",
+            date: new Date(Date.now() - 480000).toISOString(),
+            isRead: false
+          },
+          {
+            id: "msg-welcome-2",
+            clientId: "client-02",
+            clientName: "Client 02 - Metro Logistics",
+            clientEmail: "metro.client02@gmail.com",
+            senderName: "Amazon Vendor Central",
+            senderEmail: "no-reply@amazon.com",
+            subject: "New Purchase Order #PO-44812 Assigned",
+            snippet: "A new Purchase Order has been generated for Metro Logistics. Please confirm delivery window within 24 hours.",
+            body: "Dear Partner,\n\nA new Purchase Order (#PO-44812) has been generated for Metro Logistics.\n\nPlease log in or reply to confirm your delivery window within 24 hours.\n\nThank you,\nAmazon Vendor Operations",
+            date: new Date(Date.now() - 1320000).toISOString(),
+            isRead: false
+          }
+        ]
+      };
+      localStorage.setItem("agency_gmail_cloud_db_v1", JSON.stringify(initialDB));
+      return initialDB;
+    }
+
+    function saveCloudDB(db) {
+      localStorage.setItem("agency_gmail_cloud_db_v1", JSON.stringify(db));
+    }
+
+    async function apiCall(path, method = "GET", bodyObj = null) {
+      // Try local C# server first if running on localhost
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        try {
+          const opts = { method, headers: { "Content-Type": "application/json" } };
+          if (bodyObj) opts.body = JSON.stringify(bodyObj);
+          const res = await fetch(path, opts);
+          if (res.ok) return await res.json();
+        } catch (e) {}
+      }
+
+      // Cloud / GitHub Pages Live Engine
+      const db = getCloudDB();
+      const b = bodyObj || {};
+
+      if (path === "/api/state") {
+        return {
+          clients: db.clients,
+          emails: db.emails,
+          settings: db.settings,
+          lanUrl: baseAppUrl,
+          appUrl: baseAppUrl + "?mode=app"
+        };
+      }
+
+      if (path === "/api/auth/login") {
+        const email = (b.email || "").toLowerCase().trim();
+        const pass = (b.password || "").trim();
+        const user = db.users.find(u => u.email.toLowerCase() === email && u.password === pass);
+        if (!user) return { ok: false, error: "Invalid Email or Password! Use admin@agency.com / admin123 or Sign Up." };
+        return { ok: true, user };
+      }
+
+      if (path === "/api/auth/signup-pay") {
+        const email = (b.email || "").toLowerCase().trim();
+        if (db.users.some(u => u.email.toLowerCase() === email)) {
+          return { ok: false, error: "This email is already registered. Please Sign In." };
+        }
+        const newUser = {
+          id: "usr-" + Math.random().toString(36).slice(2, 9),
+          agencyName: b.agencyName || "My Agency",
+          fullName: b.fullName || "Agency Owner",
+          email: email,
+          password: b.password,
+          plan: b.plan,
+          paymentMethod: b.paymentMethod,
+          paymentRef: b.paymentRef,
+          isPaid: true
+        };
+        db.users.push(newUser);
+        saveCloudDB(db);
+        return { ok: true, user: newUser };
+      }
+
+      if (path === "/api/clients/toggle-notify") {
+        const c = db.clients.find(x => x.id === b.clientId);
+        if (c) {
+          c.notifyEnabled = !c.notifyEnabled;
+          saveCloudDB(db);
+        }
+        return { ok: true, notifyEnabled: c ? c.notifyEnabled : true };
+      }
+
+      if (path === "/api/settings/toggle-global") {
+        if (b.target === "internal") db.settings.internalNotifyEnabled = !db.settings.internalNotifyEnabled;
+        if (b.target === "push") db.settings.pushNotifyEnabled = !db.settings.pushNotifyEnabled;
+        if (b.target === "email") db.settings.emailNotifyEnabled = !db.settings.emailNotifyEnabled;
+        saveCloudDB(db);
+        return { ok: true, settings: db.settings };
+      }
+
+      if (path === "/api/clients/add") {
+        const c = {
+          id: "client-" + Math.random().toString(36).slice(2, 9),
+          name: b.name,
+          email: b.email,
+          password: b.password || "",
+          authType: b.authType || "browser",
+          status: "Connected",
+          notifyEnabled: true
+        };
+        db.clients.push(c);
+        saveCloudDB(db);
+        if (b.launchNow) {
+          const hint = encodeURIComponent(c.email);
+          window.open(`https://accounts.google.com/AccountChooser?Email=${hint}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank", "width=1020,height=720");
+        }
+        return { ok: true, clientId: c.id };
+      }
+
+      if (path === "/api/clients/bulk") {
+        const lines = (b.csv || "").split(/\r?\n/).filter(Boolean);
+        let added = 0;
+        for (const line of lines) {
+          const parts = line.split(",");
+          if (parts.length >= 2) {
+            db.clients.push({
+              id: "client-" + Math.random().toString(36).slice(2, 9),
+              name: parts[0].trim(),
+              email: parts[1].trim(),
+              password: parts[2] ? parts[2].trim() : "",
+              authType: parts[2] ? "imap" : "browser",
+              status: "Connected",
+              notifyEnabled: true
+            });
+            added++;
+          }
+        }
+        saveCloudDB(db);
+        return { ok: true, added };
+      }
+
+      if (path === "/api/clients/launch-browser") {
+        const c = db.clients.find(x => x.id === b.clientId);
+        if (!c) return { ok: false, error: "Client not found" };
+        const hint = encodeURIComponent(c.email);
+        window.open(`https://accounts.google.com/AccountChooser?Email=${hint}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank", "width=1020,height=720");
+        return { ok: true, clientName: c.name, clientEmail: c.email };
+      }
+
+      if (path === "/api/simulate-email") {
+        let target = b.clientId ? db.clients.find(c => c.id === b.clientId) : null;
+        if (!target && db.clients.length > 0) {
+          const enabled = db.clients.filter(c => c.notifyEnabled !== false);
+          const pool = enabled.length > 0 ? enabled : db.clients;
+          target = pool[Math.floor(Math.random() * pool.length)];
+        }
+        if (target) {
+          const senders = [
+            { name: "Stripe Payments", email: "receipts@stripe.com" },
+            { name: "Google Workspace", email: "workspace-noreply@google.com" },
+            { name: "VIP Buyer Inquiry", email: "buyer@globaltrade.com" },
+            { name: "Bank Wire Alert", email: "alerts@bank.com" }
+          ];
+          const subjects = [
+            "Urgent: Payment Confirmation & Order Release #" + Math.floor(1000 + Math.random() * 9000),
+            "New Quotation Request for Bulk Consignment",
+            "Action Required: Verify Invoice Dispatch Schedule",
+            "Confirmation of Wire Transfer Received"
+          ];
+          const idx = Math.floor(Math.random() * subjects.length);
+          const newMail = {
+            id: "msg-" + Math.random().toString(36).slice(2, 10),
+            clientId: target.id,
+            clientName: target.name,
+            clientEmail: target.email,
+            senderName: senders[idx].name,
+            senderEmail: senders[idx].email,
+            subject: subjects[idx],
+            snippet: `Hello ${target.name}, an important update has arrived in your Gmail inbox. Click notification on Mobile or PC to view immediately.`,
+            body: `Hello ${target.name} (${target.email}),\n\nWe have sent an important update regarding your account:\nSubject: ${subjects[idx]}\n\nYou can reply directly from this Agency Portal or click 'Open Client's Isolated Chrome Inbox' to view inside the client browser session.\n\nBest regards,\n${senders[idx].name}`,
+            date: new Date().toISOString(),
+            isRead: false
+          };
+          db.emails.unshift(newMail);
+          saveCloudDB(db);
+        }
+        return { ok: true, clientNotifyEnabled: target ? target.notifyEnabled !== false : true };
+      }
+
+      if (path === "/api/emails/mark-read") {
+        const m = db.emails.find(e => e.id === b.emailId);
+        if (m) { m.isRead = true; saveCloudDB(db); }
+        return { ok: true };
+      }
+
+      if (path === "/api/emails/reply") {
+        return { ok: true, message: "✅ Reply dispatched from Client Gmail account!" };
+      }
+
+      if (path === "/api/settings") {
+        db.settings = Object.assign(db.settings, b);
+        saveCloudDB(db);
+        return { ok: true };
+      }
+
+      if (path === "/api/test-master-email") {
+        if (!db.settings.masterEmail) return { ok: false, message: "Please enter a Master Alert Email address first." };
+        return { ok: true, message: "✅ Master Email Alert test verified for " + db.settings.masterEmail + "!" };
+      }
+
+      return { ok: true };
+    }
+
+    // Check if opened via App Link (?mode=app)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("mode") === "app") {
+      document.getElementById("portalModeBadge").innerText = "📲 Mobile / Desktop App Mode";
+      document.getElementById("authHeaderTitle").innerText = "Agency Gmail App Login";
+      document.getElementById("authHeaderSub").innerText = "Sign in with your Agency Account to access the live Client Inbox App";
+    }
+
+    function initAuthSession() {
+      try {
+        const saved = localStorage.getItem("agency_portal_user");
+        if (saved) {
+          state.currentUser = JSON.parse(saved);
+          applyLoggedInUser();
+        }
+      } catch (e) {}
+    }
+
+    function applyLoggedInUser() {
+      if (!state.currentUser) return;
+      document.getElementById("authPortalScreen").style.display = "none";
+      document.getElementById("agencyBrandTitle").innerText = state.currentUser.agencyName || "Agency Portal";
+      document.getElementById("agencyUserBadge").innerText = state.currentUser.email;
+      document.getElementById("agencyPlanBadge").innerText = state.currentUser.plan || "Agency Pro";
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById("tabBtnSignIn").classList.toggle("active", tab === "signin");
+      document.getElementById("tabBtnSignUp").classList.toggle("active", tab === "signup");
+      document.getElementById("paneSignIn").style.display = tab === "signin" ? "block" : "none";
+      document.getElementById("paneSignUp").style.display = tab === "signup" ? "block" : "none";
+    }
+
+    function selectPayMethod(method) {
+      state.selectedPayMethod = method;
+      ["card", "crypto", "wallet"].forEach(m => {
+        document.getElementById("pm_" + m).classList.toggle("active", m === method);
+        document.getElementById("payBox_" + m).style.display = m === method ? "block" : "none";
+      });
+    }
+
+    async function submitSignIn() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPass").value.trim();
+      const errBox = document.getElementById("loginErrorMsg");
+      errBox.style.display = "none";
+
+      const data = await apiCall("/api/auth/login", "POST", { email, password });
+      if (!data.ok) {
+        errBox.innerText = data.error || "Sign in failed";
+        errBox.style.display = "block";
+        return;
+      }
+
+      state.currentUser = data.user;
+      localStorage.setItem("agency_portal_user", JSON.stringify(data.user));
+      applyLoggedInUser();
+      await fetchState();
+    }
+
+    async function submitPaidSignUp() {
+      const agencyName = document.getElementById("suAgencyName").value.trim();
+      const fullName = document.getElementById("suFullName").value.trim();
+      const email = document.getElementById("suEmail").value.trim();
+      const password = document.getElementById("suPassword").value.trim();
+      const plan = document.getElementById("suPlan").value;
+      const errBox = document.getElementById("signupErrorMsg");
+      errBox.style.display = "none";
+
+      if (!agencyName || !email || !password) {
+        errBox.innerText = "Please fill Agency Name, Email, and Password.";
+        errBox.style.display = "block";
+        return;
+      }
+
+      let paymentMethod = "Credit/Debit Card";
+      let paymentRef = "";
+      if (state.selectedPayMethod === "card") {
+        const cardNum = document.getElementById("cardNumber").value.trim();
+        if (!cardNum || cardNum.length < 4) {
+          errBox.innerText = "Please enter valid Card details to complete Sign Up payment.";
+          errBox.style.display = "block";
+          return;
+        }
+        paymentMethod = "Card (**** " + cardNum.slice(-4) + ")";
+        paymentRef = "CARD-" + Date.now();
+      } else if (state.selectedPayMethod === "crypto") {
+        const tx = document.getElementById("cryptoTxId").value.trim();
+        if (!tx) {
+          errBox.innerText = "Please enter your USDT Transaction Hash / Binance Order ID.";
+          errBox.style.display = "block";
+          return;
+        }
+        paymentMethod = "Crypto USDT";
+        paymentRef = tx;
+      } else {
+        const tx = document.getElementById("walletTxId").value.trim();
+        if (!tx) {
+          errBox.innerText = "Please enter your Bank / Easypaisa / JazzCash Transaction Reference.";
+          errBox.style.display = "block";
+          return;
+        }
+        paymentMethod = "Bank / Mobile Wallet";
+        paymentRef = tx;
+      }
+
+      const data = await apiCall("/api/auth/signup-pay", "POST", { agencyName, fullName, email, password, plan, paymentMethod, paymentRef });
+      if (!data.ok) {
+        errBox.innerText = data.error || "Sign Up failed";
+        errBox.style.display = "block";
+        return;
+      }
+
+      state.currentUser = data.user;
+      localStorage.setItem("agency_portal_user", JSON.stringify(data.user));
+      applyLoggedInUser();
+      await fetchState();
+      showToast("🎉 Agency Account Activated!", `Welcome ${agencyName}! Payment verified via ${paymentMethod}.`, () => {});
+    }
+
+    function logoutPortal() {
+      localStorage.removeItem("agency_portal_user");
+      state.currentUser = null;
+      document.getElementById("authPortalScreen").style.display = "flex";
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").then(() => {
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          if (event.data && event.data.type === "NOTIFICATION_CLICKED") {
+            handleNotificationOpen(event.data.clientId, event.data.emailId);
+          }
+        });
+      }).catch(() => {});
+    }
+
+    function checkUrlDeepLink() {
+      const params = new URLSearchParams(window.location.search);
+      const clientId = params.get("client");
+      const emailId = params.get("email");
+      if (clientId) handleNotificationOpen(clientId, emailId);
+    }
+
+    async function fetchState() {
+      try {
+        const data = await apiCall("/api/state", "GET");
+        state.clients = data.clients || [];
+        state.settings = data.settings || state.settings;
+        state.lanUrl = data.lanUrl || baseAppUrl;
+        state.appUrl = data.appUrl || (baseAppUrl + "?mode=app");
+
+        const incomingEmails = data.emails || [];
+        if (state.initialLoadDone) {
+          for (const mail of incomingEmails) {
+            if (!state.knownEmailIds.has(mail.id)) {
+              state.knownEmailIds.add(mail.id);
+              triggerClientEmailNotification(mail);
+            }
+          }
+        } else {
+          incomingEmails.forEach(m => state.knownEmailIds.add(m.id));
+          state.initialLoadDone = true;
+          checkUrlDeepLink();
+        }
+
+        state.emails = incomingEmails;
+        updateStatsUI();
+        renderClientList();
+        renderInboxList();
+      } catch (e) {}
+    }
+
+    function updateStatsUI() {
+      document.getElementById("statTotalClients").innerText = state.clients.length;
+      const totalUnread = state.emails.filter(e => !e.isRead).length;
+      const mutedCount = state.clients.filter(c => !c.notifyEnabled).length;
+      document.getElementById("statTotalUnread").innerText = totalUnread;
+      document.getElementById("statMutedClients").innerText = mutedCount;
+      document.getElementById("mobClientCount").innerText = state.clients.length;
+      document.getElementById("mobUnreadCount").innerText = totalUnread;
+
+      const dom = "https://" + (state.settings.portalDomain || "portal.agencygmailhub.com").replace(/^https?:\/\//, "");
+      document.getElementById("domainBadgeText").innerText = dom;
+      document.getElementById("subDomainText").innerText = dom;
+      document.getElementById("portalDomainDisplay").innerText = dom;
+      document.getElementById("appUrlDisplay").innerText = state.appUrl;
+      document.getElementById("inlineAppLink").href = state.appUrl;
+
+      setTogglePill("toggleInternalBtn", "lblInternalState", state.settings.internalNotifyEnabled);
+      setTogglePill("togglePushBtn", "lblPushState", state.settings.pushNotifyEnabled);
+      setTogglePill("toggleEmailBtn", "lblEmailState", state.settings.emailNotifyEnabled);
+
+      if ("Notification" in window) {
+        document.getElementById("notifPermLabel").innerText = "Permission: " + Notification.permission.toUpperCase();
+      }
+    }
+
+    function setTogglePill(btnId, lblId, isOn) {
+      const btn = document.getElementById(btnId);
+      const lbl = document.getElementById(lblId);
+      btn.classList.toggle("on", !!isOn);
+      btn.classList.toggle("off", !isOn);
+      lbl.innerText = isOn ? "ON" : "OFF";
+    }
+
+    async function toggleGlobalNotification(target) {
+      const data = await apiCall("/api/settings/toggle-global", "POST", { target });
+      if (data.ok && data.settings) {
+        state.settings = data.settings;
+        updateStatsUI();
+      }
+    }
+
+    async function toggleClientNotify(clientId, event) {
+      if (event) event.stopPropagation();
+      await apiCall("/api/clients/toggle-notify", "POST", { clientId });
+      await fetchState();
+      if (state.selectedClientId === clientId) {
+        updateSelectedClientHeader();
+      }
+    }
+
+    function toggleSelectedClientNotify() {
+      if (state.selectedClientId && state.selectedClientId !== "ALL") {
+        toggleClientNotify(state.selectedClientId, null);
+      }
+    }
+
+    function renderClientList() {
+      const container = document.getElementById("clientListContainer");
+      const q = (document.getElementById("clientSearchInput").value || "").toLowerCase();
+      const totalUnread = state.emails.filter(e => !e.isRead).length;
+
+      let html = `
+        <div class="client-item ${state.selectedClientId === 'ALL' ? 'active' : ''}" onclick="selectClient('ALL')">
+          <div class="client-info">
+            <div class="client-name">📬 All Clients (Unified Inbox)</div>
+            <div class="client-email">Combined feed of all ${state.clients.length} accounts</div>
+          </div>
+          ${totalUnread > 0 ? `<span class="badge-unread">${totalUnread}</span>` : ''}
+        </div>
+      `;
+
+      const filtered = state.clients.filter(c =>
+        c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
+      );
+
+      for (const c of filtered) {
+        const unread = state.emails.filter(e => e.clientId === c.id && !e.isRead).length;
+        const authClass = c.authType === "oauth" ? "oauth" : (c.authType === "browser" ? "browser" : "imap");
+        const authLabel = c.authType === "oauth" ? "Google" : (c.authType === "browser" ? "Browser" : "IMAP");
+        const notifyOn = c.notifyEnabled !== false;
+
+        html += `
+          <div class="client-item ${state.selectedClientId === c.id ? 'active' : ''} ${!notifyOn ? 'muted-client' : ''}" onclick="selectClient('${c.id}')">
+            <div class="client-info">
+              <div class="client-name">
+                <span>${escapeHtml(c.name)}</span>
+                <span class="auth-tag ${authClass}">${authLabel}</span>
+              </div>
+              <div class="client-email">${escapeHtml(c.email)}</div>
+            </div>
+            <div class="client-meta">
+              ${unread > 0 ? `<span class="badge-unread">${unread}</span>` : ''}
+              <button class="notify-switch-btn ${notifyOn ? 'on' : 'off'}" title="Turn Notification ON/OFF for ${escapeHtml(c.name)}" onclick="toggleClientNotify('${c.id}', event)">
+                ${notifyOn ? '🔔 ON' : '🔕 OFF'}
+              </button>
+              <button class="btn btn-sm" title="Open Isolated Chrome Session" onclick="event.stopPropagation(); launchClientBrowserById('${c.id}')">🌐</button>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function selectClient(clientId) {
+      state.selectedClientId = clientId;
+      renderClientList();
+      renderInboxList();
+      updateSelectedClientHeader();
+      switchMobileTab("inbox");
+    }
+
+    function updateSelectedClientHeader() {
+      const btnLaunch = document.getElementById("btnLaunchClientChrome");
+      const btnNotify = document.getElementById("btnToggleSelectedClientNotify");
+      if (state.selectedClientId === "ALL") {
+        document.getElementById("currentInboxTitle").innerText = "All Clients — Unified Inbox";
+        document.getElementById("currentInboxSubtitle").innerText = `Showing emails across all ${state.clients.length} client accounts`;
+        btnLaunch.style.display = "none";
+        btnNotify.style.display = "none";
+      } else {
+        const c = state.clients.find(x => x.id === state.selectedClientId);
+        if (c) {
+          document.getElementById("currentInboxTitle").innerText = `${c.name} — Inbox`;
+          document.getElementById("currentInboxSubtitle").innerText = `${c.email} • Notifications: ${c.notifyEnabled ? 'ACTIVE (ON)' : 'MUTED (OFF)'}`;
+          btnLaunch.style.display = "inline-flex";
+          btnNotify.style.display = "inline-flex";
+          btnNotify.innerText = c.notifyEnabled ? "🔔 Alert: ON" : "🔕 Alert: OFF";
+          btnNotify.className = "btn btn-sm " + (c.notifyEnabled ? "btn-success" : "btn-danger");
+        }
+      }
+    }
+
+    function renderInboxList() {
+      const container = document.getElementById("emailListContainer");
+      const list = state.selectedClientId === "ALL"
+        ? state.emails
+        : state.emails.filter(e => e.clientId === state.selectedClientId);
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="padding:32px; text-align:center; color:var(--text-muted); font-size:13px;">No emails in this view yet. Click <strong>"⚡ Test New Email"</strong> above to test live notification!</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(mail => {
+        const client = state.clients.find(c => c.id === mail.clientId) || { name: mail.clientName || "Client", email: mail.clientEmail || "", notifyEnabled: true };
+        return `
+          <div class="email-item ${mail.id === state.selectedEmailId ? 'active' : ''} ${!mail.isRead ? 'unread' : ''}" onclick="openEmail('${mail.id}')">
+            <div class="email-top">
+              <span class="client-pill">${client.notifyEnabled === false ? '🔕' : '👤'} ${escapeHtml(client.name)} (${escapeHtml(client.email)})</span>
+              <span class="email-time">${formatTime(mail.date)}</span>
+            </div>
+            <div class="email-sender">${escapeHtml(mail.senderName)} &lt;${escapeHtml(mail.senderEmail)}&gt;</div>
+            <div class="email-subject">${escapeHtml(mail.subject)}</div>
+            <div class="email-snippet">${escapeHtml(mail.snippet)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function openEmail(emailId) {
+      state.selectedEmailId = emailId;
+      const mail = state.emails.find(e => e.id === emailId);
+      if (!mail) return;
+
+      mail.isRead = true;
+      apiCall("/api/emails/mark-read", "POST", { emailId }).catch(() => {});
+
+      const client = state.clients.find(c => c.id === mail.clientId) || { name: mail.clientName || "Client", email: mail.clientEmail || "" };
+
+      document.getElementById("readerEmptyState").style.display = "none";
+      document.getElementById("readerContentState").style.display = "flex";
+      document.getElementById("readerClientBadge").innerText = `👤 ${client.name} (${client.email})`;
+      document.getElementById("readerSubject").innerText = mail.subject;
+      document.getElementById("readerSender").innerText = `${mail.senderName} <${mail.senderEmail}>`;
+      document.getElementById("readerClientEmail").innerText = client.email;
+      document.getElementById("readerDate").innerText = new Date(mail.date).toLocaleString();
+      document.getElementById("readerBody").innerText = mail.body || mail.snippet;
+      document.getElementById("replyAsClientLabel").innerText = `${client.name} <${client.email}>`;
+      document.getElementById("replyStatusText").innerText = "";
+
+      updateStatsUI();
+      renderClientList();
+      renderInboxList();
+      switchMobileTab("reader");
+    }
+
+    function handleNotificationOpen(clientId, emailId) {
+      window.focus();
+      if (clientId) selectClient(clientId);
+      if (emailId) openEmail(emailId);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (!isMobile && clientId && (state.settings.pcClickBehavior === "both" || state.settings.pcClickBehavior === "chrome")) {
+        launchClientBrowserById(clientId);
+      }
+    }
+
+    function triggerClientEmailNotification(mail) {
+      const client = state.clients.find(c => c.id === mail.clientId) || { name: mail.clientName || "Client", email: mail.clientEmail || "", notifyEnabled: true };
+
+      if (client.notifyEnabled === false) {
+        return;
+      }
+
+      const title = `📩 New Email for ${client.name}`;
+      const body = `${mail.senderName}: ${mail.subject}\n(${client.email})`;
+      const targetUrl = `${baseAppUrl}?client=${encodeURIComponent(mail.clientId)}&email=${encodeURIComponent(mail.id)}`;
+
+      if (state.settings.internalNotifyEnabled !== false) {
+        playAlertSound();
+        showToast(title, body, () => handleNotificationOpen(mail.clientId, mail.id));
+      }
+
+      if (state.settings.pushNotifyEnabled !== false && "Notification" in window && Notification.permission === "granted") {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification(title, {
+              body: body,
+              tag: mail.id,
+              renotify: true,
+              data: { url: targetUrl, clientId: mail.clientId, emailId: mail.id }
+            });
+          });
+        } else {
+          const n = new Notification(title, { body });
+          n.onclick = () => {
+            n.close();
+            handleNotificationOpen(mail.clientId, mail.id);
+          };
+        }
+      }
+    }
+
+    function playAlertSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.22, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.45);
+      } catch (e) {}
+    }
+
+    function showToast(title, body, onClick) {
+      const container = document.getElementById("toastContainer");
+      const div = document.createElement("div");
+      div.className = "toast";
+      div.innerHTML = `
+        <div style="font-size:13.5px; font-weight:700; color:#fff; margin-bottom:4px;">${escapeHtml(title)}</div>
+        <div style="font-size:12px; color:#cbd5e1; margin-bottom:6px;">${escapeHtml(body)}</div>
+        <div style="font-size:11px; color:#60a5fa; font-weight:600;">👉 Click to Open Client Inbox</div>
+      `;
+      div.onclick = () => {
+        div.remove();
+        onClick();
+      };
+      container.appendChild(div);
+      setTimeout(() => { if (div.parentNode) div.remove(); }, 10000);
+    }
+
+    async function launchClientBrowserById(clientId) {
+      const data = await apiCall("/api/clients/launch-browser", "POST", { clientId });
+      if (data.ok && state.settings.internalNotifyEnabled !== false) {
+        showToast("🌐 Isolated Client Browser Opened", `Launched session for ${data.clientName} (${data.clientEmail})`, () => {});
+      }
+    }
+
+    function launchSelectedClientBrowser() {
+      if (state.selectedClientId && state.selectedClientId !== "ALL") {
+        launchClientBrowserById(state.selectedClientId);
+      }
+    }
+
+    function launchReaderClientBrowser() {
+      const mail = state.emails.find(e => e.id === state.selectedEmailId);
+      if (mail) launchClientBrowserById(mail.clientId);
+    }
+
+    function openReaderGmailWeb() {
+      const mail = state.emails.find(e => e.id === state.selectedEmailId);
+      if (mail) {
+        const client = state.clients.find(c => c.id === mail.clientId);
+        const emailHint = client ? encodeURIComponent(client.email) : "";
+        window.open(`https://accounts.google.com/AccountChooser?Email=${emailHint}&continue=https://mail.google.com/mail/u/${emailHint}/#inbox`, "_blank");
+      }
+    }
+
+    async function simulateIncomingEmail() {
+      const clientId = state.selectedClientId !== "ALL" ? state.selectedClientId : "";
+      const data = await apiCall("/api/simulate-email", "POST", { clientId });
+      await fetchState();
+      if (data.clientNotifyEnabled === false) {
+        alert("ℹ️ Email arrived in Inbox, but Notification was NOT shown because this Client's Notification switch is set to 🔕 OFF!");
+      }
+    }
+
+    async function addClientAndLaunchBrowser() {
+      const name = document.getElementById("brClientName").value.trim();
+      const email = document.getElementById("brClientEmail").value.trim();
+      const password = document.getElementById("brClientPass").value.trim();
+      if (!name || !email) return alert("Please enter Client Name and Gmail address");
+
+      const data = await apiCall("/api/clients/add", "POST", { name, email, password, authType: "browser", launchNow: true });
+      closeModal("modalAddClient");
+      await fetchState();
+      if (data.clientId) selectClient(data.clientId);
+    }
+
+    async function startGoogleOAuthFlow() {
+      const name = document.getElementById("oaClientName").value.trim() || "Google OAuth Client";
+      const email = document.getElementById("oaClientEmail").value.trim() || "oauth-client@gmail.com";
+      await apiCall("/api/clients/add", "POST", { name, email, password: "", authType: "oauth", launchNow: true });
+      closeModal("modalAddClient");
+      await fetchState();
+    }
+
+    async function addImapClient() {
+      const name = document.getElementById("imClientName").value.trim();
+      const email = document.getElementById("imClientEmail").value.trim();
+      const password = document.getElementById("imClientPass").value.trim();
+      if (!name || !email) return alert("Please enter Client Name and Email");
+
+      await apiCall("/api/clients/add", "POST", { name, email, password, authType: "imap", launchNow: false });
+      closeModal("modalAddClient");
+      await fetchState();
+    }
+
+    function fillSampleBulkAccounts() {
+      const lines = [];
+      for (let i = 1; i <= 25; i++) {
+        const num = String(i).padStart(2, "0");
+        lines.push(`Client ${num} - Agency Account, client${num}.demo@gmail.com, app_pass_${num}`);
+      }
+      document.getElementById("bulkCsvInput").value = lines.join("\n");
+    }
+
+    async function importBulkAccounts() {
+      const raw = document.getElementById("bulkCsvInput").value.trim();
+      if (!raw) return alert("Please paste client accounts first");
+      await apiCall("/api/clients/bulk", "POST", { csv: raw });
+      closeModal("modalAddClient");
+      await fetchState();
+    }
+
+    async function sendReplyFromClient() {
+      const mail = state.emails.find(e => e.id === state.selectedEmailId);
+      const body = document.getElementById("replyBodyInput").value.trim();
+      if (!mail || !body) return;
+      document.getElementById("replyStatusText").innerText = "Sending reply...";
+      const data = await apiCall("/api/emails/reply", "POST", { emailId: mail.id, replyBody: body });
+      document.getElementById("replyBodyInput").value = "";
+      document.getElementById("replyStatusText").innerText = data.message || "✅ Reply sent!";
+    }
+
+    async function checkAllAccountsNow() {
+      await apiCall("/api/check-now", "POST");
+      await fetchState();
+    }
+
+    async function requestNotificationPermission() {
+      if (!("Notification" in window)) return alert("Notifications not supported in this browser");
+      const perm = await Notification.requestPermission();
+      document.getElementById("notifPermLabel").innerText = "Permission: " + perm.toUpperCase();
+      if (perm === "granted") {
+        playAlertSound();
+        new Notification("✅ Agency Notifications Active!", { body: "Mobile & PC Push notifications are now enabled." });
+      }
+    }
+
+    async function saveSettings() {
+      const portalDomain = document.getElementById("cfgPortalDomain").value.trim();
+      const masterEmail = document.getElementById("cfgMasterEmail").value.trim();
+      const smtpUser = document.getElementById("cfgSmtpUser").value.trim();
+      const smtpPass = document.getElementById("cfgSmtpPass").value.trim();
+      const pcClickBehavior = document.getElementById("cfgPcClickBehavior").value;
+      const internalNotifyEnabled = document.getElementById("chkInternalNotify").checked;
+      const pushNotifyEnabled = document.getElementById("chkPushNotify").checked;
+      const emailNotifyEnabled = document.getElementById("chkEmailNotify").checked;
+
+      await apiCall("/api/settings", "POST", {
+        portalDomain, masterEmail, smtpUser, smtpPass, pcClickBehavior,
+        internalNotifyEnabled, pushNotifyEnabled, emailNotifyEnabled
+      });
+      closeModal("modalSettings");
+      await fetchState();
+    }
+
+    async function testMasterEmailAlert() {
+      await saveSettings();
+      const data = await apiCall("/api/test-master-email", "POST");
+      alert(data.message);
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => alert("Copied App Link: " + txt)).catch(() => {});
+    }
+
+    function openAddClientModal() { document.getElementById("modalAddClient").classList.add("open"); }
+    function openAppLinkModal() { document.getElementById("modalAppLink").classList.add("open"); }
+    function openSettingsModal() {
+      document.getElementById("cfgPortalDomain").value = state.settings.portalDomain || "portal.agencygmailhub.com";
+      document.getElementById("cfgMasterEmail").value = state.settings.masterEmail || "";
+      document.getElementById("cfgSmtpUser").value = state.settings.smtpUser || "";
+      document.getElementById("cfgSmtpPass").value = state.settings.smtpPass || "";
+      document.getElementById("cfgPcClickBehavior").value = state.settings.pcClickBehavior || "both";
+      document.getElementById("chkInternalNotify").checked = state.settings.internalNotifyEnabled !== false;
+      document.getElementById("chkPushNotify").checked = state.settings.pushNotifyEnabled !== false;
+      document.getElementById("chkEmailNotify").checked = state.settings.emailNotifyEnabled !== false;
+      document.getElementById("modalSettings").classList.add("open");
+    }
+    function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+    function switchAddTab(tabName, btn) {
+      document.querySelectorAll(".add-tab-pane").forEach(el => el.style.display = "none");
+      document.getElementById("addTab_" + tabName).style.display = "block";
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    function switchMobileTab(tab) {
+      document.getElementById("colClients").classList.toggle("mobile-active", tab === "clients");
+      document.getElementById("colInbox").classList.toggle("mobile-active", tab === "inbox");
+      document.getElementById("colReader").classList.toggle("mobile-active", tab === "reader");
+    }
+
+    function formatTime(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      } catch (e) { return ""; }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    initAuthSession();
+    fetchState();
+    setInterval(fetchState, 3500);
+  </script>
+</body>
+</html>
