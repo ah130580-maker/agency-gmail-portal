@@ -1,1802 +1,1492 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>MailHub Pro — Multi-Gmail Portal & App Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MailHub by Aamiq — Multi-Gmail Workspace & Notification Hub</title>
+  <link rel="icon" type="image/png" href="aamiq-logo.png" />
   <link rel="manifest" href="./manifest.json" />
-  <meta name="theme-color" content="#0b1120" />
+  <meta name="theme-color" content="#07080c" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-dark: #070b14;
-      --bg-panel: #0f172a;
-      --bg-card: #1e293b;
-      --bg-hover: #334155;
-      --border: #1e293b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
+    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #07080c;
+      color: #f8fafc;
+      overflow-x: hidden;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-    /* STRICT SINGLE-LINE BUTTON & PILL RULE */
-    .btn, .toggle-pill, .auth-tab, .pay-method-card, .notify-switch-btn, .tab-btn, .nav-item, .badge {
+    .luxury-bg {
+      background-color: #07080c;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(234, 179, 8, 0.13) 0%, transparent 38%),
+        radial-gradient(circle at 88% 82%, rgba(217, 119, 6, 0.10) 0%, transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(17, 24, 39, 0.9) 0%, #050609 100%);
+    }
+    .dashboard-glass-bg {
+      background-color: #08090f;
+      background-image:
+        radial-gradient(circle at 0% 45%, rgba(37, 99, 235, 0.18) 0%, transparent 34%),
+        radial-gradient(circle at 92% 15%, rgba(234, 179, 8, 0.10) 0%, transparent 35%),
+        radial-gradient(circle at 80% 90%, rgba(16, 185, 129, 0.08) 0%, transparent 35%);
+    }
+    .glass-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 20, 28, 0.78) 100%);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+    }
+    .glass-card-gold {
+      background: linear-gradient(155deg, rgba(30, 27, 20, 0.80) 0%, rgba(12, 13, 18, 0.90) 100%);
+      backdrop-filter: blur(26px);
+      border: 1px solid rgba(234, 179, 8, 0.28);
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.75);
+    }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      width: 100%;
+    }
+    .glass-input:focus {
+      outline: none;
+      border-color: #eab308;
+      background: rgba(234, 179, 8, 0.05);
+    }
+    .glass-input option { background: #0f1117; color: #fff; }
+    .btn-gold {
+      background: linear-gradient(180deg, #facc15 0%, #eab308 55%, #ca8a04 100%);
+      color: #090a0f;
+      font-weight: 800;
+      box-shadow: 0 8px 22px -5px rgba(234, 179, 8, 0.45);
       white-space: nowrap;
       flex-shrink: 0;
-      line-height: 1.25;
     }
-
-    .btn {
-      background: var(--bg-card); color: var(--text-main); border: 1px solid #334155;
-      padding: 7px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
-      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-      gap: 6px; transition: 0.15s;
+    .btn-gold:hover { filter: brightness(1.06); }
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #f8fafc;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .btn:hover { background: var(--bg-hover); }
-    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-success { background: #059669; border-color: #10b981; color: #fff; }
-    .btn-warning { background: #d97706; border-color: #f59e0b; color: #fff; }
-    .btn-danger { background: rgba(239,68,68,0.18); border-color: #ef4444; color: #fca5a5; }
-    .btn-sm { padding: 4px 9px; font-size: 11px; border-radius: 6px; }
-
-    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; }
-    .form-group label { font-size: 12px; color: #cbd5e1; font-weight: 600; }
-    .form-input {
-      background: #0b1120; border: 1px solid #334155; color: var(--text-main);
-      padding: 9px 11px; border-radius: 8px; font-size: 13px; width: 100%;
+    .btn-glass:hover { background: rgba(255, 255, 255, 0.11); }
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      border: 1px solid transparent;
+      background: transparent;
+      white-space: nowrap;
+      transition: 0.15s;
+      cursor: pointer;
     }
-    .info-banner {
-      background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35);
-      padding: 10px 12px; border-radius: 9px; font-size: 12px; color: #bfdbfe; line-height: 1.5;
+    .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .nav-btn.active {
+      background: rgba(234, 179, 8, 0.13);
+      border-color: rgba(234, 179, 8, 0.35);
+      color: #facc15;
     }
-
-    /* ======================== 1. AUTH PORTAL (3-MODE: SIGN IN / SIGN UP & PAY / FORGOT PASSWORD) ======================== */
-    .auth-screen {
-      position: fixed; inset: 0; background: radial-gradient(circle at top, #1e293b 0%, #070b14 72%);
-      z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-      overflow-y: auto; padding: 24px 16px;
-    }
-    .domain-bar {
-      background: #0f172a; border: 1px solid #334155; border-radius: 999px;
-      padding: 6px 16px; font-size: 12px; color: #94a3b8; display: inline-flex;
-      align-items: center; gap: 8px; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-    }
-    .auth-card {
-      background: var(--bg-panel); border: 1px solid #334155; border-radius: 16px;
-      width: 100%; max-width: 560px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    }
-    .auth-tabs {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #070b14;
-      padding: 5px; border-radius: 10px; border: 1px solid #1e293b; margin-bottom: 18px;
-    }
-    .auth-tab {
-      padding: 9px 8px; text-align: center; font-size: 12.5px; font-weight: 700;
-      border-radius: 8px; cursor: pointer; color: var(--text-muted); border: none; background: transparent;
-      overflow: hidden; text-overflow: ellipsis;
-    }
-    .auth-tab.active { background: var(--primary); color: #fff; }
-    .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-    .pay-method-card {
-      background: #070b14; border: 1px solid #334155; border-radius: 9px;
-      padding: 10px 8px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600;
-      color: var(--text-muted); transition: 0.15s; overflow: hidden; text-overflow: ellipsis;
-    }
-    .pay-method-card.active { border-color: var(--success); background: rgba(16, 185, 129, 0.14); color: #fff; }
-
-    /* ======================== 2. APP SHELL (GLASSMORPHIC SIDEBAR + STICKY HEADER + WORKSPACE) ======================== */
-    .app-shell { display: flex; flex: 1; overflow: hidden; }
-    .app-sidebar {
-      width: 245px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(14px);
-      border-right: 1px solid #1e293b; display: flex; flex-direction: column; flex-shrink: 0;
-      padding: 14px 10px; gap: 6px;
-    }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
-      font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
-      border: 1px solid transparent; background: transparent; width: 100%; text-align: left; transition: 0.15s;
-    }
-    .nav-item:hover { background: rgba(30, 41, 59, 0.7); color: #fff; }
-    .nav-item.active { background: rgba(59, 130, 246, 0.16); border-color: rgba(59, 130, 246, 0.45); color: #fff; }
-
-    .main-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-    .topbar {
-      background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px);
-      border-bottom: 1px solid #1e293b; padding: 9px 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
-      position: sticky; top: 0; z-index: 30;
-    }
-    .toggle-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .toggle-pill {
-      background: var(--bg-card); border: 1px solid #334155; padding: 5px 10px;
-      border-radius: 999px; font-size: 11.5px; cursor: pointer; display: inline-flex;
-      align-items: center; gap: 5px; user-select: none; font-weight: 600;
-    }
-    .toggle-pill.on { border-color: #10b981; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
-    .toggle-pill.off { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
-
-    /* SLEEK SERVICE STATUS / MAINTENANCE STRIP */
-    #service-status-banner {
-      display: none; padding: 6px 16px; font-size: 12px; font-weight: 600;
-      align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    #service-status-banner.maintenance { background: rgba(245, 158, 11, 0.16); color: #fcd34d; display: flex; }
-    #service-status-banner.issue { background: rgba(239, 68, 68, 0.18); color: #fca5a5; display: flex; }
-    .pulse-dot {
-      width: 8px; height: 8px; border-radius: 50%; background: currentColor;
-      animation: pulse 1.4s infinite; flex-shrink: 0;
-    }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    .main-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-    .tab-page { display: none; padding: 20px; flex-direction: column; gap: 18px; }
-    .tab-page.active { display: flex; }
-    .tab-page.inbox-mode { padding: 0; height: 100%; overflow: hidden; }
-
-    /* DASHBOARD BENTO STATS (ONLY ON TAB 1) */
-    .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
-    .bento-card {
-      background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 14px; padding: 18px;
-      display: flex; flex-direction: column; gap: 6px;
-    }
-    .bento-val { font-size: 26px; font-weight: 800; color: #fff; }
-    .bento-lbl { font-size: 11.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-    .panel-card { background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 14px; padding: 18px; }
-
-    /* UNIFIED INBOX 3-COLUMN WORKSPACE (TAB 2) */
-    .workspace { display: flex; flex: 1; overflow: hidden; height: 100%; }
-    .sidebar {
-      width: 330px; background: var(--bg-panel); border-right: 1px solid #1e293b;
-      display: flex; flex-direction: column; flex-shrink: 0;
-    }
-    .sidebar-header { padding: 10px 12px; border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; gap: 8px; }
-    .search-box {
-      width: 100%; background: #070b14; border: 1px solid #334155;
-      color: var(--text-main); padding: 7px 10px; border-radius: 8px; font-size: 12.5px;
-    }
-    .client-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
-    .client-item {
-      padding: 9px 10px; border-radius: 9px; cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between;
-      border: 1px solid transparent; transition: 0.15s;
-    }
-    .client-item:hover { background: rgba(51, 65, 85, 0.45); }
-    .client-item.active { background: rgba(37, 99, 235, 0.18); border-color: var(--primary); }
-    .client-info { min-width: 0; flex: 1; }
-    .client-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; }
-    .client-email { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-    .client-meta { display: flex; align-items: center; gap: 5px; margin-left: 6px; flex-shrink: 0; }
-    .badge-unread { background: var(--danger); color: #fff; font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
-    .notify-switch-btn {
-      border: 1px solid #334155; border-radius: 6px; padding: 3px 8px; font-size: 10.5px;
-      cursor: pointer; font-weight: 700;
-    }
-    .notify-switch-btn.on { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
-    .notify-switch-btn.off { background: rgba(239, 68, 68, 0.18); border-color: #ef4444; color: #fca5a5; }
-
-    .inbox-col { width: 370px; background: var(--bg-dark); border-right: 1px solid #1e293b; display: flex; flex-direction: column; flex-shrink: 0; }
-    .inbox-header { padding: 11px 14px; background: var(--bg-panel); border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .email-list { flex: 1; overflow-y: auto; }
-    .email-item { padding: 12px 14px; border-bottom: 1px solid #1e293b; cursor: pointer; }
-    .email-item:hover { background: rgba(30, 41, 59, 0.7); }
-    .email-item.active { background: rgba(37, 99, 235, 0.16); border-left: 3px solid var(--primary); }
-    .email-item.unread { background: rgba(30, 41, 59, 0.45); }
-    .email-item.unread .email-subject { font-weight: 700; color: #fff; }
-    .client-pill {
-      font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
-      background: rgba(59, 130, 246, 0.2); color: #93c5fd; max-width: 200px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .reader-col { flex: 1; background: var(--bg-dark); display: flex; flex-direction: column; overflow: hidden; }
-    .reader-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); padding: 32px; text-align: center; gap: 10px; }
-    .reader-header { padding: 15px 18px; background: var(--bg-panel); border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; gap: 10px; }
-    .reader-body { flex: 1; padding: 20px; overflow-y: auto; line-height: 1.65; font-size: 13.5px; color: #e2e8f0; white-space: pre-wrap; background: #0b1120; }
-    .reply-box { padding: 12px 18px; background: var(--bg-panel); border-top: 1px solid #1e293b; display: flex; flex-direction: column; gap: 8px; }
-    .reply-textarea { width: 100%; height: 68px; background: #070b14; border: 1px solid #334155; color: var(--text-main); border-radius: 8px; padding: 9px; font-size: 13px; resize: none; }
-
-    /* TABLES & BADGES */
-    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #1e293b; }
-    th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
-    .badge { padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
-    .badge-ok { background: rgba(16,185,129,0.18); color: #6ee7b7; }
-    .badge-warn { background: rgba(245,158,11,0.18); color: #fcd34d; }
-    .badge-err { background: rgba(239,68,68,0.18); color: #fca5a5; }
-
-    .progress-track { width: 100%; height: 10px; background: #070b14; border-radius: 999px; overflow: hidden; border: 1px solid #334155; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: 0.25s; }
-
-    /* MODALS & TOASTS */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.78); display: none; align-items: center; justify-content: center; z-index: 600; padding: 16px; }
-    .modal-backdrop.open { display: flex; }
-    .modal { background: var(--bg-panel); border: 1px solid #334155; border-radius: 14px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
-    .tabs { display: flex; gap: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; flex-wrap: wrap; }
-    .tab-btn { background: var(--bg-card); color: var(--text-muted); border: 1px solid #334155; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; }
-    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 700; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: calc(100% - 40px); }
-    .toast { background: #1e293b; border-left: 5px solid var(--success); border: 1px solid #475569; border-radius: 10px; padding: 13px 15px; box-shadow: 0 12px 28px rgba(0,0,0,0.5); cursor: pointer; }
-
-    .footer-bar {
-      background: #070b14; border-top: 1px solid #1e293b; padding: 8px 16px;
-      display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--text-muted); flex-wrap: wrap; gap: 8px;
-    }
-
-    @media (max-width: 960px) {
-      .app-sidebar { display: none; }
-      .sidebar, .inbox-col, .reader-col { width: 100%; display: none; }
-      .sidebar.mobile-active, .inbox-col.mobile-active, .reader-col.mobile-active { display: flex; }
-    }
+    .pill-single { white-space: nowrap; flex-shrink: 0; }
+    .app-section { display: none; }
+    .app-section.active { display: block; }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col luxury-bg selection:bg-yellow-500 selection:text-black">
 
-  <!-- ======================== 1. 3-MODE AUTH PORTAL (SIGN IN / SIGN UP & PAY / FORGOT PASSWORD) ======================== -->
-  <div class="auth-screen" id="authPortalScreen">
-    <div class="domain-bar">
-      <span>🔒</span>
-      <span id="domainBadgeText">https://portal.mailhub.pro</span>
-      <span style="background:#1d4ed8; color:#fff; padding:1px 8px; border-radius:99px; font-size:10.5px; white-space:nowrap;" id="portalModeBadge">MailHub Pro</span>
-    </div>
+  <!-- ===================================================================== -->
+  <!-- 1. PUBLIC WEBSITE VIEW (LIKE ZOOMCAST BY AAMIQ)                       -->
+  <!-- ===================================================================== -->
+  <div id="public-website-view" class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-50 border-b border-white/10 bg-[#07080c]/85 backdrop-blur-xl">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 cursor-pointer shrink-0" onclick="showPublicPage('landing')">
+          <img src="aamiq-logo.png" alt="Aamiq Logo" class="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(250,204,21,0.35)]" />
+          <div class="flex flex-col leading-none">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight text-white whitespace-nowrap">MailHub</span>
+            <span class="text-[10px] font-extrabold tracking-widest uppercase text-yellow-400 whitespace-nowrap mt-0.5">by Aamiq</span>
+          </div>
+        </div>
 
-    <div class="auth-card">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-        <div style="width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,#2563eb,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">📬</div>
+        <nav class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-semibold text-slate-300">
+          <button onclick="showPublicPage('landing'); document.getElementById('sec-features').scrollIntoView({behavior:'smooth'})" class="hover:text-yellow-400 whitespace-nowrap">Features</button>
+          <button onclick="showPublicPage('landing'); document.getElementById('sec-pricing').scrollIntoView({behavior:'smooth'})" class="hover:text-yellow-400 whitespace-nowrap">Pricing</button>
+          <button onclick="showPublicPage('about')" class="hover:text-yellow-400 whitespace-nowrap">About Us</button>
+          <button onclick="showPublicPage('terms')" class="hover:text-yellow-400 whitespace-nowrap">Terms &amp; Conditions</button>
+          <button onclick="showPublicPage('contact')" class="hover:text-yellow-400 whitespace-nowrap">Contact Us</button>
+        </nav>
+
+        <div class="flex items-center gap-2.5 shrink-0">
+          <button onclick="openAuthModal('signin')" class="px-4 py-2 rounded-xl btn-glass text-xs sm:text-sm">Sign In</button>
+          <button onclick="openAuthModal('signup')" class="px-4 py-2 rounded-xl btn-gold text-xs sm:text-sm">Sign Up</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- LANDING PAGE -->
+    <main id="pub-landing" class="flex-1">
+      <section class="py-16 sm:py-24 border-b border-white/10 text-center px-4">
+        <div class="max-w-4xl mx-auto">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 text-xs font-bold mb-6">
+            <span>⚡</span> <span>mailhub.aamiq.online • Multi-Gmail Workspace</span>
+          </div>
+          <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12] text-white">
+            Manage 150+ <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-500">Gmail Accounts</span> In One Unified Workspace
+          </h1>
+          <p class="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Keep every Gmail account logged in persistently, read &amp; reply from one Gmail-style Inbox, launch isolated Google browsers &amp; search per account, and get instant desktop &amp; mobile alerts.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <button onclick="openAuthModal('signup')" class="px-7 py-3.5 rounded-xl btn-gold text-sm">Get Started — Sign Up →</button>
+            <button onclick="openAuthModal('signin')" class="px-7 py-3.5 rounded-xl btn-glass text-sm">Sign In to Portal</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="sec-features" class="py-16 px-4 max-w-6xl mx-auto border-b border-white/10">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-center mb-10">Built for Speed, Persistence &amp; Scale</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="glass-card rounded-2xl p-6">
+            <div class="text-2xl mb-3">📬</div>
+            <h3 class="font-bold text-lg mb-2">Gmail-Style Unified Inbox &amp; Sent</h3>
+            <p class="text-sm text-slate-300">Filter All Mail, Unread, specific accounts, date ranges, and custom labels. Compose &amp; attach files just like Gmail.</p>
+          </div>
+          <div class="glass-card rounded-2xl p-6">
+            <div class="text-2xl mb-3">🌐</div>
+            <h3 class="font-bold text-lg mb-2">Persistent Multi-Account Google Browser</h3>
+            <p class="text-sm text-slate-300">Stay logged in without unexpected logouts. Search Google or open Gmail directly under any connected account.</p>
+          </div>
+          <div class="glass-card rounded-2xl p-6">
+            <div class="text-2xl mb-3">⚠️</div>
+            <h3 class="font-bold text-lg mb-2">Verification &amp; Issue Resolver</h3>
+            <p class="text-sm text-slate-300">Dedicated Issues tab lists only accounts needing password or verification attention so you can fix them one by one.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRICING PLANS (1 USER / 3 USERS+ADMIN / 5 USERS+ADMIN) -->
+      <section id="sec-pricing" class="py-16 px-4 max-w-6xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-center mb-3">Simple, Transparent Plans</h2>
+        <p class="text-center text-slate-400 text-sm mb-10">7-Day Grace Period on billing • Cancel, Upgrade or Downgrade anytime</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Plan 1 — Starter</div>
+              <div class="text-3xl font-extrabold mt-2">$29 <span class="text-sm font-normal text-slate-400">/mo</span></div>
+              <ul class="mt-5 space-y-2.5 text-sm text-slate-300">
+                <li>✔ Up to 50 Gmail Accounts</li>
+                <li>✔ <strong>1 User</strong> (Admin Only)</li>
+                <li>✔ Unified Inbox, Sent &amp; Compose</li>
+                <li>✔ 2 GB Attachment Storage</li>
+              </ul>
+            </div>
+            <button onclick="selectPlanForSignup('Starter')" class="mt-6 w-full py-2.5 rounded-xl btn-glass text-sm">Choose Starter</button>
+          </div>
+
+          <div class="glass-card-gold rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-yellow-400">Plan 2 — Business Pro</div>
+              <div class="text-3xl font-extrabold mt-2">$49 <span class="text-sm font-normal text-slate-400">/mo</span></div>
+              <ul class="mt-5 space-y-2.5 text-sm text-slate-200">
+                <li>✔ Up to 150+ Gmail Accounts</li>
+                <li>✔ <strong>3 Team Users + Admin</strong> (Add/Delete)</li>
+                <li>✔ Persistent Browser + Google Search</li>
+                <li>✔ 5 GB Attachment Storage</li>
+              </ul>
+            </div>
+            <button onclick="selectPlanForSignup('Business Pro')" class="mt-6 w-full py-2.5 rounded-xl btn-gold text-sm">Choose Business Pro</button>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Plan 3 — Enterprise</div>
+              <div class="text-3xl font-extrabold mt-2">$99 <span class="text-sm font-normal text-slate-400">/mo</span></div>
+              <ul class="mt-5 space-y-2.5 text-sm text-slate-300">
+                <li>✔ Unlimited Gmail Accounts (500+)</li>
+                <li>✔ <strong>5 Team Users + Admin</strong> (Add/Delete)</li>
+                <li>✔ Priority Support &amp; Custom Subdomain</li>
+                <li>✔ 7 GB Attachment Storage</li>
+              </ul>
+            </div>
+            <button onclick="selectPlanForSignup('Enterprise')" class="mt-6 w-full py-2.5 rounded-xl btn-glass text-sm">Choose Enterprise</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ABOUT US PAGE -->
+    <section id="pub-about" class="hidden flex-1 max-w-4xl mx-auto px-4 py-14">
+      <div class="glass-card rounded-2xl p-8">
+        <h2 class="text-2xl font-extrabold mb-4 text-yellow-400">About MailHub by Aamiq</h2>
+        <p class="text-slate-300 leading-relaxed text-sm sm:text-base">
+          MailHub by Aamiq is a dedicated multi-mailbox management workspace built for teams and professionals who manage dozens or hundreds of Gmail accounts daily. Instead of juggling dozens of browser windows or losing sessions, MailHub unifies Inbox, Sent, Compose, Labels, and isolated Google Search sessions under one fast, secure workspace.
+        </p>
+      </div>
+    </section>
+
+    <!-- TERMS & CONDITIONS PAGE -->
+    <section id="pub-terms" class="hidden flex-1 max-w-4xl mx-auto px-4 py-14">
+      <div class="glass-card rounded-2xl p-8 space-y-4">
+        <h2 class="text-2xl font-extrabold text-yellow-400">Terms, Privacy &amp; 7-Day Refund Policy</h2>
+        <p class="text-sm text-slate-300 leading-relaxed">1. Authorized Access: You agree to connect only Gmail accounts you own or have explicit authorization to manage.</p>
+        <p class="text-sm text-slate-300 leading-relaxed">2. Session Persistence &amp; Security: Connected sessions are stored securely for workspace continuity and never shared with third parties.</p>
+        <p class="text-sm text-slate-300 leading-relaxed">3. Billing &amp; 7-Day Grace Period: Failed renewals enter a 7-day grace period with header alerts and admin email notifications before suspension.</p>
+      </div>
+    </section>
+
+    <!-- CONTACT US PAGE -->
+    <section id="pub-contact" class="hidden flex-1 max-w-3xl mx-auto px-4 py-14">
+      <div class="glass-card rounded-2xl p-8">
+        <h2 class="text-2xl font-extrabold text-yellow-400 mb-3">Contact Us</h2>
+        <p class="text-sm text-slate-300 mb-4">Need help with onboarding, custom subdomains, or billing? Reach our support team directly:</p>
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-sm space-y-2">
+          <div>📧 Support Email: <strong class="text-yellow-300" id="pubContactEmail">support@aamiq.online</strong></div>
+          <div>🌐 Portal Subdomain: <strong class="text-white">mailhub.aamiq.online</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLEAN FOOTER -->
+    <footer class="border-t border-white/10 bg-[#050609] py-6 px-4">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div class="flex items-center gap-2.5">
+          <img src="aamiq-logo.png" alt="Aamiq" class="h-6 w-auto" />
+          <span>© 2026 <strong class="text-white">MailHub by Aamiq</strong> • mailhub.aamiq.online</span>
+        </div>
+        <div class="flex items-center gap-5">
+          <button onclick="showPublicPage('about')" class="hover:text-yellow-400">About Us</button>
+          <button onclick="showPublicPage('terms')" class="hover:text-yellow-400">Terms &amp; Conditions</button>
+          <button onclick="showPublicPage('contact')" class="hover:text-yellow-400">Contact Us</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. SIMPLE AUTH MODAL (SIGN IN / SIGN UP / FORGOT PASSWORD)            -->
+  <!-- ===================================================================== -->
+  <div id="authModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card-gold rounded-2xl w-full max-w-md p-6 relative">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+      <div class="flex items-center gap-3 mb-5">
+        <img src="aamiq-logo.png" alt="Aamiq" class="h-9 w-auto" />
         <div>
-          <h2 style="font-size:18.5px; font-weight:700;" id="authHeaderTitle">MailHub Pro — Multi-Gmail Portal</h2>
-          <div style="font-size:12px; color:var(--text-muted);" id="authHeaderSub">Sign In to your Workspace or Sign Up with Subscription Plan</div>
+          <div class="font-extrabold text-base text-white">MailHub by Aamiq</div>
+          <div class="text-xs text-slate-400" id="authModalSub">Sign in to your workspace</div>
         </div>
       </div>
 
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabBtnSignIn" onclick="switchAuthTab('signin')">🔐 Sign In</button>
-        <button class="auth-tab" id="tabBtnSignUp" onclick="switchAuthTab('signup')">💳 Sign Up &amp; Pay</button>
-        <button class="auth-tab" id="tabBtnForgot" onclick="switchAuthTab('forgot')">🔑 Forgot Password</button>
+      <div class="grid grid-cols-3 gap-1.5 bg-black/40 p-1 rounded-xl mb-5 border border-white/10">
+        <button id="amTab_signin" onclick="switchAuthMode('signin')" class="py-2 rounded-lg text-xs font-bold bg-yellow-500 text-black pill-single">Sign In</button>
+        <button id="amTab_signup" onclick="switchAuthMode('signup')" class="py-2 rounded-lg text-xs font-bold text-slate-300 pill-single">Sign Up</button>
+        <button id="amTab_forgot" onclick="switchAuthMode('forgot')" class="py-2 rounded-lg text-xs font-bold text-slate-300 pill-single">Reset Pass</button>
       </div>
 
-      <!-- MODE 1: SIGN IN -->
-      <div id="paneSignIn">
-        <div class="info-banner" style="margin-bottom:14px;">
-          <strong>Workspace Sign In:</strong> Enter your registered email and password (Owner test account: <code>admin@mailhub.pro</code> / <code>admin123</code>).
+      <!-- SIGN IN -->
+      <div id="amPane_signin" class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Email</label>
+          <input type="email" id="loginEmail" class="glass-input" value="admin@aamiq.online" placeholder="you@domain.com" />
         </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" class="form-input" id="loginEmail" value="admin@mailhub.pro" placeholder="owner@yourdomain.com" />
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Password</label>
+          <input type="password" id="loginPass" class="glass-input" value="admin123" placeholder="••••••••" />
         </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" class="form-input" id="loginPass" value="admin123" placeholder="••••••••" />
-        </div>
-        <div id="loginErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
-        <button class="btn btn-primary" style="width:100%; padding:11px; font-size:14px;" onclick="submitSignIn()">
-          🚀 Sign In to Dashboard
-        </button>
+        <div id="loginErr" class="hidden text-xs text-rose-400"></div>
+        <button onclick="doSignIn()" class="w-full py-2.5 rounded-xl btn-gold text-sm mt-2">Sign In →</button>
       </div>
 
-      <!-- MODE 2: SIGN UP & PAY (PASSWORD === CONFIRM PASSWORD + DUAL CHECKOUT) -->
-      <div id="paneSignUp" style="display:none;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <div class="form-group">
-            <label>Workspace Name</label>
-            <input type="text" class="form-input" id="suWorkspaceName" placeholder="e.g., Horizon Operations" />
+      <!-- SIGN UP -->
+      <div id="amPane_signup" class="hidden space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Full Name</label>
+          <input type="text" id="suName" class="glass-input" placeholder="Workspace Owner" />
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Email</label>
+          <input type="email" id="suEmail" class="glass-input" placeholder="owner@yourdomain.com" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Password</label>
+            <input type="password" id="suPass" class="glass-input" placeholder="Min 6 chars" />
           </div>
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" class="form-input" id="suFullName" placeholder="Workspace Owner" />
+          <div>
+            <label class="text-xs font-semibold text-slate-300 block mb-1">Confirm</label>
+            <input type="password" id="suConfirm" class="glass-input" placeholder="Re-enter" />
           </div>
         </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" class="form-input" id="suEmail" placeholder="owner@yourdomain.com" />
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <div class="form-group">
-            <label>Create Password</label>
-            <input type="password" class="form-input" id="suPassword" placeholder="Min 6 chars" />
-          </div>
-          <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" class="form-input" id="suConfirmPassword" placeholder="Re-enter password" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Select Plan (Includes Tiered Storage Quota)</label>
-          <select class="form-input" id="suPlan">
-            <option value="Starter">Starter Plan (50 Accounts • 2 GB Storage) — $29 / mo (PKR 8,100)</option>
-            <option value="Business Pro" selected>🔥 Business Pro (150+ Accounts • 5 GB Storage) — $49 / mo (PKR 13,700)</option>
-            <option value="Enterprise">Enterprise (500+ Accounts • 7 GB Storage) — $99 / mo (PKR 27,700)</option>
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Select Plan</label>
+          <select id="suPlan" class="glass-input">
+            <option value="Starter">Starter ($29/mo • 1 User)</option>
+            <option value="Business Pro" selected>Business Pro ($49/mo • 3 Users + Admin)</option>
+            <option value="Enterprise">Enterprise ($99/mo • 5 Users + Admin)</option>
           </select>
         </div>
-
-        <label style="font-size:12px; color:#cbd5e1; font-weight:600; display:block; margin-bottom:6px;">Select Checkout Gateway:</label>
-        <div class="pay-methods">
-          <div class="pay-method-card active" id="pm_lemon" onclick="selectPayMethod('lemon')">💳 Lemon Squeezy (USD)</div>
-          <div class="pay-method-card" id="pm_safepay" onclick="selectPayMethod('safepay')">🇵🇰 Safepay (PKR)</div>
-          <div class="pay-method-card" id="pm_card" onclick="selectPayMethod('card')">🏦 Direct Card / Bank</div>
-        </div>
-
-        <div id="payBox_card" style="background:#070b14; padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
-          <div class="form-group">
-            <label>Cardholder / Account Label</label>
-            <input type="text" class="form-input" id="cardHolder" placeholder="Workspace Owner" />
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label>Card Number / Wallet Reference</label>
-            <input type="text" class="form-input" id="cardNumber" placeholder="4532 •••• •••• 8891" maxlength="19" />
-          </div>
-        </div>
-
-        <div id="signupErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
-        <button class="btn btn-success" style="width:100%; padding:11px; font-size:14px;" onclick="submitPaidSignUp()">
-          ✅ Complete Checkout &amp; Launch Dashboard
-        </button>
+        <div id="signupErr" class="hidden text-xs text-rose-400"></div>
+        <button onclick="doSignUp()" class="w-full py-2.5 rounded-xl btn-gold text-sm">Create Account &amp; Pay →</button>
       </div>
 
-      <!-- MODE 3: FORGOT PASSWORD (STRICT 3-STEP FLOW, ZERO-OTP-LEAK) -->
-      <div id="paneForgot" style="display:none;">
-        <div class="info-banner" style="margin-bottom:12px;">
-          <strong>3-Step Password Reset:</strong> A 4-digit OTP will be sent exclusively to your registered email via Resend (<code>noreply@mailhub.pro</code>).
+      <!-- FORGOT PASSWORD -->
+      <div id="amPane_forgot" class="hidden space-y-3">
+        <div id="fp1" class="space-y-3">
+          <input type="email" id="fpEmail" class="glass-input" placeholder="Registered email address" />
+          <button onclick="sendOtpStep()" class="w-full py-2.5 rounded-xl btn-gold text-sm">Send 4-Digit OTP</button>
         </div>
-        <div id="fpStep1">
-          <div class="form-group">
-            <label>Registered Email Address</label>
-            <input type="email" class="form-input" id="fpEmail" placeholder="owner@yourdomain.com" />
-          </div>
-          <button class="btn btn-primary" style="width:100%;" onclick="sendForgotOtp()">📧 Send 4-Digit OTP</button>
+        <div id="fp2" class="hidden space-y-3">
+          <input type="text" id="fpOtp" maxlength="4" class="glass-input" placeholder="Enter 4-digit OTP from email" />
+          <button onclick="verifyOtpStep()" class="w-full py-2.5 rounded-xl btn-gold text-sm">Verify OTP</button>
         </div>
-        <div id="fpStep2" style="display:none;">
-          <div class="form-group">
-            <label>Enter 4-Digit OTP from Your Email Inbox</label>
-            <input type="text" class="form-input" id="fpOtpInput" maxlength="4" placeholder="4-digit code" />
-          </div>
-          <button class="btn btn-primary" style="width:100%;" onclick="verifyForgotOtp()">✔ Verify OTP</button>
+        <div id="fp3" class="hidden space-y-3">
+          <input type="password" id="fpNew1" class="glass-input" placeholder="New Password" />
+          <input type="password" id="fpNew2" class="glass-input" placeholder="Confirm New Password" />
+          <button onclick="completeForgotPasswordReset()" class="w-full py-2.5 rounded-xl btn-gold text-sm">Update Password</button>
         </div>
-        <div id="fpStep3" style="display:none;">
-          <div class="form-group">
-            <label>New Password</label>
-            <input type="password" class="form-input" id="fpNewPass" placeholder="Min 6 chars" />
-          </div>
-          <div class="form-group">
-            <label>Confirm New Password</label>
-            <input type="password" class="form-input" id="fpConfirmPass" placeholder="Re-enter new password" />
-          </div>
-          <button class="btn btn-success" style="width:100%;" onclick="completeForgotPasswordReset()">🔒 Update Password</button>
-        </div>
-        <div id="fpMsg" style="font-size:12px; margin-top:10px; color:#93c5fd;"></div>
-      </div>
-
-      <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b; display:flex; justify-content:space-between; font-size:11.5px; color:var(--text-muted); flex-wrap:wrap; gap:8px;">
-        <span>Support: <a href="mailto:support@mailhub.pro" style="color:#60a5fa;" id="authSupportLink">support@mailhub.pro</a></span>
-        <div style="display:flex; gap:10px;">
-          <a href="#" onclick="openLegalModal('terms'); return false;" style="color:#94a3b8;">Terms</a>
-          <a href="#" onclick="openLegalModal('privacy'); return false;" style="color:#94a3b8;">Privacy</a>
-          <a href="#" onclick="openLegalModal('refund'); return false;" style="color:#94a3b8;">7-Day Refund</a>
-          <a href="./admin.html" style="color:#60a5fa;">Admin</a>
-        </div>
+        <div id="fpMsg" class="text-xs text-amber-300"></div>
       </div>
     </div>
   </div>
 
-  <!-- ======================== 2. PRODUCTION SAAS PORTAL SHELL ======================== -->
-  <div class="app-shell">
-    <!-- GLASSMORPHIC SIDEBAR (STRICT 5-TAB NAVIGATION) -->
-    <aside class="app-sidebar">
-      <div style="display:flex; align-items:center; gap:10px; padding:4px 6px 14px; border-bottom:1px solid #1e293b; margin-bottom:6px;">
-        <div style="width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#2563eb,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">📬</div>
-        <div style="min-width:0;">
-          <div id="sidebarBrandTitle" style="font-weight:700; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">MailHub Pro</div>
-          <div id="sidebarUserEmail" style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">admin@mailhub.pro</div>
+  <!-- ===================================================================== -->
+  <!-- 3. DESKTOP-FIRST WORKSPACE PORTAL (AFTER LOGIN)                       -->
+  <!-- ===================================================================== -->
+  <div id="workspace-view" class="hidden min-h-screen flex-col dashboard-glass-bg">
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-40 border-b border-white/10 bg-[#08090f]/90 backdrop-blur-xl px-4 h-14 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 shrink-0">
+        <img src="aamiq-logo.png" alt="Aamiq" class="h-8 w-auto" />
+        <div class="leading-none">
+          <span class="font-extrabold text-sm text-white">MailHub</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-yellow-400 ml-1">by Aamiq</span>
         </div>
       </div>
 
-      <button class="nav-item active" id="nav_dashboard" onclick="switchMainTab('dashboard')">🏠 Dashboard</button>
-      <button class="nav-item" id="nav_inbox" onclick="switchMainTab('inbox')">📬 Unified Inbox</button>
-      <button class="nav-item" id="nav_logs" onclick="switchMainTab('logs')">📊 Activity Logs</button>
-      <button class="nav-item" id="nav_support" onclick="switchMainTab('support')">💬 Support &amp; Tickets</button>
-      <button class="nav-item" id="nav_profile" onclick="switchMainTab('profile')">🛡️ Profile &amp; Billing</button>
-
-      <div style="margin-top:auto; padding-top:12px; border-top:1px solid #1e293b; display:flex; flex-direction:column; gap:6px;">
-        <button class="btn btn-sm btn-success" onclick="openAppLinkModal()">📲 App Link</button>
-        <button class="btn btn-sm btn-danger" onclick="logoutPortal()">🚪 Sign Out</button>
-      </div>
-    </aside>
-
-    <!-- MAIN COLUMN -->
-    <div class="main-column">
-      <!-- STICKY TOP HEADER -->
-      <header class="topbar">
-        <div class="toggle-bar">
-          <div class="toggle-pill on" id="toggleInternalBtn" onclick="toggleGlobalNotification('internal')">
-            🔔 Internal Alert: <span id="lblInternalState">ON</span>
-          </div>
-          <div class="toggle-pill on" id="togglePushBtn" onclick="toggleGlobalNotification('push')">
-            📱 Mobile/PC Push: <span id="lblPushState">ON</span>
-          </div>
-          <div class="toggle-pill on" id="toggleEmailBtn" onclick="toggleGlobalNotification('email')">
-            📧 Master Email: <span id="lblEmailState">ON</span>
-          </div>
-        </div>
-
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-          <button class="btn btn-sm btn-warning" onclick="simulateIncomingEmail()">⚡ Test Email</button>
-          <button class="btn btn-sm btn-primary" onclick="openAddClientModal()">➕ Add Account</button>
-          <button class="btn btn-sm" onclick="switchMainTab('profile')">⚙️ Integrations</button>
-        </div>
-      </header>
-
-      <!-- SLEEK SERVICE STATUS / MAINTENANCE STRIP -->
-      <div id="service-status-banner">
-        <span class="pulse-dot"></span>
-        <span id="serviceStatusText">System operational.</span>
+      <!-- GOOGLE BROWSER & SEARCH ENGINE BAR (ANY CONNECTED ACCOUNT) -->
+      <div class="hidden lg:flex items-center gap-2 flex-1 max-w-xl mx-4">
+        <select id="googleSearchAccountSelect" class="glass-input !w-48 !py-1.5 text-xs"></select>
+        <input type="text" id="googleSearchQuery" class="glass-input !py-1.5 text-xs" placeholder="Search Google or open Gmail with selected account..." onkeydown="if(event.key==='Enter') runGoogleSearch()" />
+        <button onclick="runGoogleSearch()" class="px-3 py-1.5 rounded-lg btn-gold text-xs">🔍 Google</button>
       </div>
 
-      <!-- INDEPENDENT SCROLLABLE MAIN WORKSPACE -->
-      <div class="main-scroll">
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="text-xs text-slate-300 hidden sm:inline" id="hdrUserBadge">admin@aamiq.online</span>
+        <button onclick="switchSection('compose')" class="px-3 py-1.5 rounded-lg btn-gold text-xs">✏️ Compose</button>
+        <button onclick="doSignOut()" class="px-3 py-1.5 rounded-lg btn-glass text-xs text-rose-300">Sign Out</button>
+      </div>
+    </header>
 
-        <!-- TAB 1: DASHBOARD (DEFAULT ACTIVE TAB — ONLY TAB WITH BENTO STATS ROW) -->
-        <section class="tab-page active" id="page_dashboard">
-          <div class="bento-grid">
-            <div class="bento-card">
-              <div class="bento-lbl">Connected Gmail Accounts</div>
-              <div class="bento-val" id="kpiAccounts">0</div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-lbl">Active Alert Rules</div>
-              <div class="bento-val" id="kpiRules" style="color:#34d399;">0</div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-lbl">Unread Emails</div>
-              <div class="bento-val" id="kpiUnread" style="color:#f87171;">0</div>
-            </div>
-            <div class="bento-card">
-              <div class="bento-lbl">Open Support Tickets</div>
-              <div class="bento-val" id="kpiTickets" style="color:#fbbf24;">0</div>
-            </div>
+    <!-- MAINTENANCE ALERT BAR (SET BY OWNER) -->
+    <div id="maintenance-alert-bar" class="hidden px-4 py-2 bg-amber-500/20 border-b border-amber-500/40 text-amber-200 text-xs font-semibold flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+      <span id="maintenance-alert-text"></span>
+    </div>
+
+    <!-- 7-DAY GRACE PERIOD PAYMENT DECLINE ALERT BAR -->
+    <div id="grace-alert-bar" class="hidden px-4 py-2 bg-rose-500/20 border-b border-rose-500/40 text-rose-200 text-xs font-semibold flex items-center justify-between gap-3">
+      <span>⚠️ Payment Declined: Your workspace is in a <strong>7-Day Grace Period</strong> (<span id="graceDaysLeft">7</span> days remaining). Update payment to avoid pause.</span>
+      <button onclick="switchSection('profile')" class="px-3 py-1 rounded-lg bg-rose-500 text-white text-xs font-bold pill-single">Fix Billing →</button>
+    </div>
+
+    <!-- BODY: SIDEBAR MENU + SECTION CONTENT -->
+    <div class="flex flex-1 overflow-hidden">
+      <aside class="w-60 border-r border-white/10 bg-[#0b0d14]/85 p-3 flex flex-col gap-1 shrink-0 overflow-y-auto">
+        <button class="nav-btn active" id="nav_dashboard" onclick="switchSection('dashboard')"><span>🏠 Dashboard</span></button>
+        <button class="nav-btn" id="nav_inbox" onclick="switchSection('inbox')"><span>📬 Inbox</span><span id="badgeUnreadNav" class="text-[11px] px-1.5 rounded-full bg-yellow-500 text-black font-bold">0</span></button>
+        <button class="nav-btn" id="nav_sent" onclick="switchSection('sent')"><span>📤 Sent</span></button>
+        <button class="nav-btn" id="nav_compose" onclick="switchSection('compose')"><span>✏️ Compose</span></button>
+        <div class="my-1 border-t border-white/10"></div>
+        <button class="nav-btn" id="nav_accounts" onclick="switchSection('accounts')"><span>➕ Add Account</span></button>
+        <button class="nav-btn" id="nav_issues" onclick="switchSection('issues')"><span>⚠️ Account Issues</span><span id="badgeIssuesNav" class="hidden text-[11px] px-1.5 rounded-full bg-rose-500 text-white font-bold">0</span></button>
+        <button class="nav-btn" id="nav_integrations" onclick="switchSection('integrations')"><span>🔗 Integrations</span></button>
+        <button class="nav-btn" id="nav_settings" onclick="switchSection('settings')"><span>⚙️ Settings</span></button>
+        <div class="my-1 border-t border-white/10"></div>
+        <button class="nav-btn" id="nav_profile" onclick="switchSection('profile')"><span>👤 Profile &amp; Billing</span></button>
+        <button class="nav-btn" id="nav_support" onclick="switchSection('support')"><span>💬 Support</span></button>
+        <!-- OWNER ONLY BUTTON -->
+        <button class="nav-btn hidden text-yellow-300" id="nav_owner_admin" onclick="switchSection('owner_admin')"><span>🛡️ Agency / Owner Portal</span></button>
+      </aside>
+
+      <main class="flex-1 overflow-y-auto p-5">
+
+        <!-- SECTION 1: DASHBOARD -->
+        <section id="sec_dashboard" class="app-section active space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card rounded-2xl p-5"><div class="text-xs text-slate-400 uppercase font-bold">Connected Gmails</div><div class="text-3xl font-extrabold mt-1" id="kpiTotalAccounts">0</div></div>
+            <div class="glass-card rounded-2xl p-5"><div class="text-xs text-slate-400 uppercase font-bold">Unread Emails</div><div class="text-3xl font-extrabold mt-1 text-yellow-400" id="kpiUnreadCount">0</div></div>
+            <div class="glass-card rounded-2xl p-5"><div class="text-xs text-slate-400 uppercase font-bold">Account Issues</div><div class="text-3xl font-extrabold mt-1 text-rose-400" id="kpiIssuesCount">0</div></div>
+            <div class="glass-card rounded-2xl p-5"><div class="text-xs text-slate-400 uppercase font-bold">Open Tickets</div><div class="text-3xl font-extrabold mt-1 text-emerald-400" id="kpiOpenTickets">0</div></div>
           </div>
 
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-            <!-- Integration Readiness Card -->
-            <div class="panel-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h3 style="font-size:15px;">🔌 Integration Readiness</h3>
-                <span class="badge badge-ok" id="readinessBadge">Healthy</span>
-              </div>
-              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;" id="readinessText">
-                All connected Gmail accounts are healthy and syncing in real time.
-              </p>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm btn-primary" onclick="openAddClientModal()">➕ Connect Gmail Account</button>
-                <button class="btn btn-sm" onclick="switchMainTab('profile')">🛡️ Manage Integrations</button>
-              </div>
+          <div class="glass-card rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h3 class="font-bold text-base">Quick Actions</h3>
+              <p class="text-xs text-slate-400 mt-1">Manage persistent Gmail sessions, test alerts, or open your Inbox.</p>
             </div>
-
-            <!-- Workspace Quick Navigation -->
-            <div class="panel-card">
-              <h3 style="font-size:15px; margin-bottom:10px;">⚡ Workspace Quick Navigation</h3>
-              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;">
-                Jump straight to your Unified Inbox, Activity CSV Logs, or Support Center.
-              </p>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm btn-primary" onclick="switchMainTab('inbox')">📬 Open Unified Inbox</button>
-                <button class="btn btn-sm" onclick="switchMainTab('logs')">📊 View Activity Logs</button>
-                <button class="btn btn-sm" onclick="switchMainTab('support')">💬 Open Ticket</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- TAB 2: CORE WORKSPACE (UNIFIED INBOX & MULTI-GMAIL ACCOUNTS — CLEAN & UNCLUTTERED) -->
-        <section class="tab-page inbox-mode" id="page_inbox">
-          <div class="workspace">
-            <aside class="sidebar mobile-active" id="colClients">
-              <div class="sidebar-header">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Accounts (🔔 Mute/Unmute)</span>
-                  <button class="btn btn-sm" onclick="fetchState()">🔄 Sync</button>
-                </div>
-                <input type="text" class="search-box" id="clientSearchInput" placeholder="Search 150+ accounts..." oninput="renderClientList()" />
-              </div>
-              <div class="client-list" id="clientListContainer"></div>
-            </aside>
-
-            <section class="inbox-col mobile-active" id="colInbox">
-              <div class="inbox-header">
-                <div>
-                  <div style="font-size:14px; font-weight:700;" id="currentInboxTitle">All Accounts — Unified Inbox</div>
-                  <div style="font-size:11px; color:var(--text-muted);" id="currentInboxSubtitle">Real-time emails across connected accounts</div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="btn btn-sm" id="btnToggleSelectedClientNotify" style="display:none;" onclick="toggleSelectedClientNotify()"></button>
-                  <button class="btn btn-sm btn-primary" id="btnLaunchClientChrome" style="display:none;" onclick="launchSelectedClientBrowser()">🌐 Browser</button>
-                </div>
-              </div>
-              <div class="email-list" id="emailListContainer"></div>
-            </section>
-
-            <main class="reader-col" id="colReader">
-              <div class="reader-empty" id="readerEmptyState">
-                <div style="font-size:40px;">📬</div>
-                <div style="font-size:15.5px; font-weight:600; color:#fff;">Select an Email or Click Any Notification</div>
-                <div style="max-width:400px; font-size:12.5px;">Click any email from the feed to read, reply directly, or launch that account's isolated Chrome session.</div>
-              </div>
-              <div id="readerContentState" style="display:none; flex-direction:column; height:100%;">
-                <div class="reader-header">
-                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <span class="client-pill" id="readerClientBadge">Account</span>
-                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                      <button class="btn btn-sm btn-primary" onclick="launchReaderClientBrowser()">🌐 Open Isolated Chrome</button>
-                      <button class="btn btn-sm" onclick="openReaderGmailWeb()">↗️ Gmail Web</button>
-                    </div>
-                  </div>
-                  <div style="font-size:16.5px; font-weight:700;" id="readerSubject">Subject</div>
-                  <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); flex-wrap:wrap; gap:8px;">
-                    <span>From: <strong style="color:#fff;" id="readerSender"></strong></span>
-                    <span>To: <strong style="color:#93c5fd;" id="readerClientEmail"></strong></span>
-                    <span id="readerDate"></span>
-                  </div>
-                </div>
-                <div class="reader-body" id="readerBody"></div>
-                <div class="reply-box">
-                  <textarea class="reply-textarea" id="replyBodyInput" placeholder="Write your reply..."></textarea>
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span id="replyStatusText" style="font-size:12px; color:var(--success);"></span>
-                    <button class="btn btn-sm btn-primary" onclick="sendReplyFromClient()">📤 Send Reply</button>
-                  </div>
-                </div>
-              </div>
-            </main>
-          </div>
-        </section>
-
-        <!-- TAB 3: LOGS / ACTIVITY / ANALYTICS (SEARCHABLE & CSV EXPORTABLE) -->
-        <section class="tab-page" id="page_logs">
-          <div class="panel-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
-              <h3 style="font-size:16px;">📊 Real-Time Activity &amp; Delivery Logs</h3>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <input type="text" class="form-input" id="logSearchInput" style="width:220px; padding:6px 10px;" placeholder="Search logs..." oninput="renderLogsTable()" />
-                <button class="btn btn-sm btn-success" onclick="exportLogsCsv()">⬇ Export CSV</button>
-              </div>
-            </div>
-            <div style="overflow-x:auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Timestamp</th>
-                    <th>Event Type</th>
-                    <th>Account</th>
-                    <th>Details</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="logsTableBody"></tbody>
-              </table>
+            <div class="flex flex-wrap gap-2.5">
+              <button onclick="switchSection('inbox')" class="px-4 py-2 rounded-xl btn-gold text-xs">📬 Open Inbox</button>
+              <button onclick="switchSection('accounts')" class="px-4 py-2 rounded-xl btn-glass text-xs">➕ Add Gmail Account</button>
+              <button onclick="simulateNewInboxEmail()" class="px-4 py-2 rounded-xl btn-glass text-xs">⚡ Simulate New Email</button>
             </div>
           </div>
         </section>
 
-        <!-- TAB 4: SUPPORT & TICKETS -->
-        <section class="tab-page" id="page_support">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:16px;">
-            <div class="panel-card">
-              <h3 style="font-size:15.5px; margin-bottom:12px;">🎫 Create Support Ticket</h3>
-              <div class="form-group">
-                <label>Subject</label>
-                <input type="text" class="form-input" id="tktSubject" placeholder="Describe your issue or request" />
-              </div>
-              <div class="form-group">
-                <label>Priority</label>
-                <select class="form-input" id="tktPriority">
-                  <option value="Low">Low — General Inquiry</option>
-                  <option value="Normal" selected>Normal — Standard Support</option>
-                  <option value="High">High — Urgent Connection / Billing Issue</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Message</label>
-                <textarea class="form-input" id="tktMessage" style="height:95px;" placeholder="Provide details..."></textarea>
-              </div>
-              <button class="btn btn-primary" onclick="submitSupportTicket()">📤 Submit Ticket to support@mailhub.pro</button>
-            </div>
+        <!-- SECTION 2: GMAIL-STYLE INBOX -->
+        <section id="sec_inbox" class="app-section space-y-4">
+          <div class="glass-card rounded-2xl p-3.5 flex flex-wrap items-center gap-2.5">
+            <button id="inbTab_all" onclick="setInboxFilter('all')" class="px-3 py-1.5 rounded-lg btn-gold text-xs">All Mail</button>
+            <button id="inbTab_unread" onclick="setInboxFilter('unread')" class="px-3 py-1.5 rounded-lg btn-glass text-xs">Unread</button>
+            <select id="inbAccountSelect" onchange="renderInboxView()" class="glass-input !w-52 !py-1.5 text-xs"></select>
+            <select id="inbLabelFilter" onchange="renderInboxView()" class="glass-input !w-36 !py-1.5 text-xs"></select>
+            <select id="inbDateFilter" onchange="renderInboxView()" class="glass-input !w-36 !py-1.5 text-xs">
+              <option value="all">Any Date</option>
+              <option value="today">Today</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">This Month</option>
+            </select>
+            <select id="inbSortSelect" onchange="renderInboxView()" class="glass-input !w-40 !py-1.5 text-xs">
+              <option value="newest">Sort: Newest First</option>
+              <option value="oldest">Sort: Oldest First</option>
+              <option value="unread">Sort: Unread First</option>
+              <option value="sender">Sort: Sender A–Z</option>
+            </select>
+            <input type="text" id="inbSearchInput" oninput="renderInboxView()" class="glass-input !w-52 !py-1.5 text-xs" placeholder="Search subject, sender, account..." />
+          </div>
 
-            <div class="panel-card">
-              <h3 style="font-size:15.5px; margin-bottom:12px;">💬 Your Ticket Threads</h3>
-              <div id="clientTicketsList" style="display:flex; flex-direction:column; gap:10px;"></div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div class="lg:col-span-5 glass-card rounded-2xl overflow-hidden max-h-[68vh] overflow-y-auto" id="inboxListContainer"></div>
+            <div class="lg:col-span-7 glass-card rounded-2xl p-5 min-h-[420px]" id="inboxReaderContainer">
+              <div class="text-slate-400 text-sm text-center py-20">Select an email from the list to read &amp; reply.</div>
             </div>
           </div>
         </section>
 
-        <!-- TAB 5: SECURITY, INTEGRATIONS, STORAGE QUOTA & BILLING (PROFILE) -->
-        <section class="tab-page" id="page_profile">
-          <!-- 5A. Profile & OTP Password Reset -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-            <div class="panel-card">
-              <h3 style="font-size:15px; margin-bottom:10px;">👤 Workspace Profile</h3>
-              <div style="font-size:13px; line-height:1.8;">
-                <div>Owner: <strong id="profName">Workspace Owner</strong></div>
-                <div>Workspace: <strong id="profWorkspace">MailHub Pro</strong></div>
-                <div>Email: <strong id="profEmail">admin@mailhub.pro</strong></div>
-                <div>Support Contact: <strong id="profSupportEmail">support@mailhub.pro</strong></div>
-              </div>
-            </div>
-
-            <div class="panel-card">
-              <h3 style="font-size:15px; margin-bottom:10px;">🔐 OTP Password Reset</h3>
-              <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Send a 4-digit OTP to your registered email via Resend (<code>noreply@mailhub.pro</code>) to change your password.</p>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm btn-primary" onclick="requestProfileOtp()">📧 Send OTP to Email</button>
-                <input type="text" class="form-input" id="profOtpCode" maxlength="4" style="width:110px; padding:5px 8px;" placeholder="4-digit OTP" />
-                <input type="password" class="form-input" id="profNewPass" style="width:150px; padding:5px 8px;" placeholder="New Password" />
-                <button class="btn btn-sm btn-success" onclick="verifyProfileOtpReset()">✔ Update</button>
-              </div>
-              <div id="profOtpStatus" style="font-size:11.5px; color:#93c5fd; margin-top:8px;"></div>
-            </div>
+        <!-- SECTION 3: GMAIL-STYLE SENT -->
+        <section id="sec_sent" class="app-section space-y-4">
+          <div class="glass-card rounded-2xl p-3.5 flex flex-wrap items-center gap-2.5">
+            <span class="text-xs font-bold text-yellow-400 px-2">📤 Sent Mail</span>
+            <select id="sentAccountSelect" onchange="renderSentView()" class="glass-input !w-52 !py-1.5 text-xs"></select>
+            <select id="sentDateFilter" onchange="renderSentView()" class="glass-input !w-36 !py-1.5 text-xs">
+              <option value="all">Any Date</option>
+              <option value="today">Today</option>
+              <option value="7d">Last 7 Days</option>
+            </select>
+            <select id="sentSortSelect" onchange="renderSentView()" class="glass-input !w-40 !py-1.5 text-xs">
+              <option value="newest">Sort: Newest First</option>
+              <option value="oldest">Sort: Oldest First</option>
+              <option value="recipient">Sort: Recipient A–Z</option>
+            </select>
+            <input type="text" id="sentSearchInput" oninput="renderSentView()" class="glass-input !w-52 !py-1.5 text-xs" placeholder="Search sent mail..." />
           </div>
+          <div class="glass-card rounded-2xl overflow-hidden" id="sentListContainer"></div>
+        </section>
 
-          <!-- 5B. Integrations & Session Health -->
-          <div class="panel-card" id="integrationsCard">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
-              <h3 style="font-size:15.5px;">🔌 Connected Gmail Integrations &amp; Session Health</h3>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm btn-primary" onclick="openAddClientModal()">➕ Connect Gmail (OAuth / App Password)</button>
-                <button class="btn btn-sm btn-warning" onclick="simulateExpiredSession()">⚠️ Simulate Expired Session</button>
-              </div>
-            </div>
-            <div style="overflow-x:auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Label</th>
-                    <th>Gmail Address</th>
-                    <th>Method</th>
-                    <th>Session Health</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="integrationsTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 5C. Plan-Based Storage Quota & Media/Attachment Library -->
-          <div class="panel-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-              <h3 style="font-size:15.5px;">💾 Storage Quota &amp; Attachment Library</h3>
-              <div style="display:flex; gap:8px; align-items:center;">
-                <input type="file" id="mediaUploadInput" style="display:none;" onchange="handleAttachmentUpload(event)" />
-                <button class="btn btn-sm btn-primary" onclick="document.getElementById('mediaUploadInput').click()">⬆ Upload Attachment</button>
-              </div>
-            </div>
-            <div style="font-size:12.5px; margin-bottom:6px;" id="storageQuotaLabel">Used: 0 MB / 5120 MB (5 GB)</div>
-            <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" id="storageProgressBar" style="width:12%;"></div></div>
-            <div style="overflow-x:auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>File Name</th>
-                    <th>Size (MB)</th>
-                    <th>Usage Badge</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="mediaLibraryBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 5D. Complete Billing & Subscription System -->
-          <div class="panel-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+        <!-- SECTION 4: GMAIL-STYLE COMPOSE (WITH ATTACHMENTS) -->
+        <section id="sec_compose" class="app-section">
+          <div class="glass-card rounded-2xl p-6 max-w-3xl space-y-4">
+            <h2 class="text-lg font-extrabold">✏️ Compose New Email</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <h3 style="font-size:15.5px;">💳 Billing &amp; Subscription Management</h3>
-                <div style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">
-                  Current Plan: <strong style="color:#fff;" id="billPlanName">Business Pro</strong> •
-                  <span class="badge badge-ok" id="billPlanStatus">Active</span>
-                </div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">From Account</label>
+                <select id="cmpFrom" class="glass-input"></select>
               </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm btn-primary" onclick="openCheckoutModal()">⬆ Upgrade / Change Plan</button>
-                <button class="btn btn-sm btn-danger" onclick="toggleCancelBox()">✕ Cancel Subscription</button>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">To</label>
+                <input type="email" id="cmpTo" class="glass-input" placeholder="recipient@example.com" />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">CC (Optional)</label>
+                <input type="text" id="cmpCc" class="glass-input" placeholder="cc@example.com" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Subject</label>
+                <input type="text" id="cmpSubject" class="glass-input" placeholder="Email subject" />
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Message</label>
+              <textarea id="cmpBody" class="glass-input h-44" placeholder="Write your message..."></textarea>
+            </div>
+            <div>
+              <input type="file" id="cmpAttachInput" multiple class="hidden" onchange="handleComposeAttach(event)" />
+              <div class="flex flex-wrap items-center gap-2">
+                <button onclick="document.getElementById('cmpAttachInput').click()" class="px-3.5 py-2 rounded-xl btn-glass text-xs">📎 Attach Files</button>
+                <div id="cmpAttachList" class="flex flex-wrap gap-2"></div>
+              </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button onclick="sendComposedEmail()" class="px-6 py-2.5 rounded-xl btn-gold text-sm">📤 Send Email</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 5: ADD ACCOUNT (SIMPLE) + LABELS + PERSISTENT GOOGLE BROWSER -->
+        <section id="sec_accounts" class="app-section space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- Simple Add Account -->
+            <div class="glass-card rounded-2xl p-6 space-y-3">
+              <h2 class="text-lg font-extrabold">➕ Add Gmail Account</h2>
+              <p class="text-xs text-slate-400">Simple login: stays logged in persistently until password changes or verification is requested.</p>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Gmail Address</label>
+                <input type="email" id="addAccEmail" class="glass-input" placeholder="account@gmail.com" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Password / App Password</label>
+                <input type="password" id="addAccPass" class="glass-input" placeholder="••••••••" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Label (Optional)</label>
+                <select id="addAccLabel" class="glass-input"></select>
+              </div>
+              <div class="flex flex-wrap gap-2 pt-1">
+                <button onclick="addSimpleAccount('password')" class="px-4 py-2.5 rounded-xl btn-gold text-xs">✔ Login &amp; Save Session</button>
+                <button onclick="addSimpleAccount('google')" class="px-4 py-2.5 rounded-xl btn-glass text-xs">🔵 Continue with Google</button>
               </div>
             </div>
 
-            <!-- Inline Cancel Subscription Box with Mandatory Reason -->
-            <div id="cancelSubBox" style="display:none; background:#070b14; border:1px solid #ef4444; border-radius:10px; padding:14px; margin-bottom:14px;">
-              <div style="font-size:13px; font-weight:700; color:#fca5a5; margin-bottom:8px;">Confirm Subscription Cancellation</div>
-              <div class="form-group">
-                <label>Mandatory Cancellation Reason</label>
-                <select class="form-input" id="cancelReasonSelect">
-                  <option value="">-- Select a reason --</option>
-                  <option value="Too expensive">Too expensive</option>
-                  <option value="Temporary pause">Temporary pause</option>
-                  <option value="Missing features">Missing features</option>
-                  <option value="Technical issues">Technical issues</option>
-                  <option value="Switched platform">Switched platform</option>
-                  <option value="Other">Other</option>
-                </select>
+            <!-- Optional Labels Manager -->
+            <div class="glass-card rounded-2xl p-6 space-y-3">
+              <h2 class="text-lg font-extrabold">🏷️ Custom Labels (Optional)</h2>
+              <p class="text-xs text-slate-400">Create optional labels to organize your Gmail accounts and filter your Inbox.</p>
+              <div class="flex gap-2">
+                <input type="text" id="newLabelName" class="glass-input" placeholder="e.g., VIP, Billing, Client-A" />
+                <button onclick="createLabel()" class="px-4 py-2 rounded-xl btn-gold text-xs">Add Label</button>
               </div>
-              <div class="form-group">
-                <label>Optional Feedback</label>
-                <input type="text" class="form-input" id="cancelFeedback" placeholder="Tell us how we can improve..." />
-              </div>
-              <button class="btn btn-sm btn-danger" onclick="confirmCancelSubscription()">Confirm Cancellation</button>
+              <div id="labelsChipsContainer" class="flex flex-wrap gap-2 pt-2"></div>
             </div>
+          </div>
 
-            <!-- Primary & Backup Payment Methods -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:14px;">
-              <div style="background:#070b14; border:1px solid #334155; border-radius:10px; padding:12px;">
-                <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Primary Payment Method</div>
-                <div style="font-size:13.5px; font-weight:700; margin:4px 0;" id="primaryPayLabel">Card •••• 4242</div>
-                <button class="btn btn-sm" onclick="addOrSwitchPayMethod('primary')">Edit Primary</button>
-              </div>
-              <div style="background:#070b14; border:1px solid #334155; border-radius:10px; padding:12px;">
-                <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Backup Payment Method</div>
-                <div style="font-size:13.5px; font-weight:700; margin:4px 0;" id="backupPayLabel">Safepay Wallet •••• 9910</div>
-                <button class="btn btn-sm" onclick="addOrSwitchPayMethod('backup')">⇄ Make Primary</button>
-              </div>
-            </div>
-
-            <!-- Billing & Transaction History Table -->
-            <div style="overflow-x:auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Invoice / Txn ID</th>
-                    <th>Date</th>
-                    <th>Plan</th>
-                    <th>Amount</th>
-                    <th>Gateway</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="billingHistoryBody"></tbody>
+          <!-- Connected Accounts & Persistent Google Browser Launcher -->
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-base mb-3">Connected Persistent Accounts</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead><tr class="text-slate-400 border-b border-white/10"><th class="py-2">Email</th><th class="py-2">Label</th><th class="py-2">Session</th><th class="py-2">Actions</th></tr></thead>
+                <tbody id="accountsTableBody"></tbody>
               </table>
             </div>
           </div>
         </section>
 
-      </div>
+        <!-- SECTION 6: ACCOUNT ISSUES / VERIFICATION QUEUE -->
+        <section id="sec_issues" class="app-section space-y-4">
+          <div class="glass-card rounded-2xl p-6">
+            <h2 class="text-lg font-extrabold mb-1">⚠️ Accounts Needing Verification / Password</h2>
+            <p class="text-xs text-slate-400 mb-4">Only accounts requiring password update or Google verification appear here so you can resolve them one by one.</p>
+            <div id="issuesListContainer" class="space-y-3"></div>
+          </div>
+        </section>
 
-      <!-- FOOTER WITH BRANDED SUPPORT & LEGAL LINKS -->
-      <footer class="footer-bar">
-        <span>MailHub Pro • Support: <a href="mailto:support@mailhub.pro" style="color:#60a5fa;" id="footerSupportEmail">support@mailhub.pro</a></span>
-        <div style="display:flex; gap:12px;">
-          <a href="#" onclick="openLegalModal('terms'); return false;" style="color:#94a3b8;">Terms of Service</a>
-          <a href="#" onclick="openLegalModal('privacy'); return false;" style="color:#94a3b8;">Privacy Policy</a>
-          <a href="#" onclick="openLegalModal('refund'); return false;" style="color:#94a3b8;">7-Day Refund</a>
-          <a href="./admin.html" style="color:#60a5fa;">Admin Center</a>
-        </div>
-      </footer>
+        <!-- SECTION 7: INTEGRATIONS -->
+        <section id="sec_integrations" class="app-section space-y-4">
+          <div class="glass-card rounded-2xl p-6">
+            <h2 class="text-lg font-extrabold mb-2">🔗 Integrations</h2>
+            <p class="text-xs text-slate-400 mb-5">Manage Gmail OAuth 2.0, IMAP/SMTP Bridge, and upcoming notification channels.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="font-bold text-sm">Google OAuth 2.0</div>
+                <div class="text-xs text-emerald-400 mt-1">● Active</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="font-bold text-sm">Isolated Chrome Extension</div>
+                <div class="text-xs text-emerald-400 mt-1">● Ready</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="font-bold text-sm">Webhooks / Telegram (Future)</div>
+                <div class="text-xs text-slate-400 mt-1">Configurable anytime</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 8: SETTINGS -->
+        <section id="sec_settings" class="app-section space-y-4">
+          <div class="glass-card rounded-2xl p-6 max-w-2xl space-y-4">
+            <h2 class="text-lg font-extrabold">⚙️ Workspace &amp; Notification Settings</h2>
+            <div class="flex flex-wrap gap-2.5">
+              <button id="setBtnInternal" onclick="toggleSetting('internalNotify')" class="px-3.5 py-2 rounded-xl btn-glass text-xs"></button>
+              <button id="setBtnPush" onclick="toggleSetting('pushNotify')" class="px-3.5 py-2 rounded-xl btn-glass text-xs"></button>
+              <button id="setBtnMaster" onclick="toggleSetting('masterNotify')" class="px-3.5 py-2 rounded-xl btn-glass text-xs"></button>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Master Alert Email (Forward New Mail Alerts)</label>
+              <input type="email" id="setMasterEmail" class="glass-input" placeholder="alerts@yourdomain.com" />
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-300 block mb-1">Custom Portal Subdomain</label>
+              <input type="text" id="setSubdomain" class="glass-input" value="mailhub.aamiq.online" />
+            </div>
+            <button onclick="saveWorkspaceSettings()" class="px-5 py-2.5 rounded-xl btn-gold text-xs">💾 Save Settings</button>
+          </div>
+        </section>
+
+        <!-- SECTION 9: PROFILE, SUBSCRIPTION (UPGRADE/DOWNGRADE), TEAM USERS & BILLING -->
+        <section id="sec_profile" class="app-section space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- Subscription Management -->
+            <div class="glass-card rounded-2xl p-6 space-y-3">
+              <h2 class="text-lg font-extrabold">👤 Profile &amp; Subscription</h2>
+              <div class="text-xs text-slate-300 space-y-1">
+                <div>Email: <strong id="profUserEmail" class="text-white"></strong></div>
+                <div>Role: <strong id="profUserRole" class="text-yellow-400"></strong></div>
+                <div>Current Plan: <strong id="profCurrentPlan" class="text-emerald-400"></strong></div>
+              </div>
+              <div id="planActionButtons" class="flex flex-wrap gap-2 pt-2"></div>
+            </div>
+
+            <!-- Team Users (Admin-Only Visible) -->
+            <div id="teamUsersCard" class="hidden glass-card rounded-2xl p-6 space-y-3">
+              <div class="flex items-center justify-between">
+                <h2 class="text-lg font-extrabold">👥 Team Users (Admin Only)</h2>
+                <span class="text-xs text-yellow-400 font-bold" id="teamLimitLabel"></span>
+              </div>
+              <div id="addTeamRow" class="flex gap-2">
+                <input type="email" id="newTeamEmail" class="glass-input" placeholder="teammate@domain.com" />
+                <button onclick="addTeamUser()" class="px-4 py-2 rounded-xl btn-gold text-xs">+ Add User</button>
+              </div>
+              <div id="teamUsersList" class="space-y-2 text-xs"></div>
+            </div>
+          </div>
+
+          <!-- Billing & Payment History + Download Invoice + 7-Day Grace Test -->
+          <div class="glass-card rounded-2xl p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h3 class="text-base font-extrabold">💳 Billing &amp; Payment History</h3>
+              <button onclick="toggleGraceTest()" class="px-3 py-1.5 rounded-lg btn-glass text-xs text-rose-300">Simulate Payment Decline (7-Day Grace)</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead><tr class="text-slate-400 border-b border-white/10"><th class="py-2">Invoice ID</th><th class="py-2">Date</th><th class="py-2">Plan</th><th class="py-2">Amount</th><th class="py-2">Status</th><th class="py-2">Invoice</th></tr></thead>
+                <tbody id="billingTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 10: SUPPORT PORTAL -->
+        <section id="sec_support" class="app-section space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="glass-card rounded-2xl p-6 space-y-3">
+              <h2 class="text-lg font-extrabold">🎫 Open Support Ticket</h2>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Priority</label>
+                <select id="tktPriority" class="glass-input">
+                  <option value="Low">Low</option>
+                  <option value="Normal" selected>Normal</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Subject</label>
+                <input type="text" id="tktSubject" class="glass-input" placeholder="Short summary of your issue" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-300 block mb-1">Body</label>
+                <textarea id="tktBody" class="glass-input h-28" placeholder="Describe details..."></textarea>
+              </div>
+              <button onclick="createTicket()" class="px-5 py-2.5 rounded-xl btn-gold text-xs">📤 Submit Ticket</button>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 space-y-3">
+              <h2 class="text-lg font-extrabold">💬 My Tickets</h2>
+              <div id="userTicketsContainer" class="space-y-3"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 11: OWNER / AGENCY PORTAL (VISIBLE ONLY TO OWNER ACCOUNT) -->
+        <section id="sec_owner_admin" class="app-section space-y-5">
+          <div class="glass-card-gold rounded-2xl p-6 space-y-4">
+            <h2 class="text-lg font-extrabold text-yellow-400">🛡️ Owner Command Portal (All Clients, Subscriptions &amp; Maintenance)</h2>
+            <div class="flex flex-wrap gap-2 items-center">
+              <input type="text" id="ownerMaintInput" class="glass-input !max-w-md" placeholder="Maintenance alert message for all users..." />
+              <button onclick="setMaintenanceAlert(true)" class="px-4 py-2 rounded-xl btn-gold text-xs">Enable Maintenance Alert</button>
+              <button onclick="setMaintenanceAlert(false)" class="px-4 py-2 rounded-xl btn-glass text-xs">Clear Alert</button>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-base mb-3">All Clients &amp; Subscriptions</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead><tr class="text-slate-400 border-b border-white/10"><th class="py-2">Client Email</th><th class="py-2">Plan</th><th class="py-2">Status</th><th class="py-2">Action</th></tr></thead>
+                <tbody id="ownerClientsTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold text-base mb-3">Admin Support Tickets Inbox</h3>
+            <div id="ownerTicketsInbox" class="space-y-3"></div>
+          </div>
+        </section>
+
+      </main>
     </div>
   </div>
 
-  <!-- TOAST CONTAINER -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- ======================== MODALS ======================== -->
-  <!-- MODAL: ONBOARDING INTEGRATION GATE (#integration-gate-modal) -->
-  <div class="modal-backdrop" id="integration-gate-modal">
-    <div class="modal" style="max-width:450px;">
-      <div class="modal-header">
-        <h3>🔌 Complete Integrations First</h3>
-        <button class="btn btn-sm" onclick="closeModal('integration-gate-modal')">✕</button>
-      </div>
-      <p style="font-size:13px; color:#cbd5e1; line-height:1.5;">
-        Connect at least one Gmail account (via Email + App Password or Continue with Google OAuth 2.0) before creating alert rules or monitoring mailboxes.
-      </p>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn btn-primary" onclick="closeModal('integration-gate-modal'); switchMainTab('profile'); openAddClientModal();">
-          Go to Integrations →
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: CONNECTION ISSUE ALERT (#connection-issue-modal) -->
-  <div class="modal-backdrop" id="connection-issue-modal">
-    <div class="modal" style="max-width:460px;">
-      <div class="modal-header">
-        <h3 style="color:#fca5a5;">⚠️ Gmail Session Expired / Disconnected</h3>
-        <button class="btn btn-sm" onclick="closeModal('connection-issue-modal')">✕</button>
-      </div>
-      <p style="font-size:13px; color:#cbd5e1; line-height:1.5;" id="connIssueText">
-        One or more connected Gmail accounts need re-authentication. An automated email alert has been dispatched from <code>noreply@mailhub.pro</code>.
-      </p>
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="btn btn-warning" onclick="closeModal('connection-issue-modal'); switchMainTab('profile');">
-          Fix Connection Now →
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: ADD ACCOUNT (DUAL OPTIONS: BROWSER / OAUTH / IMAP / BULK 150) -->
-  <div class="modal-backdrop" id="modalAddClient">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>➕ Connect Gmail Account(s)</h3>
-        <button class="btn btn-sm" onclick="closeModal('modalAddClient')">✕</button>
-      </div>
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchAddTab('browser', this)">1. 🌐 Browser Login</button>
-        <button class="tab-btn" onclick="switchAddTab('oauth', this)">2. 🔐 Continue with Google</button>
-        <button class="tab-btn" onclick="switchAddTab('imap', this)">3. 🔑 Email + App Password</button>
-        <button class="tab-btn" onclick="switchAddTab('bulk', this)">4. 📋 Bulk 100–150 CSV</button>
-      </div>
-      <div id="addTab_browser" class="add-tab-pane">
-        <div class="form-group"><label>Account Label</label><input type="text" class="form-input" id="brClientName" placeholder="e.g., Support Mailbox" /></div>
-        <div class="form-group"><label>Gmail Address</label><input type="email" class="form-input" id="brClientEmail" placeholder="mailbox@gmail.com" /></div>
-        <button class="btn btn-primary" style="width:100%;" onclick="addAccount('browser')">🚀 Save &amp; Open Isolated Chrome Login</button>
-      </div>
-      <div id="addTab_oauth" class="add-tab-pane" style="display:none;">
-        <div class="info-banner" style="margin-bottom:10px;">Official Google OAuth 2.0 (Production Consent Screen, verified domain).</div>
-        <div class="form-group"><label>Account Label</label><input type="text" class="form-input" id="oaClientName" placeholder="e.g., Sales Gmail" /></div>
-        <div class="form-group"><label>Gmail Address</label><input type="email" class="form-input" id="oaClientEmail" placeholder="sales@gmail.com" /></div>
-        <button class="btn btn-success" style="width:100%;" onclick="addAccount('oauth')">🔵 Continue with Google (OAuth 2.0)</button>
-      </div>
-      <div id="addTab_imap" class="add-tab-pane" style="display:none;">
-        <div class="form-group"><label>Account Label</label><input type="text" class="form-input" id="imClientName" placeholder="e.g., Billing Mailbox" /></div>
-        <div class="form-group"><label>Gmail Address</label><input type="email" class="form-input" id="imClientEmail" placeholder="billing@gmail.com" /></div>
-        <div class="form-group"><label>16-Digit Google App Password</label><input type="password" class="form-input" id="imClientPass" placeholder="xxxx xxxx xxxx xxxx" /></div>
-        <button class="btn btn-primary" style="width:100%;" onclick="addAccount('imap')">➕ Connect via IMAP/SMTP</button>
-      </div>
-      <div id="addTab_bulk" class="add-tab-pane" style="display:none;">
-        <div class="form-group"><label>Paste 100–150 Accounts (Label, Email, App Password)</label><textarea class="form-input" id="bulkCsvInput" style="height:130px; font-family:monospace;"></textarea></div>
-        <button class="btn btn-primary" style="width:100%;" onclick="importBulkAccounts()">📥 Import Accounts</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: APP LINK -->
-  <div class="modal-backdrop" id="modalAppLink">
-    <div class="modal">
-      <div class="modal-header"><h3>📲 Mobile &amp; Desktop App Link</h3><button class="btn btn-sm" onclick="closeModal('modalAppLink')">✕</button></div>
-      <div class="info-banner">Open this link on Mobile or PC. App mode requires Account Sign In for security.</div>
-      <div style="background:#070b14; padding:12px; border-radius:10px; border:1px solid #334155; display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <strong id="appUrlDisplay" style="font-size:13px; color:#60a5fa; word-break:break-all;"></strong>
-        <button class="btn btn-sm btn-primary" onclick="copyText(document.getElementById('appUrlDisplay').innerText)">📋 Copy Link</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: DUAL CHECKOUT (SAFEPAY PKR / LEMON SQUEEZY USD) -->
-  <div class="modal-backdrop" id="modalCheckout">
-    <div class="modal" style="max-width:460px;">
-      <div class="modal-header"><h3>💳 Upgrade / Change Plan</h3><button class="btn btn-sm" onclick="closeModal('modalCheckout')">✕</button></div>
-      <div class="form-group">
-        <label>Select Plan</label>
-        <select class="form-input" id="chkPlanSelect">
-          <option value="Starter">Starter (2 GB Storage) — $29 / mo</option>
-          <option value="Business Pro" selected>Business Pro (5 GB Storage) — $49 / mo</option>
-          <option value="Enterprise">Enterprise (7 GB Storage) — $99 / mo</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Select Checkout Gateway</label>
-        <select class="form-input" id="chkGatewaySelect">
-          <option value="Lemon Squeezy (USD)">Lemon Squeezy (International USD)</option>
-          <option value="Safepay (PKR)">Safepay (Local Currency PKR)</option>
-        </select>
-      </div>
-      <button class="btn btn-success" style="width:100%;" onclick="processUpgradeCheckout()">✅ Complete Checkout (/api/create-checkout)</button>
-    </div>
-  </div>
-
-  <!-- MODAL: MEDIA PREVIEW & LEGAL POLICIES -->
-  <div class="modal-backdrop" id="modalGeneric">
-    <div class="modal">
-      <div class="modal-header"><h3 id="genModalTitle">Preview</h3><button class="btn btn-sm" onclick="closeModal('modalGeneric')">✕</button></div>
-      <div id="genModalBody" style="font-size:13px; line-height:1.65; color:#cbd5e1; white-space:pre-wrap;"></div>
-    </div>
-  </div>
+  <!-- TOAST -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 space-y-2 max-w-sm"></div>
 
   <script>
-    const DB_KEY = "mailhub_cloud_db_v2";
-    const baseAppUrl = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "/");
+    const DB_KEY = "mailhub_aamiq_db_v3";
+    const OWNER_EMAILS = ["admin@aamiq.online", "admin@mailhub.pro"];
 
-    let state = {
-      currentUser: null,
-      selectedPayMethod: "lemon",
-      clients: [],
-      emails: [],
-      logs: [],
-      tickets: [],
-      media: [],
-      billingHistory: [],
-      cms: {},
-      serviceStatus: { mode: "operational", message: "" },
-      settings: { portalDomain: "portal.mailhub.pro", internalNotifyEnabled: true, pushNotifyEnabled: true, emailNotifyEnabled: true, masterEmail: "" },
-      selectedClientId: "ALL",
-      selectedEmailId: null,
-      knownEmailIds: new Set(),
-      initialLoadDone: false,
-      pendingOtpEmail: ""
-    };
-
-    const PLAN_LIMITS_MB = { "Starter": 2048, "Business Pro": 5120, "Enterprise": 7168 };
-
-    function getCloudDB() {
+    function getDB() {
       try {
         const raw = localStorage.getItem(DB_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.users) return parsed;
-        }
+        if (raw) return JSON.parse(raw);
       } catch (e) {}
-
       const init = {
-        users: [{
-          id: "usr-owner-01",
-          agencyName: "MailHub Pro",
-          fullName: "Workspace Owner",
-          email: "admin@mailhub.pro",
-          password: "admin123",
-          plan: "Business Pro",
-          planStatus: "Active",
-          primaryPay: "Lemon Squeezy Card •••• 4242",
-          backupPay: "Safepay PKR Wallet •••• 9910",
-          usedMB: 142.5,
-          isPaid: true
-        }],
-        settings: {
-          portalDomain: "portal.mailhub.pro",
-          masterEmail: "",
-          pcClickBehavior: "both",
-          internalNotifyEnabled: true,
-          pushNotifyEnabled: true,
-          emailNotifyEnabled: true
-        },
-        serviceStatus: { mode: "operational", message: "" },
-        cms: {
-          heroText: "Sign In to your Workspace or Sign Up with Subscription Plan",
-          supportEmail: "support@mailhub.pro",
-          terms: "By using MailHub Pro, you agree to manage only authorized Gmail accounts and comply with Google API & anti-spam policies.",
-          privacy: "MailHub Pro encrypts all connected sessions (AES-256) and never sells or shares your mailbox data with third parties.",
-          refund: "All paid subscriptions include a 7-Day No-Questions-Asked Refund Policy. Contact support@mailhub.pro with your invoice ID."
-        },
-        clients: [
-          { id: "acc-01", name: "Operations Mailbox", email: "ops.mailbox01@gmail.com", authType: "oauth", sessionStatus: "healthy", notifyEnabled: true },
-          { id: "acc-02", name: "Billing & Invoices", email: "billing.mailbox02@gmail.com", authType: "imap", sessionStatus: "healthy", notifyEnabled: true },
-          { id: "acc-03", name: "Support Desk Mail", email: "desk.mailbox03@gmail.com", authType: "browser", sessionStatus: "healthy", notifyEnabled: false }
-        ],
-        emails: [
+        users: [
           {
-            id: "msg-101", clientId: "acc-01", clientName: "Operations Mailbox", clientEmail: "ops.mailbox01@gmail.com",
-            senderName: "Cloud Billing", senderEmail: "billing@cloudprovider.com",
-            subject: "Monthly Statement Ready", snippet: "Your latest statement is available for review.",
-            body: "Hello Workspace Owner,\n\nYour latest monthly statement is ready for review.\n\nBest regards,\nCloud Billing",
-            date: new Date(Date.now() - 600000).toISOString(), isRead: false
+            id: "u-owner",
+            name: "Workspace Owner",
+            email: "admin@aamiq.online",
+            password: "admin123",
+            plan: "Enterprise",
+            status: "Active",
+            role: "Admin",
+            team: [],
+            graceDays: 0
           }
         ],
-        logs: [
-          { at: new Date().toISOString(), type: "SYNC", account: "ops.mailbox01@gmail.com", details: "OAuth 2.0 mailbox sync completed", status: "Success" },
-          { at: new Date().toISOString(), type: "ALERT", account: "billing.mailbox02@gmail.com", details: "Push & internal alert rule armed", status: "Active" }
+        labels: ["VIP", "Billing", "Support"],
+        accounts: [
+          { id: "a1", email: "ops.mailbox@gmail.com", label: "VIP", status: "healthy", notify: true },
+          { id: "a2", email: "billing.desk@gmail.com", label: "Billing", status: "healthy", notify: true },
+          { id: "a3", email: "verify.needed@gmail.com", label: "Support", status: "needs_verification", notify: true }
+        ],
+        inbox: [
+          { id: "m1", accountId: "a1", accountEmail: "ops.mailbox@gmail.com", label: "VIP", from: "Stripe <receipts@stripe.com>", subject: "Payment Received #4921", body: "Payment of $49.00 has been confirmed.", date: new Date(Date.now() - 1800000).toISOString(), unread: true },
+          { id: "m2", accountId: "a2", accountEmail: "billing.desk@gmail.com", label: "Billing", from: "Cloud Host <billing@cloud.com>", subject: "Monthly Invoice Ready", body: "Your monthly cloud invoice is ready.", date: new Date(Date.now() - 86400000 * 2).toISOString(), unread: false }
+        ],
+        sent: [
+          { id: "s1", accountEmail: "ops.mailbox@gmail.com", to: "client@example.com", subject: "Welcome to MailHub by Aamiq", body: "Your workspace is ready.", attachments: ["guide.pdf"], date: new Date(Date.now() - 3600000).toISOString() }
+        ],
+        invoices: [
+          { id: "INV-2026-101", date: new Date().toISOString().slice(0, 10), plan: "Enterprise", amount: "$99.00", status: "Paid" }
         ],
         tickets: [],
-        media: [
-          { id: "med-1", name: "invoice-template.pdf", sizeMB: 2.4, usage: "Active" },
-          { id: "med-2", name: "welcome-banner.png", sizeMB: 1.8, usage: "Draft" },
-          { id: "med-3", name: "old-export.csv", sizeMB: 4.1, usage: "Unused" }
-        ],
-        billingHistory: [
-          { id: "INV-2026-001", date: new Date().toISOString().slice(0, 10), plan: "Business Pro", amount: "$49.00", gateway: "Lemon Squeezy (USD)", status: "Paid" }
-        ]
+        settings: { internalNotify: true, pushNotify: true, masterNotify: true, masterEmail: "", subdomain: "mailhub.aamiq.online", maintenanceMsg: "" }
       };
       localStorage.setItem(DB_KEY, JSON.stringify(init));
       return init;
     }
 
-    function saveCloudDB(db) {
-      localStorage.setItem(DB_KEY, JSON.stringify(db));
+    function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+    let currentUser = null;
+    let inboxFilterMode = "all";
+    let selectedEmailId = null;
+    let composeAttachments = [];
+
+    // PUBLIC WEBSITE NAVIGATION
+    function showPublicPage(page) {
+      ["landing", "about", "terms", "contact"].forEach(p => {
+        document.getElementById("pub-" + p).classList.toggle("hidden", p !== page);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function addLog(type, account, details, status) {
-      const db = getCloudDB();
-      db.logs = db.logs || [];
-      db.logs.unshift({ at: new Date().toISOString(), type, account, details, status });
-      saveCloudDB(db);
+    function selectPlanForSignup(plan) {
+      openAuthModal("signup");
+      document.getElementById("suPlan").value = plan;
     }
 
-    // ======================== AUTHENTICATION & STRICT ZERO-OTP-LEAK ========================
-    function switchAuthTab(tab) {
-      ["signin", "signup", "forgot"].forEach(t => {
-        document.getElementById("tabBtn" + (t === "signin" ? "SignIn" : (t === "signup" ? "SignUp" : "Forgot"))).classList.toggle("active", t === tab);
-        document.getElementById("pane" + (t === "signin" ? "SignIn" : (t === "signup" ? "SignUp" : "Forgot"))).style.display = t === tab ? "block" : "none";
+    // AUTH MODAL
+    function openAuthModal(mode) {
+      document.getElementById("authModal").classList.remove("hidden");
+      switchAuthMode(mode);
+    }
+    function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
+    function switchAuthMode(mode) {
+      ["signin", "signup", "forgot"].forEach(m => {
+        document.getElementById("amPane_" + m).classList.toggle("hidden", m !== mode);
+        const tab = document.getElementById("amTab_" + m);
+        tab.className = m === mode
+          ? "py-2 rounded-lg text-xs font-bold bg-yellow-500 text-black pill-single"
+          : "py-2 rounded-lg text-xs font-bold text-slate-300 pill-single";
       });
     }
 
-    function selectPayMethod(m) {
-      state.selectedPayMethod = m;
-      ["lemon", "safepay", "card"].forEach(x => document.getElementById("pm_" + x).classList.toggle("active", x === m));
-    }
-
-    function submitSignIn() {
+    function doSignIn() {
       const email = document.getElementById("loginEmail").value.trim().toLowerCase();
       const pass = document.getElementById("loginPass").value.trim();
-      const err = document.getElementById("loginErrorMsg");
-      err.style.display = "none";
-
-      const db = getCloudDB();
-      const user = (db.users || []).find(u => u.email.toLowerCase() === email && u.password === pass);
-      if (!user) {
+      const db = getDB();
+      const u = db.users.find(x => x.email.toLowerCase() === email && x.password === pass);
+      if (!u) {
+        const err = document.getElementById("loginErr");
         err.innerText = "Invalid email or password.";
-        err.style.display = "block";
+        err.classList.remove("hidden");
         return;
       }
-      completeAuthLogin(user);
+      enterWorkspace(u);
     }
 
-    function submitPaidSignUp() {
-      const workspaceName = document.getElementById("suWorkspaceName").value.trim();
-      const fullName = document.getElementById("suFullName").value.trim() || "Workspace Owner";
+    function doSignUp() {
+      const name = document.getElementById("suName").value.trim() || "Workspace Owner";
       const email = document.getElementById("suEmail").value.trim().toLowerCase();
-      const pass = document.getElementById("suPassword").value.trim();
-      const confirmPass = document.getElementById("suConfirmPassword").value.trim();
+      const pass = document.getElementById("suPass").value.trim();
+      const conf = document.getElementById("suConfirm").value.trim();
       const plan = document.getElementById("suPlan").value;
-      const err = document.getElementById("signupErrorMsg");
-      err.style.display = "none";
-
-      if (!workspaceName || !email || !pass) {
-        err.innerText = "Please fill Workspace Name, Email, and Password.";
-        err.style.display = "block";
+      const err = document.getElementById("signupErr");
+      err.classList.add("hidden");
+      if (!email || pass.length < 6 || pass !== conf) {
+        err.innerText = "Check email and ensure passwords match (min 6 chars).";
+        err.classList.remove("hidden");
         return;
       }
-      if (pass !== confirmPass) {
-        err.innerText = "Password and Confirm Password do not match.";
-        err.style.display = "block";
+      const db = getDB();
+      if (db.users.some(x => x.email.toLowerCase() === email)) {
+        err.innerText = "Email already registered.";
+        err.classList.remove("hidden");
         return;
       }
-      const db = getCloudDB();
-      if ((db.users || []).some(u => u.email.toLowerCase() === email)) {
-        err.innerText = "This email is already registered. Please Sign In.";
-        err.style.display = "block";
-        return;
-      }
-
-      const gateway = state.selectedPayMethod === "safepay" ? "Safepay (PKR)" : (state.selectedPayMethod === "lemon" ? "Lemon Squeezy (USD)" : "Card");
-      const amount = plan === "Starter" ? "$29.00" : (plan === "Enterprise" ? "$99.00" : "$49.00");
-      const newUser = {
-        id: "usr-" + Math.random().toString(36).slice(2, 9),
-        agencyName: workspaceName,
-        fullName: fullName,
-        email: email,
-        password: pass,
-        plan: plan,
-        planStatus: "Active",
-        primaryPay: gateway + " •••• " + ((document.getElementById("cardNumber").value.trim() || "4242").slice(-4)),
-        backupPay: "Backup Method Not Set",
-        usedMB: 0,
-        isPaid: true
-      };
+      const newUser = { id: "u-" + Date.now(), name, email, password: pass, plan, status: "Active", role: "Admin", team: [], graceDays: 0 };
       db.users.push(newUser);
-      db.billingHistory.unshift({ id: "INV-" + Math.floor(10000 + Math.random() * 90000), date: new Date().toISOString().slice(0, 10), plan, amount, gateway, status: "Paid" });
-      saveCloudDB(db);
-      addLog("BILLING", email, `New ${plan} checkout completed via ${gateway}`, "Paid");
-      completeAuthLogin(newUser);
+      const amt = plan === "Starter" ? "$29.00" : (plan === "Enterprise" ? "$99.00" : "$49.00");
+      db.invoices.unshift({ id: "INV-" + Math.floor(10000 + Math.random() * 90000), date: new Date().toISOString().slice(0, 10), plan, amount: amt, status: "Paid" });
+      saveDB(db);
+      enterWorkspace(newUser);
     }
 
-    // 3-STEP FORGOT PASSWORD (STRICT ZERO-OTP-LEAK)
-    async function sendForgotOtp() {
+    let pendingOtpEmail = "";
+    function sendOtpStep() {
       const email = document.getElementById("fpEmail").value.trim().toLowerCase();
-      const msg = document.getElementById("fpMsg");
-      const db = getCloudDB();
-      if (!(db.users || []).some(u => u.email.toLowerCase() === email)) {
-        msg.innerText = "No account found with that email.";
+      const db = getDB();
+      if (!db.users.some(u => u.email.toLowerCase() === email)) {
+        document.getElementById("fpMsg").innerText = "No account found with this email.";
         return;
       }
-      state.pendingOtpEmail = email;
+      pendingOtpEmail = email;
       const code = String(Math.floor(1000 + Math.random() * 9000));
-      sessionStorage.setItem("mailhub_otp_hash", btoa(email + ":" + code));
-      try { await fetch("/api/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, purpose: "password_reset" }) }); } catch (e) {}
-      document.getElementById("fpStep1").style.display = "none";
-      document.getElementById("fpStep2").style.display = "block";
-      msg.innerText = "✅ A 4-digit verification code has been sent to your email inbox via noreply@mailhub.pro.";
+      sessionStorage.setItem("mh_otp", btoa(email + ":" + code));
+      document.getElementById("fp1").classList.add("hidden");
+      document.getElementById("fp2").classList.remove("hidden");
+      document.getElementById("fpMsg").innerText = "4-digit OTP sent to your email inbox.";
     }
-
-    function verifyForgotOtp() {
-      const entered = document.getElementById("fpOtpInput").value.trim();
-      const msg = document.getElementById("fpMsg");
-      if (!/^\d{4}$/.test(entered)) {
-        msg.innerText = "Please enter the 4-digit OTP from your email.";
+    function verifyOtpStep() {
+      const val = document.getElementById("fpOtp").value.trim();
+      if (sessionStorage.getItem("mh_otp") !== btoa(pendingOtpEmail + ":" + val)) {
+        document.getElementById("fpMsg").innerText = "Invalid OTP code.";
         return;
       }
-      const expected = sessionStorage.getItem("mailhub_otp_hash");
-      if (expected !== btoa(state.pendingOtpEmail + ":" + entered)) {
-        msg.innerText = "Invalid OTP code. Please check your email inbox.";
-        return;
-      }
-      document.getElementById("fpStep2").style.display = "none";
-      document.getElementById("fpStep3").style.display = "block";
-      msg.innerText = "OTP verified. Set your new password below.";
+      document.getElementById("fp2").classList.add("hidden");
+      document.getElementById("fp3").classList.remove("hidden");
+      document.getElementById("fpMsg").innerText = "Verified. Enter your new password.";
     }
-
     function completeForgotPasswordReset() {
-      const p1 = document.getElementById("fpNewPass").value.trim();
-      const p2 = document.getElementById("fpConfirmPass").value.trim();
-      const msg = document.getElementById("fpMsg");
+      const p1 = document.getElementById("fpNew1").value.trim();
+      const p2 = document.getElementById("fpNew2").value.trim();
       if (p1.length < 6 || p1 !== p2) {
-        msg.innerText = "Passwords must match and be at least 6 characters.";
+        document.getElementById("fpMsg").innerText = "Passwords must match (min 6 chars).";
         return;
       }
-      const db = getCloudDB();
-      const u = db.users.find(x => x.email.toLowerCase() === state.pendingOtpEmail);
-      if (u) {
-        u.password = p1;
-        saveCloudDB(db);
-      }
-      sessionStorage.removeItem("mailhub_otp_hash");
-      switchAuthTab("signin");
-      document.getElementById("loginEmail").value = state.pendingOtpEmail;
-      alert("✅ Password updated successfully! Please Sign In.");
+      const db = getDB();
+      const u = db.users.find(x => x.email.toLowerCase() === pendingOtpEmail);
+      if (u) { u.password = p1; saveDB(db); }
+      sessionStorage.removeItem("mh_otp");
+      switchAuthMode("signin");
     }
 
-    function completeAuthLogin(user) {
-      state.currentUser = user;
-      localStorage.setItem("mailhub_portal_user", JSON.stringify(user));
-      document.getElementById("authPortalScreen").style.display = "none";
-      fetchState();
-      switchMainTab("dashboard");
+    function enterWorkspace(user) {
+      currentUser = user;
+      localStorage.setItem("mailhub_session_email", user.email);
+      closeAuthModal();
+      document.getElementById("public-website-view").classList.add("hidden");
+      document.getElementById("workspace-view").classList.remove("hidden");
+      document.getElementById("workspace-view").classList.add("flex");
+      document.getElementById("hdrUserBadge").innerText = user.email;
+      document.getElementById("nav_owner_admin").classList.toggle("hidden", !OWNER_EMAILS.includes(user.email.toLowerCase()));
+      refreshAll();
+      switchSection("dashboard");
+    }
 
-      // Onboarding Integration Gate Check
-      const db = getCloudDB();
-      if ((db.clients || []).length === 0) {
-        document.getElementById("integration-gate-modal").classList.add("open");
+    function doSignOut() {
+      localStorage.removeItem("mailhub_session_email");
+      currentUser = null;
+      document.getElementById("workspace-view").classList.add("hidden");
+      document.getElementById("workspace-view").classList.remove("flex");
+      document.getElementById("public-website-view").classList.remove("hidden");
+    }
+
+    function switchSection(sec) {
+      document.querySelectorAll(".app-section").forEach(el => el.classList.remove("active"));
+      document.getElementById("sec_" + sec).classList.add("active");
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      const nb = document.getElementById("nav_" + sec);
+      if (nb) nb.classList.add("active");
+      refreshAll();
+    }
+
+    function refreshAll() {
+      const db = getDB();
+      if (currentUser) {
+        const fresh = db.users.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (fresh) currentUser = fresh;
+      }
+
+      // Maintenance & Grace Period Bars
+      const mBar = document.getElementById("maintenance-alert-bar");
+      if (db.settings.maintenanceMsg) {
+        mBar.classList.remove("hidden");
+        document.getElementById("maintenance-alert-text").innerText = db.settings.maintenanceMsg;
       } else {
-        checkSessionHealthBannerAndModal();
+        mBar.classList.add("hidden");
       }
-    }
 
-    function logoutPortal() {
-      localStorage.removeItem("mailhub_portal_user");
-      state.currentUser = null;
-      document.getElementById("authPortalScreen").style.display = "flex";
-    }
+      const gBar = document.getElementById("grace-alert-bar");
+      if (currentUser && currentUser.graceDays > 0) {
+        gBar.classList.remove("hidden");
+        document.getElementById("graceDaysLeft").innerText = currentUser.graceDays;
+      } else {
+        gBar.classList.add("hidden");
+      }
 
-    // ======================== TAB NAVIGATION & STATE SYNC ========================
-    function switchMainTab(tab) {
-      ["dashboard", "inbox", "logs", "support", "profile"].forEach(t => {
-        document.getElementById("nav_" + t).classList.toggle("active", t === tab);
-        document.getElementById("page_" + t).classList.toggle("active", t === tab);
+      // KPIs & Badges
+      const unread = db.inbox.filter(m => m.unread).length;
+      const issues = db.accounts.filter(a => a.status !== "healthy").length;
+      document.getElementById("kpiTotalAccounts").innerText = db.accounts.length;
+      document.getElementById("kpiUnreadCount").innerText = unread;
+      document.getElementById("kpiIssuesCount").innerText = issues;
+      document.getElementById("kpiOpenTickets").innerText = db.tickets.filter(t => t.status !== "Closed").length;
+      document.getElementById("badgeUnreadNav").innerText = unread;
+      const issBadge = document.getElementById("badgeIssuesNav");
+      issBadge.innerText = issues;
+      issBadge.classList.toggle("hidden", issues === 0);
+
+      // Account dropdowns
+      const accOptsAll = `<option value="ALL">All Accounts (${db.accounts.length})</option>` + db.accounts.map(a => `<option value="${a.email}">${escapeHtml(a.email)}</option>`).join("");
+      const accOptsOnly = db.accounts.map(a => `<option value="${a.email}">${escapeHtml(a.email)}</option>`).join("");
+      ["inbAccountSelect", "sentAccountSelect"].forEach(id => {
+        const el = document.getElementById(id);
+        const cur = el.value;
+        el.innerHTML = accOptsAll;
+        if (cur) el.value = cur;
       });
-      if (tab === "logs") renderLogsTable();
-      if (tab === "support") renderTickets();
-      if (tab === "profile") renderProfileTab();
+      ["cmpFrom", "googleSearchAccountSelect"].forEach(id => {
+        const el = document.getElementById(id);
+        const cur = el.value;
+        el.innerHTML = accOptsOnly;
+        if (cur) el.value = cur;
+      });
+
+      const lblOpts = `<option value="">No Label (Optional)</option>` + db.labels.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join("");
+      document.getElementById("addAccLabel").innerHTML = lblOpts;
+      document.getElementById("inbLabelFilter").innerHTML = `<option value="ALL">All Labels</option>` + db.labels.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join("");
+
+      renderInboxView();
+      renderSentView();
+      renderAccountsAndLabels();
+      renderIssuesView();
+      renderSettingsView();
+      renderProfileAndBilling();
+      renderSupportView();
+      renderOwnerPortal();
     }
 
-    function fetchState() {
-      const db = getCloudDB();
-      state.clients = db.clients || [];
-      state.emails = db.emails || [];
-      state.logs = db.logs || [];
-      state.tickets = db.tickets || [];
-      state.media = db.media || [];
-      state.billingHistory = db.billingHistory || [];
-      state.cms = db.cms || {};
-      state.serviceStatus = db.serviceStatus || { mode: "operational", message: "" };
-      state.settings = db.settings || state.settings;
-
-      // Refresh current user from DB
-      if (state.currentUser) {
-        const fresh = (db.users || []).find(u => u.email.toLowerCase() === state.currentUser.email.toLowerCase());
-        if (fresh) state.currentUser = fresh;
-      }
-
-      if (state.initialLoadDone) {
-        for (const m of state.emails) {
-          if (!state.knownEmailIds.has(m.id)) {
-            state.knownEmailIds.add(m.id);
-            triggerClientEmailNotification(m);
-          }
-        }
-      } else {
-        state.emails.forEach(m => state.knownEmailIds.add(m.id));
-        state.initialLoadDone = true;
-      }
-
-      updateUI();
+    // GOOGLE BROWSER & SEARCH ENGINE LAUNCHER
+    function runGoogleSearch() {
+      const email = document.getElementById("googleSearchAccountSelect").value || "";
+      const q = document.getElementById("googleSearchQuery").value.trim();
+      const target = q ? `https://www.google.com/search?q=${encodeURIComponent(q)}` : `https://mail.google.com/mail/u/${encodeURIComponent(email)}/#inbox`;
+      window.open(`https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=${encodeURIComponent(target)}`, "_blank");
     }
 
-    function updateUI() {
-      // Service Status Strip
-      const banner = document.getElementById("service-status-banner");
-      banner.className = "";
-      if (state.serviceStatus.mode === "maintenance" || state.serviceStatus.mode === "issue") {
-        banner.classList.add(state.serviceStatus.mode);
-        document.getElementById("serviceStatusText").innerText = state.serviceStatus.message || "Scheduled maintenance in progress.";
-      }
-
-      // CMS Support Email & Header
-      const supEmail = state.cms.supportEmail || "support@mailhub.pro";
-      document.getElementById("authSupportLink").innerText = supEmail;
-      document.getElementById("authSupportLink").href = "mailto:" + supEmail;
-      document.getElementById("footerSupportEmail").innerText = supEmail;
-      document.getElementById("footerSupportEmail").href = "mailto:" + supEmail;
-      document.getElementById("appUrlDisplay").innerText = baseAppUrl + "?mode=app";
-
-      if (state.currentUser) {
-        document.getElementById("sidebarBrandTitle").innerText = state.currentUser.agencyName || "MailHub Pro";
-        document.getElementById("sidebarUserEmail").innerText = state.currentUser.email;
-      }
-
-      // Dashboard KPIs
-      document.getElementById("kpiAccounts").innerText = state.clients.length;
-      document.getElementById("kpiRules").innerText = state.clients.filter(c => c.notifyEnabled !== false).length;
-      document.getElementById("kpiUnread").innerText = state.emails.filter(e => !e.isRead).length;
-      document.getElementById("kpiTickets").innerText = state.tickets.filter(t => t.status !== "Resolved").length;
-
-      // Readiness Card
-      const unhealthy = state.clients.filter(c => c.sessionStatus && c.sessionStatus !== "healthy");
-      const rBadge = document.getElementById("readinessBadge");
-      const rText = document.getElementById("readinessText");
-      if (state.clients.length === 0) {
-        rBadge.className = "badge badge-warn"; rBadge.innerText = "Setup Required";
-        rText.innerText = "Connect your first Gmail account to activate Unified Inbox and real-time notifications.";
-      } else if (unhealthy.length > 0) {
-        rBadge.className = "badge badge-err"; rBadge.innerText = unhealthy.length + " Issue(s)";
-        rText.innerText = `${unhealthy.length} connected account(s) have an expired session or error. Fix inside Profile → Integrations.`;
-      } else {
-        rBadge.className = "badge badge-ok"; rBadge.innerText = "Healthy";
-        rText.innerText = `All ${state.clients.length} connected Gmail accounts are healthy and syncing.`;
-      }
-
-      // Global Toggles
-      setTogglePill("toggleInternalBtn", "lblInternalState", state.settings.internalNotifyEnabled);
-      setTogglePill("togglePushBtn", "lblPushState", state.settings.pushNotifyEnabled);
-      setTogglePill("toggleEmailBtn", "lblEmailState", state.settings.emailNotifyEnabled);
-
-      renderClientList();
-      renderInboxList();
+    function openAccountGoogleBrowser(email, dest) {
+      const target = dest === "google" ? "https://www.google.com" : "https://mail.google.com/mail/u/0/#inbox";
+      window.open(`https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=${encodeURIComponent(target)}`, "_blank");
     }
 
-    function setTogglePill(btnId, lblId, isOn) {
-      const btn = document.getElementById(btnId);
-      btn.classList.toggle("on", !!isOn);
-      btn.classList.toggle("off", !isOn);
-      document.getElementById(lblId).innerText = isOn ? "ON" : "OFF";
+    // INBOX VIEW
+    function setInboxFilter(mode) {
+      inboxFilterMode = mode;
+      document.getElementById("inbTab_all").className = mode === "all" ? "px-3 py-1.5 rounded-lg btn-gold text-xs" : "px-3 py-1.5 rounded-lg btn-glass text-xs";
+      document.getElementById("inbTab_unread").className = mode === "unread" ? "px-3 py-1.5 rounded-lg btn-gold text-xs" : "px-3 py-1.5 rounded-lg btn-glass text-xs";
+      renderInboxView();
     }
 
-    function toggleGlobalNotification(target) {
-      const db = getCloudDB();
-      if (target === "internal") db.settings.internalNotifyEnabled = !db.settings.internalNotifyEnabled;
-      if (target === "push") db.settings.pushNotifyEnabled = !db.settings.pushNotifyEnabled;
-      if (target === "email") db.settings.emailNotifyEnabled = !db.settings.emailNotifyEnabled;
-      saveCloudDB(db);
-      fetchState();
-    }
+    function renderInboxView() {
+      const db = getDB();
+      const acc = document.getElementById("inbAccountSelect").value || "ALL";
+      const lbl = document.getElementById("inbLabelFilter").value || "ALL";
+      const dt = document.getElementById("inbDateFilter").value || "all";
+      const sort = document.getElementById("inbSortSelect").value || "newest";
+      const q = (document.getElementById("inbSearchInput").value || "").toLowerCase();
 
-    // ======================== CORE WORKSPACE: ACCOUNTS & UNIFIED INBOX ========================
-    function renderClientList() {
-      const container = document.getElementById("clientListContainer");
-      const q = (document.getElementById("clientSearchInput").value || "").toLowerCase();
-      const totalUnread = state.emails.filter(e => !e.isRead).length;
+      let list = db.inbox.filter(m => {
+        if (inboxFilterMode === "unread" && !m.unread) return false;
+        if (acc !== "ALL" && m.accountEmail !== acc) return false;
+        if (lbl !== "ALL" && m.label !== lbl) return false;
+        if (dt === "today" && (Date.now() - new Date(m.date).getTime()) > 86400000) return false;
+        if (dt === "7d" && (Date.now() - new Date(m.date).getTime()) > 86400000 * 7) return false;
+        if (dt === "30d" && (Date.now() - new Date(m.date).getTime()) > 86400000 * 30) return false;
+        if (q && !(m.subject + m.from + m.accountEmail + m.body).toLowerCase().includes(q)) return false;
+        return true;
+      });
 
-      let html = `
-        <div class="client-item ${state.selectedClientId === 'ALL' ? 'active' : ''}" onclick="selectClient('ALL')">
-          <div class="client-info">
-            <div class="client-name">📬 All Accounts (Unified)</div>
-            <div class="client-email">${state.clients.length} connected mailboxes</div>
+      list.sort((a, b) => {
+        if (sort === "oldest") return new Date(a.date) - new Date(b.date);
+        if (sort === "unread") return (b.unread ? 1 : 0) - (a.unread ? 1 : 0);
+        if (sort === "sender") return a.from.localeCompare(b.from);
+        return new Date(b.date) - new Date(a.date);
+      });
+
+      const cont = document.getElementById("inboxListContainer");
+      if (!list.length) {
+        cont.innerHTML = `<div class="p-8 text-center text-xs text-slate-400">No emails match your current filter.</div>`;
+        return;
+      }
+      cont.innerHTML = list.map(m => `
+        <div onclick="readInboxEmail('${m.id}')" class="p-3.5 border-b border-white/10 cursor-pointer hover:bg-white/5 ${m.id === selectedEmailId ? 'bg-yellow-500/10 border-l-2 border-l-yellow-400' : ''} ${m.unread ? 'bg-white/[0.03]' : ''}">
+          <div class="flex justify-between items-center text-[11px] text-slate-400 mb-1">
+            <span class="px-2 py-0.5 rounded bg-white/10 text-yellow-300 font-semibold">${escapeHtml(m.accountEmail)}</span>
+            <span>${new Date(m.date).toLocaleDateString()}</span>
           </div>
-          ${totalUnread > 0 ? `<span class="badge-unread">${totalUnread}</span>` : ''}
+          <div class="text-xs ${m.unread ? 'font-extrabold text-white' : 'font-semibold text-slate-300'}">${escapeHtml(m.subject)}</div>
+          <div class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHtml(m.from)}</div>
+        </div>
+      `).join("");
+    }
+
+    function readInboxEmail(id) {
+      selectedEmailId = id;
+      const db = getDB();
+      const m = db.inbox.find(x => x.id === id);
+      if (!m) return;
+      m.unread = false;
+      saveDB(db);
+      document.getElementById("inboxReaderContainer").innerHTML = `
+        <div class="space-y-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
+            <div>
+              <h3 class="text-lg font-extrabold text-white">${escapeHtml(m.subject)}</h3>
+              <div class="text-xs text-slate-400 mt-1">From: <strong class="text-slate-200">${escapeHtml(m.from)}</strong> → <strong class="text-yellow-300">${escapeHtml(m.accountEmail)}</strong></div>
+            </div>
+            <button onclick="openAccountGoogleBrowser('${escapeHtml(m.accountEmail)}', 'gmail')" class="px-3 py-1.5 rounded-lg btn-glass text-xs">🌐 Open in Gmail Browser</button>
+          </div>
+          <div class="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed min-h-[160px]">${escapeHtml(m.body)}</div>
+          <div class="border-t border-white/10 pt-3 space-y-2">
+            <textarea id="quickReplyBox" class="glass-input h-20" placeholder="Reply from ${escapeHtml(m.accountEmail)}..."></textarea>
+            <button onclick="sendQuickReply('${escapeHtml(m.accountEmail)}','${escapeHtml(m.from)}','${escapeHtml(m.subject)}')" class="px-4 py-2 rounded-xl btn-gold text-xs">📤 Send Reply</button>
+          </div>
         </div>
       `;
-
-      for (const c of state.clients.filter(x => x.name.toLowerCase().includes(q) || x.email.toLowerCase().includes(q))) {
-        const unread = state.emails.filter(e => e.clientId === c.id && !e.isRead).length;
-        const notifyOn = c.notifyEnabled !== false;
-        const healthDot = c.sessionStatus && c.sessionStatus !== "healthy" ? "🔴" : "🟢";
-        html += `
-          <div class="client-item ${state.selectedClientId === c.id ? 'active' : ''}" onclick="selectClient('${c.id}')">
-            <div class="client-info">
-              <div class="client-name">${healthDot} ${escapeHtml(c.name)}</div>
-              <div class="client-email">${escapeHtml(c.email)}</div>
-            </div>
-            <div class="client-meta">
-              ${unread > 0 ? `<span class="badge-unread">${unread}</span>` : ''}
-              <button class="notify-switch-btn ${notifyOn ? 'on' : 'off'}" onclick="toggleClientNotify('${c.id}', event)">${notifyOn ? '🔔 ON' : '🔕 OFF'}</button>
-            </div>
-          </div>
-        `;
-      }
-      container.innerHTML = html;
+      refreshAll();
     }
 
-    function selectClient(id) {
-      state.selectedClientId = id;
-      renderClientList();
-      renderInboxList();
-      const btnL = document.getElementById("btnLaunchClientChrome");
-      const btnN = document.getElementById("btnToggleSelectedClientNotify");
-      if (id === "ALL") {
-        document.getElementById("currentInboxTitle").innerText = "All Accounts — Unified Inbox";
-        document.getElementById("currentInboxSubtitle").innerText = "Real-time emails across connected accounts";
-        btnL.style.display = "none"; btnN.style.display = "none";
-      } else {
-        const c = state.clients.find(x => x.id === id);
-        if (c) {
-          document.getElementById("currentInboxTitle").innerText = c.name;
-          document.getElementById("currentInboxSubtitle").innerText = c.email;
-          btnL.style.display = "inline-flex"; btnN.style.display = "inline-flex";
-          btnN.innerText = c.notifyEnabled !== false ? "🔔 ON" : "🔕 OFF";
-          btnN.className = "btn btn-sm " + (c.notifyEnabled !== false ? "btn-success" : "btn-danger");
-        }
-      }
+    function sendQuickReply(fromAcc, to, subj) {
+      const body = document.getElementById("quickReplyBox").value.trim();
+      if (!body) return;
+      const db = getDB();
+      db.sent.unshift({ id: "s-" + Date.now(), accountEmail: fromAcc, to, subject: "Re: " + subj, body, attachments: [], date: new Date().toISOString() });
+      saveDB(db);
+      toast("Reply Sent", `Sent from ${fromAcc}`);
+      document.getElementById("quickReplyBox").value = "";
+      refreshAll();
     }
 
-    function toggleClientNotify(id, ev) {
-      if (ev) ev.stopPropagation();
-      const db = getCloudDB();
-      const c = db.clients.find(x => x.id === id);
-      if (c) {
-        c.notifyEnabled = c.notifyEnabled === false;
-        saveCloudDB(db);
-        addLog("RULE", c.email, `Account notifications turned ${c.notifyEnabled ? 'ON' : 'OFF'}`, "Updated");
-        fetchState();
-      }
-    }
-
-    function toggleSelectedClientNotify() {
-      if (state.selectedClientId !== "ALL") toggleClientNotify(state.selectedClientId, null);
-    }
-
-    function renderInboxList() {
-      const container = document.getElementById("emailListContainer");
-      const list = state.selectedClientId === "ALL" ? state.emails : state.emails.filter(e => e.clientId === state.selectedClientId);
-      if (list.length === 0) {
-        container.innerHTML = `<div style="padding:32px; text-align:center; color:var(--text-muted); font-size:13px;">No emails yet. Click <strong>⚡ Test Email</strong> to test alerts!</div>`;
-        return;
-      }
-      container.innerHTML = list.map(m => `
-        <div class="email-item ${m.id === state.selectedEmailId ? 'active' : ''} ${!m.isRead ? 'unread' : ''}" onclick="openEmail('${m.id}')">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:6px;">
-            <span class="client-pill">👤 ${escapeHtml(m.clientName)}</span>
-            <span style="font-size:11px; color:var(--text-muted);">${new Date(m.date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-          </div>
-          <div style="font-size:12.5px; font-weight:600; color:#e2e8f0;">${escapeHtml(m.senderName)}</div>
-          <div class="email-subject" style="font-size:12.5px; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.subject)}</div>
-        </div>
-      `).join("");
-    }
-
-    function openEmail(id) {
-      state.selectedEmailId = id;
-      const db = getCloudDB();
-      const m = db.emails.find(x => x.id === id);
-      if (!m) return;
-      m.isRead = true;
-      saveCloudDB(db);
-
-      document.getElementById("readerEmptyState").style.display = "none";
-      document.getElementById("readerContentState").style.display = "flex";
-      document.getElementById("readerClientBadge").innerText = `${m.clientName} (${m.clientEmail})`;
-      document.getElementById("readerSubject").innerText = m.subject;
-      document.getElementById("readerSender").innerText = `${m.senderName} <${m.senderEmail}>`;
-      document.getElementById("readerClientEmail").innerText = m.clientEmail;
-      document.getElementById("readerDate").innerText = new Date(m.date).toLocaleString();
-      document.getElementById("readerBody").innerText = m.body || m.snippet;
-      fetchState();
-    }
-
-    function sendReplyFromClient() {
-      const txt = document.getElementById("replyBodyInput").value.trim();
-      if (!txt) return;
-      document.getElementById("replyBodyInput").value = "";
-      document.getElementById("replyStatusText").innerText = "✅ Reply dispatched!";
-      addLog("REPLY", "Unified Inbox", "Sent reply from connected Gmail account", "Delivered");
-    }
-
-    function simulateIncomingEmail() {
-      if (state.clients.length === 0) {
-        document.getElementById("integration-gate-modal").classList.add("open");
-        return;
-      }
-      const db = getCloudDB();
-      const pool = db.clients.filter(c => c.notifyEnabled !== false);
-      const target = pool.length ? pool[Math.floor(Math.random() * pool.length)] : db.clients[0];
-      const mail = {
-        id: "msg-" + Math.random().toString(36).slice(2, 9),
-        clientId: target.id, clientName: target.name, clientEmail: target.email,
-        senderName: "Payment Gateway", senderEmail: "alerts@checkout.com",
-        subject: "New Order Confirmation #" + Math.floor(1000 + Math.random() * 9000),
-        snippet: "A new confirmation arrived in your Gmail inbox.",
-        body: `Hello ${target.name},\n\nA new confirmation has arrived in ${target.email}.\n\nBest regards,\nPayment Gateway`,
-        date: new Date().toISOString(), isRead: false
-      };
-      db.emails.unshift(mail);
-      saveCloudDB(db);
-      addLog("EMAIL_IN", target.email, mail.subject, "Received");
-      fetchState();
-    }
-
-    function triggerClientEmailNotification(mail) {
-      const c = state.clients.find(x => x.id === mail.clientId);
-      if (c && c.notifyEnabled === false) return;
-      if (state.settings.internalNotifyEnabled !== false) {
-        showToast(`📩 New Email: ${mail.clientName}`, `${mail.senderName}: ${mail.subject}`, () => {
-          switchMainTab("inbox");
-          openEmail(mail.id);
-        });
-      }
-      if (state.settings.pushNotifyEnabled !== false && "Notification" in window && Notification.permission === "granted") {
-        new Notification(`📩 ${mail.clientName}`, { body: mail.subject });
-      }
-    }
-
-    // ======================== INTEGRATIONS & SESSION HEALTH ========================
-    function openAddClientModal() { document.getElementById("modalAddClient").classList.add("open"); }
-    function switchAddTab(tab, btn) {
-      document.querySelectorAll(".add-tab-pane").forEach(el => el.style.display = "none");
-      document.getElementById("addTab_" + tab).style.display = "block";
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-    }
-
-    function addAccount(type) {
-      const name = document.getElementById(type === "browser" ? "brClientName" : (type === "oauth" ? "oaClientName" : "imClientName")).value.trim();
-      const email = document.getElementById(type === "browser" ? "brClientEmail" : (type === "oauth" ? "oaClientEmail" : "imClientEmail")).value.trim();
-      if (!name || !email) return alert("Please enter Label and Gmail address.");
-
-      const db = getCloudDB();
-      db.clients.push({
-        id: "acc-" + Math.random().toString(36).slice(2, 8),
-        name, email, authType: type, sessionStatus: "healthy", notifyEnabled: true
+    function simulateNewInboxEmail() {
+      const db = getDB();
+      const acc = db.accounts[0];
+      if (!acc) return;
+      db.inbox.unshift({
+        id: "m-" + Date.now(), accountId: acc.id, accountEmail: acc.email, label: acc.label || "",
+        from: "Client Alert <client@example.com>", subject: "New Order Inquiry #" + Math.floor(1000 + Math.random() * 9000),
+        body: "Hello,\n\nWe just sent a new inquiry to " + acc.email + ".", date: new Date().toISOString(), unread: true
       });
-      saveCloudDB(db);
-      addLog("INTEGRATION", email, `Connected via ${type.toUpperCase()}`, "Healthy");
-      closeModal("modalAddClient");
-      fetchState();
+      saveDB(db);
+      if (db.settings.internalNotify) toast("📩 New Email: " + acc.email, "New Order Inquiry arrived.");
+      refreshAll();
     }
 
-    function importBulkAccounts() {
-      const lines = (document.getElementById("bulkCsvInput").value || "").split(/\r?\n/).filter(Boolean);
-      const db = getCloudDB();
-      for (const l of lines) {
-        const p = l.split(",");
-        if (p.length >= 2) {
-          db.clients.push({ id: "acc-" + Math.random().toString(36).slice(2, 8), name: p[0].trim(), email: p[1].trim(), authType: p[2] ? "imap" : "browser", sessionStatus: "healthy", notifyEnabled: true });
-        }
-      }
-      saveCloudDB(db);
-      addLog("BULK_IMPORT", "Workspace", `Imported ${lines.length} Gmail accounts`, "Success");
-      closeModal("modalAddClient");
-      fetchState();
-    }
+    // SENT VIEW
+    function renderSentView() {
+      const db = getDB();
+      const acc = document.getElementById("sentAccountSelect").value || "ALL";
+      const dt = document.getElementById("sentDateFilter").value || "all";
+      const sort = document.getElementById("sentSortSelect").value || "newest";
+      const q = (document.getElementById("sentSearchInput").value || "").toLowerCase();
 
-    function simulateExpiredSession() {
-      const db = getCloudDB();
-      if (!db.clients.length) return;
-      db.clients[0].sessionStatus = "expired";
-      saveCloudDB(db);
-      addLog("SESSION_ALERT", db.clients[0].email, "OAuth/IMAP session expired — alert sent via Resend", "Expired");
-      fetchState();
-      renderProfileTab();
-      checkSessionHealthBannerAndModal();
-    }
+      let list = db.sent.filter(s => {
+        if (acc !== "ALL" && s.accountEmail !== acc) return false;
+        if (dt === "today" && (Date.now() - new Date(s.date).getTime()) > 86400000) return false;
+        if (dt === "7d" && (Date.now() - new Date(s.date).getTime()) > 86400000 * 7) return false;
+        if (q && !(s.subject + s.to + s.accountEmail + s.body).toLowerCase().includes(q)) return false;
+        return true;
+      });
+      list.sort((a, b) => sort === "oldest" ? new Date(a.date) - new Date(b.date) : (sort === "recipient" ? a.to.localeCompare(b.to) : new Date(b.date) - new Date(a.date)));
 
-    async function checkSessionHealthBannerAndModal() {
-      const unhealthy = state.clients.filter(c => c.sessionStatus && c.sessionStatus !== "healthy");
-      if (unhealthy.length > 0) {
-        document.getElementById("connIssueText").innerText = `Account "${unhealthy[0].email}" session is ${unhealthy[0].sessionStatus}. Automated alert sent via noreply@mailhub.pro.`;
-        document.getElementById("connection-issue-modal").classList.add("open");
-        try { await fetch("/api/session-alert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: unhealthy[0].email }) }); } catch (e) {}
-      }
-    }
-
-    function fixAccountConnection(id) {
-      const db = getCloudDB();
-      const c = db.clients.find(x => x.id === id);
-      if (c) {
-        c.sessionStatus = "healthy";
-        saveCloudDB(db);
-        addLog("RECONNECT", c.email, "Connection repaired & verified", "Healthy");
-        fetchState();
-        renderProfileTab();
-      }
-    }
-
-    function launchSelectedClientBrowser() {
-      const c = state.clients.find(x => x.id === state.selectedClientId);
-      if (c) window.open(`https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(c.email)}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank");
-    }
-    function launchReaderClientBrowser() {
-      const m = state.emails.find(x => x.id === state.selectedEmailId);
-      if (m) window.open(`https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(m.clientEmail)}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank");
-    }
-    function openReaderGmailWeb() { launchReaderClientBrowser(); }
-
-    // ======================== LOGS & CSV EXPORT ========================
-    function renderLogsTable() {
-      const q = (document.getElementById("logSearchInput").value || "").toLowerCase();
-      const body = document.getElementById("logsTableBody");
-      const filtered = state.logs.filter(l => (l.account + l.details + l.type).toLowerCase().includes(q));
-      body.innerHTML = filtered.map(l => `
-        <tr>
-          <td>${new Date(l.at).toLocaleString()}</td>
-          <td><span class="badge badge-ok">${escapeHtml(l.type)}</span></td>
-          <td>${escapeHtml(l.account)}</td>
-          <td>${escapeHtml(l.details)}</td>
-          <td>${escapeHtml(l.status)}</td>
-        </tr>
-      `).join("");
-    }
-
-    function exportLogsCsv() {
-      const rows = [["Timestamp", "Type", "Account", "Details", "Status"]];
-      for (const l of state.logs) rows.push([l.at, l.type, l.account, l.details, l.status]);
-      const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "mailhub-activity-logs.csv";
-      a.click();
-    }
-
-    // ======================== SUPPORT & TICKETS ========================
-    async function submitSupportTicket() {
-      const subject = document.getElementById("tktSubject").value.trim();
-      const priority = document.getElementById("tktPriority").value;
-      const message = document.getElementById("tktMessage").value.trim();
-      if (!subject || !message) return alert("Please enter ticket subject and message.");
-
-      const db = getCloudDB();
-      const ticket = {
-        id: "TKT-" + Math.floor(1000 + Math.random() * 9000),
-        userEmail: state.currentUser ? state.currentUser.email : "Workspace Owner",
-        subject, priority, status: "Open",
-        createdAt: new Date().toISOString(),
-        messages: [
-          { sender: "Workspace Owner", text: message, at: new Date().toISOString() },
-          { sender: "MailHub Pro Support Team", text: `Auto-Acknowledgement: Ticket received (${priority} Priority). Our team at ${state.cms.supportEmail || 'support@mailhub.pro'} will respond shortly.`, at: new Date().toISOString() }
-        ]
-      };
-      db.tickets.unshift(ticket);
-      saveCloudDB(db);
-      addLog("TICKET", ticket.userEmail, `Created ${ticket.id} (${priority})`, "Open");
-      document.getElementById("tktSubject").value = "";
-      document.getElementById("tktMessage").value = "";
-      fetchState();
-      renderTickets();
-    }
-
-    function renderTickets() {
-      const list = document.getElementById("clientTicketsList");
-      if (!state.tickets.length) {
-        list.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">No support tickets yet.</div>`;
-        return;
-      }
-      list.innerHTML = state.tickets.map(t => `
-        <div style="background:#070b14; border:1px solid #334155; border-radius:10px; padding:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <strong>#${t.id} — ${escapeHtml(t.subject)}</strong>
-            <span class="badge ${t.priority === 'High' ? 'badge-err' : 'badge-warn'}">${t.priority} • ${t.status}</span>
+      const cont = document.getElementById("sentListContainer");
+      cont.innerHTML = list.length ? list.map(s => `
+        <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <div class="text-xs font-bold text-white">${escapeHtml(s.subject)}</div>
+            <div class="text-[11px] text-slate-400">From: <span class="text-yellow-300">${escapeHtml(s.accountEmail)}</span> → To: ${escapeHtml(s.to)}</div>
+            ${s.attachments && s.attachments.length ? `<div class="text-[11px] text-emerald-400 mt-1">📎 ${s.attachments.join(", ")}</div>` : ""}
           </div>
-          <div style="font-size:12px; color:#cbd5e1;">
-            ${t.messages.map(m => `<div style="margin-top:4px;"><strong>${escapeHtml(m.sender)}:</strong> ${escapeHtml(m.text)}</div>`).join("")}
-          </div>
+          <span class="text-[11px] text-slate-400">${new Date(s.date).toLocaleString()}</span>
         </div>
-      `).join("");
+      `).join("") : `<div class="p-8 text-center text-xs text-slate-400">No sent emails found.</div>`;
     }
 
-    // ======================== PROFILE: OTP RESET, INTEGRATIONS, STORAGE QUOTA & BILLING ========================
-    function renderProfileTab() {
-      const u = state.currentUser || {};
-      document.getElementById("profName").innerText = u.fullName || "Workspace Owner";
-      document.getElementById("profWorkspace").innerText = u.agencyName || "MailHub Pro";
-      document.getElementById("profEmail").innerText = u.email || "";
-      document.getElementById("profSupportEmail").innerText = state.cms.supportEmail || "support@mailhub.pro";
+    // COMPOSE WITH ATTACHMENTS
+    function handleComposeAttach(ev) {
+      for (const f of ev.target.files) composeAttachments.push(f.name);
+      renderComposeAttachments();
+    }
+    function renderComposeAttachments() {
+      document.getElementById("cmpAttachList").innerHTML = composeAttachments.map((n, i) => `
+        <span class="px-2.5 py-1 rounded-lg bg-white/10 text-xs flex items-center gap-1.5">📎 ${escapeHtml(n)} <button onclick="composeAttachments.splice(${i},1);renderComposeAttachments()" class="text-rose-400">✕</button></span>
+      `).join("");
+    }
+    function sendComposedEmail() {
+      const from = document.getElementById("cmpFrom").value;
+      const to = document.getElementById("cmpTo").value.trim();
+      const subject = document.getElementById("cmpSubject").value.trim();
+      const body = document.getElementById("cmpBody").value.trim();
+      if (!to || !subject) return alert("Please enter recipient and subject.");
+      const db = getDB();
+      db.sent.unshift({ id: "s-" + Date.now(), accountEmail: from, to, subject, body, attachments: [...composeAttachments], date: new Date().toISOString() });
+      saveDB(db);
+      composeAttachments = [];
+      document.getElementById("cmpTo").value = ""; document.getElementById("cmpSubject").value = ""; document.getElementById("cmpBody").value = "";
+      renderComposeAttachments();
+      toast("Email Sent", `Dispatched via ${from}`);
+      switchSection("sent");
+    }
 
-      // Integrations Table
-      document.getElementById("integrationsTableBody").innerHTML = state.clients.map(c => `
-        <tr>
-          <td>${escapeHtml(c.name)}</td>
-          <td>${escapeHtml(c.email)}</td>
-          <td>${escapeHtml((c.authType || "browser").toUpperCase())}</td>
-          <td><span class="badge ${c.sessionStatus === 'healthy' || !c.sessionStatus ? 'badge-ok' : 'badge-err'}">${c.sessionStatus || 'healthy'}</span></td>
-          <td>${c.sessionStatus && c.sessionStatus !== 'healthy'
-            ? `<button class="btn btn-sm btn-warning" onclick="fixAccountConnection('${c.id}')">Fix Connection</button>`
-            : `<button class="btn btn-sm" onclick="fixAccountConnection('${c.id}')">Re-verify</button>`}</td>
-        </tr>
+    // ADD ACCOUNT & LABELS
+    function addSimpleAccount(mode) {
+      const email = document.getElementById("addAccEmail").value.trim();
+      const label = document.getElementById("addAccLabel").value;
+      if (!email) return alert("Enter Gmail address.");
+      const db = getDB();
+      db.accounts.push({ id: "a-" + Date.now(), email, label, status: "healthy", notify: true });
+      saveDB(db);
+      document.getElementById("addAccEmail").value = ""; document.getElementById("addAccPass").value = "";
+      if (mode === "google") openAccountGoogleBrowser(email, "gmail");
+      toast("Account Added", `${email} saved persistently.`);
+      refreshAll();
+    }
+    function createLabel() {
+      const name = document.getElementById("newLabelName").value.trim();
+      if (!name) return;
+      const db = getDB();
+      if (!db.labels.includes(name)) db.labels.push(name);
+      saveDB(db);
+      document.getElementById("newLabelName").value = "";
+      refreshAll();
+    }
+    function deleteLabel(name) {
+      const db = getDB();
+      db.labels = db.labels.filter(l => l !== name);
+      saveDB(db);
+      refreshAll();
+    }
+    function renderAccountsAndLabels() {
+      const db = getDB();
+      document.getElementById("labelsChipsContainer").innerHTML = db.labels.map(l => `
+        <span class="px-3 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-yellow-300 text-xs font-semibold flex items-center gap-1.5">
+          🏷️ ${escapeHtml(l)} <button onclick="deleteLabel('${escapeHtml(l)}')" class="text-rose-400">✕</button>
+        </span>
       `).join("");
 
-      // Storage Quota (2GB / 5GB / 7GB)
-      const planKey = (u.plan || "Business Pro").includes("Enterprise") ? "Enterprise" : ((u.plan || "").includes("Starter") ? "Starter" : "Business Pro");
-      const limitMB = PLAN_LIMITS_MB[planKey] || 5120;
-      const usedMB = state.media.reduce((acc, m) => acc + (m.sizeMB || 0), 0);
-      const pct = Math.min(100, Math.round((usedMB / limitMB) * 100));
-      document.getElementById("storageQuotaLabel").innerText = `Plan: ${planKey} • Used: ${usedMB.toFixed(1)} MB / ${limitMB} MB (${(limitMB/1024)} GB) • Remaining: ${(limitMB - usedMB).toFixed(1)} MB`;
-      document.getElementById("storageProgressBar").style.width = Math.max(4, pct) + "%";
-
-      document.getElementById("mediaLibraryBody").innerHTML = state.media.map(m => `
-        <tr>
-          <td>${escapeHtml(m.name)}</td>
-          <td>${m.sizeMB.toFixed(2)} MB</td>
-          <td><span class="badge ${m.usage === 'Active' ? 'badge-ok' : (m.usage === 'Draft' ? 'badge-warn' : 'badge-err')}">${m.usage}</span></td>
-          <td style="display:flex; gap:6px;">
-            <button class="btn btn-sm" onclick="previewMedia('${m.id}')">▶ Preview</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteMedia('${m.id}')">🗑️ Delete</button>
+      document.getElementById("accountsTableBody").innerHTML = db.accounts.map(a => `
+        <tr class="border-b border-white/10">
+          <td class="py-2.5 font-semibold text-white">${escapeHtml(a.email)}</td>
+          <td class="py-2.5">${a.label ? `<span class="px-2 py-0.5 rounded bg-white/10">${escapeHtml(a.label)}</span>` : '<span class="text-slate-500">None</span>'}</td>
+          <td class="py-2.5">${a.status === 'healthy' ? '<span class="text-emerald-400 font-bold">● Persistent Login</span>' : '<span class="text-rose-400 font-bold">● Needs Verification</span>'}</td>
+          <td class="py-2.5 flex flex-wrap gap-1.5">
+            <button onclick="openAccountGoogleBrowser('${escapeHtml(a.email)}','gmail')" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20">📬 Gmail</button>
+            <button onclick="openAccountGoogleBrowser('${escapeHtml(a.email)}','google')" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20">🔍 Google</button>
           </td>
         </tr>
       `).join("");
+    }
 
-      // Billing Summary & History
-      document.getElementById("billPlanName").innerText = u.plan || "Business Pro";
-      const stBadge = document.getElementById("billPlanStatus");
-      stBadge.innerText = u.planStatus || "Active";
-      stBadge.className = "badge " + (u.planStatus === "Cancelled" ? "badge-err" : "badge-ok");
-      document.getElementById("primaryPayLabel").innerText = u.primaryPay || "Lemon Squeezy •••• 4242";
-      document.getElementById("backupPayLabel").innerText = u.backupPay || "Safepay PKR •••• 9910";
+    // ACCOUNT ISSUES
+    function renderIssuesView() {
+      const db = getDB();
+      const issues = db.accounts.filter(a => a.status !== "healthy");
+      const cont = document.getElementById("issuesListContainer");
+      if (!issues.length) {
+        cont.innerHTML = `<div class="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">✅ All connected Gmail accounts are healthy! No password or verification issues.</div>`;
+        return;
+      }
+      cont.innerHTML = issues.map(a => `
+        <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="font-bold text-sm text-white">${escapeHtml(a.email)}</div>
+            <div class="text-xs text-rose-300">Requires password re-authentication or Google verification.</div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openAccountGoogleBrowser('${escapeHtml(a.email)}','gmail')" class="px-3 py-1.5 rounded-lg btn-glass text-xs">🔐 Verify in Google</button>
+            <button onclick="resolveAccountIssue('${a.id}')" class="px-3 py-1.5 rounded-lg btn-gold text-xs">✔ Mark Resolved</button>
+          </div>
+        </div>
+      `).join("");
+    }
+    function resolveAccountIssue(id) {
+      const db = getDB();
+      const a = db.accounts.find(x => x.id === id);
+      if (a) { a.status = "healthy"; saveDB(db); }
+      toast("Account Verified", "Session restored.");
+      refreshAll();
+    }
 
-      document.getElementById("billingHistoryBody").innerHTML = state.billingHistory.map(b => `
-        <tr>
-          <td>${escapeHtml(b.id)}</td>
-          <td>${escapeHtml(b.date)}</td>
-          <td>${escapeHtml(b.plan)}</td>
-          <td>${escapeHtml(b.amount)}</td>
-          <td>${escapeHtml(b.gateway)}</td>
-          <td><span class="badge badge-ok">${escapeHtml(b.status)}</span></td>
+    // SETTINGS
+    function toggleSetting(k) {
+      const db = getDB();
+      db.settings[k] = !db.settings[k];
+      saveDB(db);
+      refreshAll();
+    }
+    function saveWorkspaceSettings() {
+      const db = getDB();
+      db.settings.masterEmail = document.getElementById("setMasterEmail").value.trim();
+      db.settings.subdomain = document.getElementById("setSubdomain").value.trim();
+      saveDB(db);
+      toast("Settings Saved", "Workspace settings updated.");
+    }
+    function renderSettingsView() {
+      const db = getDB();
+      document.getElementById("setBtnInternal").innerText = "🔔 Internal Alert: " + (db.settings.internalNotify ? "ON" : "OFF");
+      document.getElementById("setBtnPush").innerText = "📱 Mobile/PC Push: " + (db.settings.pushNotify ? "ON" : "OFF");
+      document.getElementById("setBtnMaster").innerText = "📧 Master Email: " + (db.settings.masterNotify ? "ON" : "OFF");
+      document.getElementById("setMasterEmail").value = db.settings.masterEmail || "";
+      document.getElementById("setSubdomain").value = db.settings.subdomain || "mailhub.aamiq.online";
+    }
+
+    // PROFILE, PLAN UPGRADE/DOWNGRADE, TEAM USERS & INVOICE DOWNLOAD
+    function renderProfileAndBilling() {
+      if (!currentUser) return;
+      const db = getDB();
+      document.getElementById("profUserEmail").innerText = currentUser.email;
+      document.getElementById("profUserRole").innerText = currentUser.role || "Admin";
+      document.getElementById("profCurrentPlan").innerText = currentUser.plan;
+
+      // Plan-aware Upgrade / Downgrade buttons
+      const pBox = document.getElementById("planActionButtons");
+      if (currentUser.plan === "Starter") {
+        pBox.innerHTML = `<button onclick="changeMyPlan('Business Pro')" class="px-4 py-2 rounded-xl btn-gold text-xs">⬆ Upgrade to Business Pro</button>`;
+      } else if (currentUser.plan === "Business Pro") {
+        pBox.innerHTML = `
+          <button onclick="changeMyPlan('Enterprise')" class="px-4 py-2 rounded-xl btn-gold text-xs">⬆ Upgrade to Enterprise</button>
+          <button onclick="changeMyPlan('Starter')" class="px-4 py-2 rounded-xl btn-glass text-xs">⬇ Downgrade to Starter</button>
+        `;
+      } else {
+        pBox.innerHTML = `<button onclick="changeMyPlan('Business Pro')" class="px-4 py-2 rounded-xl btn-glass text-xs">⬇ Downgrade to Business Pro</button>`;
+      }
+
+      // Admin-only Team Users (Starter: 1 User [Admin only], Business Pro: 3 Users + Admin, Enterprise: 5 Users + Admin)
+      const isAdmin = currentUser.role === "Admin" || OWNER_EMAILS.includes(currentUser.email.toLowerCase());
+      const tCard = document.getElementById("teamUsersCard");
+      tCard.classList.toggle("hidden", !isAdmin);
+      if (isAdmin) {
+        const maxTeam = currentUser.plan === "Starter" ? 0 : (currentUser.plan === "Business Pro" ? 3 : 5);
+        const team = currentUser.team || [];
+        document.getElementById("teamLimitLabel").innerText = maxTeam === 0 ? "1 User (Admin Only)" : `${team.length} / ${maxTeam} Team Users + Admin`;
+        document.getElementById("addTeamRow").classList.toggle("hidden", maxTeam === 0);
+        document.getElementById("teamUsersList").innerHTML = maxTeam === 0
+          ? `<div class="text-slate-400">Starter plan includes 1 User (Admin only). Upgrade to add team users.</div>`
+          : (team.length ? team.map((em, idx) => `
+              <div class="flex justify-between items-center p-2 rounded-lg bg-white/5 border border-white/10">
+                <span>${escapeHtml(em)}</span>
+                <button onclick="deleteTeamUser(${idx})" class="text-rose-400 font-bold">Delete</button>
+              </div>
+            `).join("") : `<div class="text-slate-400">No team users added yet.</div>`);
+      }
+
+      // Billing History + Download Invoice
+      document.getElementById("billingTableBody").innerHTML = db.invoices.map(inv => `
+        <tr class="border-b border-white/10">
+          <td class="py-2 font-bold text-white">${escapeHtml(inv.id)}</td>
+          <td class="py-2">${escapeHtml(inv.date)}</td>
+          <td class="py-2">${escapeHtml(inv.plan)}</td>
+          <td class="py-2">${escapeHtml(inv.amount)}</td>
+          <td class="py-2 text-emerald-400 font-bold">${escapeHtml(inv.status)}</td>
+          <td class="py-2"><button onclick="downloadInvoice('${inv.id}')" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20">⬇ Invoice</button></td>
         </tr>
       `).join("");
     }
 
-    function handleAttachmentUpload(ev) {
-      const file = ev.target.files[0];
-      if (!file) return;
-      const fileSizeMB = +(file.size / (1024 * 1024)).toFixed(2) || 0.5;
-      const u = state.currentUser || {};
-      const planKey = (u.plan || "Business Pro").includes("Enterprise") ? "Enterprise" : ((u.plan || "").includes("Starter") ? "Starter" : "Business Pro");
-      const limitMB = PLAN_LIMITS_MB[planKey] || 5120;
-      const usedMB = state.media.reduce((acc, m) => acc + (m.sizeMB || 0), 0);
-
-      if (usedMB + fileSizeMB > limitMB) {
-        alert(`❌ Upload Blocked: Adding ${fileSizeMB} MB exceeds your ${planKey} limit (${limitMB} MB). Please delete unused files or upgrade your plan.`);
-        return;
+    function changeMyPlan(newPlan) {
+      const db = getDB();
+      const u = db.users.find(x => x.email === currentUser.email);
+      if (u) {
+        u.plan = newPlan;
+        const amt = newPlan === "Starter" ? "$29.00" : (newPlan === "Enterprise" ? "$99.00" : "$49.00");
+        db.invoices.unshift({ id: "INV-" + Math.floor(10000 + Math.random() * 90000), date: new Date().toISOString().slice(0, 10), plan: newPlan, amount: amt, status: "Paid" });
+        saveDB(db);
+        toast("Plan Updated", `Switched to ${newPlan}`);
+        refreshAll();
       }
-
-      const db = getCloudDB();
-      db.media.unshift({ id: "med-" + Date.now(), name: file.name, sizeMB: fileSizeMB, usage: "Unused" });
-      saveCloudDB(db);
-      fetchState();
-      renderProfileTab();
     }
 
-    function previewMedia(id) {
-      const m = state.media.find(x => x.id === id);
-      if (!m) return;
-      document.getElementById("genModalTitle").innerText = "▶ Attachment Preview — " + m.name;
-      document.getElementById("genModalBody").innerText = `File: ${m.name}\nSize: ${m.sizeMB} MB\nStatus: ${m.usage}\n\nInline media previewer ready (Off-Cloud Object Storage).`;
-      document.getElementById("modalGeneric").classList.add("open");
+    function addTeamUser() {
+      const em = document.getElementById("newTeamEmail").value.trim().toLowerCase();
+      if (!em) return;
+      const db = getDB();
+      const u = db.users.find(x => x.email === currentUser.email);
+      const maxTeam = u.plan === "Business Pro" ? 3 : 5;
+      u.team = u.team || [];
+      if (u.team.length >= maxTeam) return alert(`User limit reached (${maxTeam} users + Admin).`);
+      u.team.push(em);
+      saveDB(db);
+      document.getElementById("newTeamEmail").value = "";
+      refreshAll();
+    }
+    function deleteTeamUser(idx) {
+      const db = getDB();
+      const u = db.users.find(x => x.email === currentUser.email);
+      u.team.splice(idx, 1);
+      saveDB(db);
+      refreshAll();
     }
 
-    function deleteMedia(id) {
-      const m = state.media.find(x => x.id === id);
-      if (!m) return;
-      if (m.usage === "Active" && !confirm("This attachment is used in an Active rule. Remove references and delete?")) return;
-      const db = getCloudDB();
-      db.media = db.media.filter(x => x.id !== id);
-      saveCloudDB(db);
-      fetchState();
-      renderProfileTab();
+    function downloadInvoice(invId) {
+      const db = getDB();
+      const inv = db.invoices.find(x => x.id === invId);
+      if (!inv) return;
+      const html = `<html><body style="font-family:Arial;padding:30px;"><h2>MailHub by Aamiq — Invoice ${inv.id}</h2><p>Date: ${inv.date}</p><p>Account: ${currentUser.email}</p><p>Plan: ${inv.plan}</p><p>Amount: ${inv.amount}</p><p>Status: ${inv.status}</p></body></html>`;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+      a.download = `${inv.id}.html`;
+      a.click();
     }
 
-    async function requestProfileOtp() {
-      const email = state.currentUser ? state.currentUser.email : "";
-      const code = String(Math.floor(1000 + Math.random() * 9000));
-      sessionStorage.setItem("mailhub_prof_otp", btoa(email + ":" + code));
-      try { await fetch("/api/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, purpose: "profile_reset" }) }); } catch (e) {}
-      document.getElementById("profOtpStatus").innerText = "✅ 4-digit OTP sent to your email inbox via noreply@mailhub.pro.";
+    function toggleGraceTest() {
+      const db = getDB();
+      const u = db.users.find(x => x.email === currentUser.email);
+      u.graceDays = u.graceDays > 0 ? 0 : 7;
+      saveDB(db);
+      if (u.graceDays > 0) toast("Payment Decline Alert", "7-Day Grace Period active & admin email queued.");
+      refreshAll();
     }
 
-    function verifyProfileOtpReset() {
-      const code = document.getElementById("profOtpCode").value.trim();
-      const np = document.getElementById("profNewPass").value.trim();
-      const email = state.currentUser ? state.currentUser.email : "";
-      if (sessionStorage.getItem("mailhub_prof_otp") !== btoa(email + ":" + code)) {
-        document.getElementById("profOtpStatus").innerText = "Invalid OTP. Please check your inbox.";
-        return;
-      }
-      if (np.length < 6) {
-        document.getElementById("profOtpStatus").innerText = "Password must be at least 6 characters.";
-        return;
-      }
-      const db = getCloudDB();
-      const u = db.users.find(x => x.email === email);
-      if (u) { u.password = np; saveCloudDB(db); }
-      sessionStorage.removeItem("mailhub_prof_otp");
-      document.getElementById("profOtpStatus").innerText = "✅ Password updated!";
+    // SUPPORT PORTAL
+    function createTicket() {
+      const priority = document.getElementById("tktPriority").value;
+      const subject = document.getElementById("tktSubject").value.trim();
+      const body = document.getElementById("tktBody").value.trim();
+      if (!subject || !body) return alert("Enter subject and body.");
+      const db = getDB();
+      db.tickets.unshift({
+        id: "TKT-" + Math.floor(1000 + Math.random() * 9000),
+        userEmail: currentUser.email, priority, subject, status: "Open",
+        messages: [{ sender: currentUser.email, text: body }]
+      });
+      saveDB(db);
+      document.getElementById("tktSubject").value = ""; document.getElementById("tktBody").value = "";
+      toast("Ticket Submitted", "Sent to Admin Panel & support email queued.");
+      refreshAll();
+    }
+    function renderSupportView() {
+      const db = getDB();
+      const mine = db.tickets.filter(t => t.userEmail === (currentUser ? currentUser.email : ""));
+      document.getElementById("userTicketsContainer").innerHTML = mine.length ? mine.map(t => `
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <strong class="text-white">#${t.id} — ${escapeHtml(t.subject)}</strong>
+            <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 font-bold">${t.priority} • ${t.status}</span>
+          </div>
+          <div class="text-xs text-slate-300 space-y-1">${t.messages.map(m => `<div><strong>${escapeHtml(m.sender)}:</strong> ${escapeHtml(m.text)}</div>`).join("")}</div>
+          ${t.status !== "Closed" ? `<button onclick="closeTicket('${t.id}')" class="px-3 py-1 rounded bg-white/10 text-xs">✔ Close Ticket</button>` : ""}
+        </div>
+      `).join("") : `<div class="text-xs text-slate-400">No tickets opened yet.</div>`;
+    }
+    function closeTicket(id) {
+      const db = getDB();
+      const t = db.tickets.find(x => x.id === id);
+      if (t) { t.status = "Closed"; saveDB(db); }
+      refreshAll();
     }
 
-    function toggleCancelBox() {
-      const box = document.getElementById("cancelSubBox");
-      box.style.display = box.style.display === "none" ? "block" : "none";
+    // OWNER / AGENCY PORTAL
+    function setMaintenanceAlert(enable) {
+      const db = getDB();
+      db.settings.maintenanceMsg = enable ? (document.getElementById("ownerMaintInput").value.trim() || "Scheduled system maintenance in progress.") : "";
+      saveDB(db);
+      refreshAll();
+    }
+    function toggleClientPause(uid) {
+      const db = getDB();
+      const u = db.users.find(x => x.id === uid);
+      if (u) { u.status = u.status === "Paused" ? "Active" : "Paused"; saveDB(db); }
+      refreshAll();
+    }
+    function ownerReplyTicket(id) {
+      const txt = document.getElementById("ownRep_" + id).value.trim();
+      if (!txt) return;
+      const db = getDB();
+      const t = db.tickets.find(x => x.id === id);
+      if (t) { t.messages.push({ sender: "Support Team", text: txt }); t.status = "Answered"; saveDB(db); }
+      refreshAll();
+    }
+    function renderOwnerPortal() {
+      const db = getDB();
+      document.getElementById("ownerClientsTable").innerHTML = db.users.map(u => `
+        <tr class="border-b border-white/10">
+          <td class="py-2 font-semibold text-white">${escapeHtml(u.email)}</td>
+          <td class="py-2">${escapeHtml(u.plan)}</td>
+          <td class="py-2"><span class="${u.status === 'Paused' ? 'text-rose-400' : 'text-emerald-400'} font-bold">${u.status || 'Active'}</span></td>
+          <td class="py-2"><button onclick="toggleClientPause('${u.id}')" class="px-2.5 py-1 rounded bg-white/10">${u.status === 'Paused' ? 'Activate' : 'Pause'}</button></td>
+        </tr>
+      `).join("");
+
+      document.getElementById("ownerTicketsInbox").innerHTML = db.tickets.length ? db.tickets.map(t => `
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
+          <div class="flex justify-between text-xs">
+            <strong>#${t.id} (${escapeHtml(t.userEmail)}) — ${escapeHtml(t.subject)}</strong>
+            <span class="text-yellow-300 font-bold">${t.priority} • ${t.status}</span>
+          </div>
+          <div class="text-xs text-slate-300">${t.messages.map(m => `<div><strong>${escapeHtml(m.sender)}:</strong> ${escapeHtml(m.text)}</div>`).join("")}</div>
+          <div class="flex gap-2">
+            <input type="text" id="ownRep_${t.id}" class="glass-input !py-1.5 text-xs" placeholder="Reply to client..." />
+            <button onclick="ownerReplyTicket('${t.id}')" class="px-3 py-1.5 rounded-lg btn-gold text-xs">Reply</button>
+            <button onclick="closeTicket('${t.id}')" class="px-3 py-1.5 rounded-lg btn-glass text-xs">Close</button>
+          </div>
+        </div>
+      `).join("") : `<div class="text-xs text-slate-400">No client tickets yet.</div>`;
     }
 
-    function confirmCancelSubscription() {
-      const reason = document.getElementById("cancelReasonSelect").value;
-      if (!reason) return alert("Please select a mandatory cancellation reason.");
-      const db = getCloudDB();
-      const u = db.users.find(x => x.email === state.currentUser.email);
-      if (u) { u.planStatus = "Cancelled"; saveCloudDB(db); }
-      addLog("BILLING", state.currentUser.email, `Subscription cancelled (Reason: ${reason})`, "Cancelled");
-      document.getElementById("cancelSubBox").style.display = "none";
-      fetchState();
-      renderProfileTab();
-    }
-
-    function addOrSwitchPayMethod(which) {
-      const db = getCloudDB();
-      const u = db.users.find(x => x.email === state.currentUser.email);
-      if (!u) return;
-      if (which === "backup") {
-        const tmp = u.primaryPay;
-        u.primaryPay = u.backupPay;
-        u.backupPay = tmp;
-      } else {
-        const label = prompt("Enter Card/Wallet label + last 4 digits:", u.primaryPay);
-        if (label) u.primaryPay = label;
-      }
-      saveCloudDB(db);
-      fetchState();
-      renderProfileTab();
-    }
-
-    function openCheckoutModal() { document.getElementById("modalCheckout").classList.add("open"); }
-    async function processUpgradeCheckout() {
-      const plan = document.getElementById("chkPlanSelect").value;
-      const gateway = document.getElementById("chkGatewaySelect").value;
-      const amount = plan === "Starter" ? "$29.00" : (plan === "Enterprise" ? "$99.00" : "$49.00");
-      try { await fetch("/api/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan, gateway }) }); } catch (e) {}
-      const db = getCloudDB();
-      const u = db.users.find(x => x.email === state.currentUser.email);
-      if (u) { u.plan = plan; u.planStatus = "Active"; }
-      db.billingHistory.unshift({ id: "INV-" + Math.floor(10000 + Math.random() * 90000), date: new Date().toISOString().slice(0, 10), plan, amount, gateway, status: "Paid" });
-      saveCloudDB(db);
-      closeModal("modalCheckout");
-      fetchState();
-      renderProfileTab();
-    }
-
-    function openLegalModal(kind) {
-      const db = getCloudDB();
-      const cms = db.cms || {};
-      document.getElementById("genModalTitle").innerText = kind === "terms" ? "Terms of Service" : (kind === "privacy" ? "Privacy Policy" : "7-Day Refund Policy");
-      document.getElementById("genModalBody").innerText = cms[kind] || "Standard MailHub Pro policy.";
-      document.getElementById("modalGeneric").classList.add("open");
-    }
-
-    function openAppLinkModal() { document.getElementById("modalAppLink").classList.add("open"); }
-    function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-    function copyText(t) { navigator.clipboard.writeText(t).then(() => alert("Copied: " + t)); }
-
-    function showToast(title, body, onClick) {
-      const c = document.getElementById("toastContainer");
+    function toast(title, body) {
+      const box = document.getElementById("toastBox");
       const d = document.createElement("div");
-      d.className = "toast";
-      d.innerHTML = `<div style="font-size:13px;font-weight:700;color:#fff;">${escapeHtml(title)}</div><div style="font-size:12px;color:#cbd5e1;margin-top:3px;">${escapeHtml(body)}</div>`;
-      d.onclick = () => { d.remove(); onClick(); };
-      c.appendChild(d);
-      setTimeout(() => { if (d.parentNode) d.remove(); }, 9000);
+      d.className = "glass-card-gold rounded-xl p-3.5 text-xs shadow-2xl";
+      d.innerHTML = `<div class="font-bold text-yellow-300">${escapeHtml(title)}</div><div class="text-slate-200 mt-0.5">${escapeHtml(body)}</div>`;
+      box.appendChild(d);
+      setTimeout(() => d.remove(), 5000);
     }
+    function escapeHtml(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-    function escapeHtml(s) {
-      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    // Boot
-    try {
-      const saved = localStorage.getItem("mailhub_portal_user");
+    // Auto-restore persistent session
+    (function boot() {
+      const saved = localStorage.getItem("mailhub_session_email");
       if (saved) {
-        state.currentUser = JSON.parse(saved);
-        document.getElementById("authPortalScreen").style.display = "none";
+        const db = getDB();
+        const u = db.users.find(x => x.email.toLowerCase() === saved.toLowerCase());
+        if (u) enterWorkspace(u);
       }
-    } catch (e) {}
-    fetchState();
-    setInterval(fetchState, 4000);
+    })();
   </script>
 </body>
 </html>
