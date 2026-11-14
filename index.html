@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Agency Gmail Portal & App Hub — 150+ Client Manager</title>
+  <title>MailHub Pro — Multi-Gmail Portal & App Hub</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#0f172a" />
   <style>
@@ -44,35 +44,37 @@
       padding: 5px; border-radius: 10px; border: 1px solid #1f2937; margin-bottom: 20px;
     }
     .auth-tab {
-      padding: 10px; text-align: center; font-size: 13.5px; font-weight: 700;
+      padding: 10px 12px; text-align: center; font-size: 13px; font-weight: 700;
       border-radius: 8px; cursor: pointer; color: var(--text-muted); border: none; background: transparent;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .auth-tab.active { background: var(--primary); color: #fff; }
     .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
     .pay-method-card {
       background: var(--bg-dark); border: 1px solid #334155; border-radius: 9px;
       padding: 10px 8px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600;
-      color: var(--text-muted); transition: 0.15s;
+      color: var(--text-muted); transition: 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .pay-method-card.active { border-color: var(--success); background: rgba(16, 185, 129, 0.14); color: #fff; }
 
-    /* ======================== AGENCY DASHBOARD & APP LAYOUT ======================== */
+    /* ======================== PORTAL DASHBOARD & APP LAYOUT ======================== */
     .topbar {
       background: var(--bg-panel); border-bottom: 1px solid var(--border);
       padding: 9px 14px; display: flex; align-items: center; justify-content: space-between;
       gap: 10px; flex-wrap: wrap; z-index: 20;
     }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; flex-shrink: 0; }
     .brand-icon {
       width: 34px; height: 34px; border-radius: 9px;
       background: linear-gradient(135deg, #2563eb, #7c3aed);
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
     }
     .toggle-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .toggle-pill {
-      background: var(--bg-card); border: 1px solid #334155; padding: 5px 10px;
+      background: var(--bg-card); border: 1px solid #334155; padding: 5px 11px;
       border-radius: 999px; font-size: 11.5px; cursor: pointer; display: inline-flex;
-      align-items: center; gap: 6px; user-select: none; transition: 0.15s; font-weight: 600;
+      align-items: center; gap: 5px; user-select: none; transition: 0.15s; font-weight: 600;
+      white-space: nowrap; flex-shrink: 0; line-height: 1.2;
     }
     .toggle-pill.on { border-color: #10b981; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
     .toggle-pill.off { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
@@ -80,8 +82,9 @@
     .top-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .btn {
       background: var(--bg-card); color: var(--text-main); border: 1px solid #334155;
-      padding: 6px 11px; border-radius: 8px; font-size: 12.5px; font-weight: 500;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.15s;
+      padding: 6px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 500;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      gap: 5px; transition: 0.15s; white-space: nowrap; flex-shrink: 0; line-height: 1.25;
     }
     .btn:hover { background: var(--bg-hover); }
     .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
@@ -89,10 +92,10 @@
     .btn-success { background: #059669; border-color: #10b981; color: #fff; }
     .btn-warning { background: #d97706; border-color: #f59e0b; color: #fff; }
     .btn-danger { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #fca5a5; }
-    .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
+    .btn-sm { padding: 4px 9px; font-size: 11px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; }
 
-    /* Sub-bar for Agency Portal & App Link info */
-    .agency-subbar {
+    /* Sub-bar for Portal & App Link info */
+    .portal-subbar {
       background: #0f172a; border-bottom: 1px solid var(--border); padding: 6px 16px;
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       font-size: 12px; color: var(--text-muted); flex-wrap: wrap;
@@ -129,15 +132,15 @@
     }
     .auth-tag {
       font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: 600;
-      background: rgba(148, 163, 184, 0.15); color: #cbd5e1;
+      background: rgba(148, 163, 184, 0.15); color: #cbd5e1; white-space: nowrap; flex-shrink: 0;
     }
     .auth-tag.oauth { background: rgba(16, 185, 129, 0.18); color: #34d399; }
     .auth-tag.browser { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
     .auth-tag.imap { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
 
     .notify-switch-btn {
-      border: 1px solid #334155; border-radius: 6px; padding: 3px 7px; font-size: 10.5px;
-      cursor: pointer; font-weight: 700; transition: 0.15s;
+      border: 1px solid #334155; border-radius: 6px; padding: 3px 8px; font-size: 10.5px;
+      cursor: pointer; font-weight: 700; transition: 0.15s; white-space: nowrap; flex-shrink: 0; line-height: 1.2;
     }
     .notify-switch-btn.on { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
     .notify-switch-btn.off { background: rgba(239, 68, 68, 0.18); border-color: #ef4444; color: #fca5a5; }
@@ -210,7 +213,8 @@
     .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; }
     .tab-btn {
       background: var(--bg-card); color: var(--text-muted); border: 1px solid #334155;
-      padding: 6px 11px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600;
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600;
+      white-space: nowrap; flex-shrink: 0; line-height: 1.25;
     }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; }
@@ -252,32 +256,32 @@
   <div class="auth-screen" id="authPortalScreen">
     <div class="domain-bar">
       <span>🔒</span>
-      <span id="domainBadgeText">https://portal.agencygmailhub.com</span>
-      <span style="background:#1d4ed8; color:#fff; padding:1px 7px; border-radius:99px; font-size:10.5px;" id="portalModeBadge">Agency Portal</span>
+      <span id="domainBadgeText">https://portal.mailhub.pro</span>
+      <span style="background:#1d4ed8; color:#fff; padding:1px 8px; border-radius:99px; font-size:10.5px; white-space:nowrap;" id="portalModeBadge">MailHub Portal</span>
     </div>
 
     <div class="auth-card">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
-        <div class="brand-icon" style="width:42px; height:42px; font-size:22px;">🏢</div>
+        <div class="brand-icon" style="width:42px; height:42px; font-size:22px;">📬</div>
         <div>
-          <h2 style="font-size:19px; font-weight:700;" id="authHeaderTitle">Agency Multi-Gmail Portal</h2>
-          <div style="font-size:12px; color:var(--text-muted);" id="authHeaderSub">Sign In to your Agency Dashboard or Sign Up with Subscription Payment</div>
+          <h2 style="font-size:19px; font-weight:700;" id="authHeaderTitle">MailHub Pro — Multi-Gmail Portal</h2>
+          <div style="font-size:12px; color:var(--text-muted);" id="authHeaderSub">Sign In to your Account Dashboard or Sign Up with Subscription Plan</div>
         </div>
       </div>
 
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tabBtnSignIn" onclick="switchAuthTab('signin')">🔐 Sign In (Direct Login)</button>
-        <button class="auth-tab" id="tabBtnSignUp" onclick="switchAuthTab('signup')">💳 Sign Up & Pay (New Agency)</button>
+        <button class="auth-tab active" id="tabBtnSignIn" onclick="switchAuthTab('signin')">🔐 Sign In</button>
+        <button class="auth-tab" id="tabBtnSignUp" onclick="switchAuthTab('signup')">💳 Sign Up &amp; Pay</button>
       </div>
 
       <!-- SIGN IN PANE -->
       <div id="paneSignIn">
         <div class="info-banner" style="margin-bottom:14px;">
-          <strong>Direct Sign In:</strong> Agar aapka Agency Account bana hua hai toh direct Email aur Password se login karein (Demo Login pre-filled hai: <code>admin@agency.com</code> / <code>admin123</code>).
+          <strong>Direct Sign In:</strong> Apne Account Email aur Password se login karein (Demo Login pre-filled hai: <code>admin@mailhub.pro</code> / <code>admin123</code>).
         </div>
         <div class="form-group">
-          <label>Agency Email Address</label>
-          <input type="email" class="form-input" id="loginEmail" value="admin@agency.com" placeholder="admin@agency.com" />
+          <label>Account Email Address</label>
+          <input type="email" class="form-input" id="loginEmail" value="admin@mailhub.pro" placeholder="admin@mailhub.pro" />
         </div>
         <div class="form-group">
           <label>Password</label>
@@ -285,20 +289,20 @@
         </div>
         <div id="loginErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
         <button class="btn btn-primary" style="width:100%; justify-content:center; padding:11px; font-size:14px;" onclick="submitSignIn()">
-          🚀 Sign In to Agency Dashboard
+          🚀 Sign In to Dashboard
         </button>
       </div>
 
       <!-- SIGN UP + PAYMENT GATE PANE -->
       <div id="paneSignUp" style="display:none;">
         <div class="info-banner" style="margin-bottom:12px;">
-          <strong>Paid Agency Registration:</strong> Naya Agency Portal banane ke liye apna Plan aur Payment Method (Card, Crypto USDT, ya Bank/Wallet) select karke Sign Up complete karein.
+          <strong>New Account Registration:</strong> Naya account banane ke liye apna Plan aur Payment Method (Card, USDT Crypto, ya Bank/Wallet) select karke Sign Up complete karein.
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <div class="form-group">
-            <label>Agency / Company Name</label>
-            <input type="text" class="form-input" id="suAgencyName" placeholder="e.g., SkyLine Digital Agency" />
+            <label>Workspace / Business Name</label>
+            <input type="text" class="form-input" id="suAgencyName" placeholder="e.g., My Mail Workspace" />
           </div>
           <div class="form-group">
             <label>Your Full Name</label>
@@ -309,7 +313,7 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <div class="form-group">
             <label>Login Email Address</label>
-            <input type="email" class="form-input" id="suEmail" placeholder="owner@youragency.com" />
+            <input type="email" class="form-input" id="suEmail" placeholder="you@yourdomain.com" />
           </div>
           <div class="form-group">
             <label>Create Password</label>
@@ -318,19 +322,19 @@
         </div>
 
         <div class="form-group">
-          <label>Select Agency Plan</label>
+          <label>Select Account Plan</label>
           <select class="form-input" id="suPlan">
-            <option value="Agency Pro (150 Gmail Accounts) - $49/mo">🔥 Agency Pro (Manage 150 Client Gmails) — $49 / month</option>
-            <option value="Starter Plan (50 Gmail Accounts) - $29/mo">Starter Plan (Manage 50 Client Gmails) — $29 / month</option>
-            <option value="Enterprise Unlimited (500+ Accounts) - $99/mo">Enterprise Unlimited (500+ Client Gmails) — $99 / month</option>
+            <option value="Pro Plan (150 Gmail Accounts) - $49/mo">🔥 Pro Plan (Manage 150+ Gmail Accounts) — $49 / month</option>
+            <option value="Starter Plan (50 Gmail Accounts) - $29/mo">Starter Plan (Manage 50 Gmail Accounts) — $29 / month</option>
+            <option value="Enterprise Unlimited (500+ Accounts) - $99/mo">Enterprise Unlimited (500+ Gmail Accounts) — $99 / month</option>
           </select>
         </div>
 
         <label style="font-size:12px; color:#cbd5e1; font-weight:600; display:block; margin-bottom:6px;">Select Payment Option:</label>
         <div class="pay-methods">
-          <div class="pay-method-card active" id="pm_card" onclick="selectPayMethod('card')">💳 Debit / Credit Card</div>
-          <div class="pay-method-card" id="pm_crypto" onclick="selectPayMethod('crypto')">🪙 USDT / Crypto Pay</div>
-          <div class="pay-method-card" id="pm_wallet" onclick="selectPayMethod('wallet')">🏦 Bank / Easypaisa / JazzCash</div>
+          <div class="pay-method-card active" id="pm_card" onclick="selectPayMethod('card')">💳 Card</div>
+          <div class="pay-method-card" id="pm_crypto" onclick="selectPayMethod('crypto')">🪙 USDT / Crypto</div>
+          <div class="pay-method-card" id="pm_wallet" onclick="selectPayMethod('wallet')">🏦 Bank / Wallet</div>
         </div>
 
         <!-- Option 1: Credit/Debit Card Fields -->
@@ -379,20 +383,20 @@
 
         <div id="signupErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
         <button class="btn btn-success" style="width:100%; justify-content:center; padding:11px; font-size:14px;" onclick="submitPaidSignUp()">
-          ✅ Complete Payment & Launch Agency Dashboard
+          ✅ Complete Payment &amp; Launch Dashboard
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ======================== 2. MAIN AGENCY PORTAL & APP DASHBOARD ======================== -->
+  <!-- ======================== 2. MAIN PORTAL & APP DASHBOARD ======================== -->
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon">🏢</div>
+      <div class="brand-icon">📬</div>
       <div>
-        <div id="agencyBrandTitle">Prime Agency Hub</div>
+        <div id="agencyBrandTitle">MailHub Pro</div>
         <div style="font-size:11px; color:var(--text-muted); font-weight:400;">
-          <span id="agencyUserBadge">admin@agency.com</span> • <span id="agencyPlanBadge" style="color:#60a5fa;">Agency Pro</span>
+          <span id="agencyUserBadge">admin@mailhub.pro</span> • <span id="agencyPlanBadge" style="color:#60a5fa;">Pro Plan</span>
         </div>
       </div>
     </div>
@@ -406,39 +410,39 @@
         📱 Mobile/PC Push: <span id="lblPushState">ON</span>
       </div>
       <div class="toggle-pill on" id="toggleEmailBtn" onclick="toggleGlobalNotification('email')" title="Turn Master Email Forwarding Alerts ON or OFF">
-        📧 Master Email Alert: <span id="lblEmailState">ON</span>
+        📧 Master Email: <span id="lblEmailState">ON</span>
       </div>
     </div>
 
     <div class="top-actions">
       <button class="btn btn-warning" onclick="simulateIncomingEmail()">
-        ⚡ Test New Email
+        ⚡ Test Email
       </button>
       <button class="btn btn-primary" onclick="openAddClientModal()">
-        ➕ Add Client / Bulk 150
+        ➕ Add Account
       </button>
       <button class="btn btn-success" onclick="openAppLinkModal()">
-        📲 App Link & Portal
+        📲 App Link
       </button>
       <button class="btn" onclick="openSettingsModal()">
         ⚙️ Settings
       </button>
-      <button class="btn btn-danger" onclick="logoutPortal()" title="Sign Out of Agency Portal">
+      <button class="btn btn-danger" onclick="logoutPortal()" title="Sign Out">
         🚪 Sign Out
       </button>
     </div>
   </header>
 
-  <!-- Sub-bar with Domain, App Link & Client Counter -->
-  <div class="agency-subbar">
+  <!-- Sub-bar with Domain, App Link & Account Counter -->
+  <div class="portal-subbar">
     <div>
-      🌐 Portal Domain: <strong style="color:#fff;" id="subDomainText">https://portal.agencygmailhub.com</strong>
-      &nbsp;|&nbsp; 👥 Connected Clients: <strong style="color:#fff;" id="statTotalClients">0</strong> / 150+
+      🌐 Portal Domain: <strong style="color:#fff;" id="subDomainText">https://portal.mailhub.pro</strong>
+      &nbsp;|&nbsp; 👥 Accounts: <strong style="color:#fff;" id="statTotalClients">0</strong> / 150+
       &nbsp;|&nbsp; 📩 Unread: <strong style="color:#f87171;" id="statTotalUnread">0</strong>
-      &nbsp;|&nbsp; 🔕 Muted Clients: <strong style="color:#fbbf24;" id="statMutedClients">0</strong>
+      &nbsp;|&nbsp; 🔕 Muted: <strong style="color:#fbbf24;" id="statMutedClients">0</strong>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
-      <span>📲 Direct App Link (Login Protected): <a href="./?mode=app" target="_blank" style="color:#60a5fa; font-weight:600;" id="inlineAppLink">Open App View ↗</a></span>
+      <span>📲 Direct App Link: <a href="./?mode=app" target="_blank" style="color:#60a5fa; font-weight:600; white-space:nowrap;" id="inlineAppLink">Open App View ↗</a></span>
     </div>
   </div>
 
@@ -478,21 +482,21 @@
     <!-- Right Column: Email Reader & Direct Reply / Browser Launch -->
     <main class="reader-col" id="colReader">
       <div class="reader-empty" id="readerEmptyState">
-        <div style="font-size:42px;">🏢</div>
-        <div style="font-size:16px; font-weight:600; color:var(--text-main);">Agency Portal & App Inbox Ready</div>
+        <div style="font-size:42px;">📬</div>
+        <div style="font-size:16px; font-weight:600; color:var(--text-main);">Multi-Gmail Portal &amp; App Inbox Ready</div>
         <div style="max-width:440px; font-size:13px; line-height:1.6;">
-          • Har client ke aage <strong>🔔 ON / 🔕 OFF</strong> button diya gaya hai jisse aap kisi bhi client ki email notification band ya chalu kar sakte hain.<br/>
-          • Upar header se aap <strong>Internal Notification</strong>, <strong>Mobile/PC Push</strong>, aur <strong>Master Email Alert</strong> ko bhi ON/OFF kar sakte hain.
+          • Har account ke aage <strong>🔔 ON / 🔕 OFF</strong> button diya gaya hai jisse aap kisi bhi account ki email notification band ya chalu kar sakte hain.<br/>
+          • Upar header se aap <strong>Internal Notification</strong>, <strong>Mobile/PC Push</strong>, aur <strong>Master Email</strong> ko bhi ON/OFF kar sakte hain.
         </div>
       </div>
 
       <div id="readerContentState" style="display:none; flex-direction:column; height:100%;">
         <div class="reader-header">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
-            <span class="client-pill" id="readerClientBadge">Client Account</span>
+            <span class="client-pill" id="readerClientBadge">Gmail Account</span>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
               <button class="btn btn-sm btn-primary" onclick="launchReaderClientBrowser()">
-                🌐 Open Client's Isolated Chrome Inbox (PC)
+                🌐 Open Isolated Chrome Inbox
               </button>
               <button class="btn btn-sm" onclick="openReaderGmailWeb()">
                 ↗️ Gmail Web View
@@ -614,35 +618,35 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Agency App Link & Portal Access -->
+  <!-- MODAL 2: App Link & Portal Access -->
   <div class="modal-backdrop" id="modalAppLink">
     <div class="modal">
       <div class="modal-header">
-        <h3>📲 Agency App Link & Portal Access (Mobile + PC)</h3>
+        <h3>📲 App Link &amp; Portal Access (Mobile + PC)</h3>
         <button class="btn btn-sm" onclick="closeModal('modalAppLink')">✕</button>
       </div>
       <div class="info-banner">
-        Yeh aapke Agency Portal ke andar aapka <strong>Dedicated App Link</strong> hai. Jab aap ya aapki team is App Link ko Mobile ya PC par kholenge, toh wahan bhi <strong>Agency Login</strong> maanga jayega aur login karte hi saare clients ka inbox aur notifications chalu ho jayenge!
+        Yeh aapke Portal ke andar aapka <strong>Dedicated App Link</strong> hai. Jab aap is App Link ko Mobile ya PC par kholenge, toh wahan bhi <strong>Account Login</strong> maanga jayega aur login karte hi saare accounts ka inbox aur notifications chalu ho jayenge!
       </div>
 
       <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid #334155;">
         <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">1. Mobile / Desktop Direct App Link:</div>
         <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
           <strong id="appUrlDisplay" style="font-size:14px; color:#60a5fa; word-break:break-all;"></strong>
-          <button class="btn btn-sm btn-primary" onclick="copyText(document.getElementById('appUrlDisplay').innerText)">📋 Copy App Link</button>
+          <button class="btn btn-sm btn-primary" onclick="copyText(document.getElementById('appUrlDisplay').innerText)">📋 Copy Link</button>
         </div>
       </div>
 
       <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">2. Custom Agency Portal Domain:</div>
+        <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">2. Custom Portal Domain:</div>
         <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-          <strong id="portalDomainDisplay" style="font-size:15px; color:#34d399;">https://portal.agencygmailhub.com</strong>
-          <button class="btn btn-sm" onclick="window.open('./?mode=app', '_blank')">🚀 Launch App Window</button>
+          <strong id="portalDomainDisplay" style="font-size:15px; color:#34d399;">https://portal.mailhub.pro</strong>
+          <button class="btn btn-sm" onclick="window.open('./?mode=app', '_blank')">🚀 Launch App</button>
         </div>
       </div>
 
       <div style="font-size:12.5px; color:#cbd5e1; line-height:1.6;">
-        • <strong>App Login Protection:</strong> App link kholne par user ko apna Agency Email & Password daal kar Sign In karna padta hai.<br/>
+        • <strong>App Login Protection:</strong> App link kholne par user ko apna Email &amp; Password daal kar Sign In karna padta hai.<br/>
         • <strong>Install as App:</strong> Mobile ya PC Chrome mein is link ko khol kar <em>"Install App / Add to Home Screen"</em> kar sakte hain.
       </div>
     </div>
@@ -652,13 +656,13 @@
   <div class="modal-backdrop" id="modalSettings">
     <div class="modal">
       <div class="modal-header">
-        <h3>⚙️ Agency Portal & Notification Control Center</h3>
+        <h3>⚙️ Portal &amp; Notification Control Center</h3>
         <button class="btn btn-sm" onclick="closeModal('modalSettings')">✕</button>
       </div>
 
       <div class="form-group">
-        <label>Agency Portal Custom Domain Name</label>
-        <input type="text" class="form-input" id="cfgPortalDomain" placeholder="portal.youragency.com" />
+        <label>Portal Custom Domain Name</label>
+        <input type="text" class="form-input" id="cfgPortalDomain" placeholder="portal.mailhub.pro" />
       </div>
 
       <div style="background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; display:flex; flex-direction:column; gap:10px;">
@@ -689,7 +693,7 @@
 
       <div class="form-group">
         <label>Master Alert Email Address (Jahan Client ki New Email ka Alert aayega)</label>
-        <input type="email" class="form-input" id="cfgMasterEmail" placeholder="alerts@youragency.com" />
+        <input type="email" class="form-input" id="cfgMasterEmail" placeholder="alerts@yourdomain.com" />
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
@@ -719,7 +723,7 @@
       clients: [],
       emails: [],
       settings: {
-        portalDomain: "portal.agencygmailhub.com",
+        portalDomain: "portal.mailhub.pro",
         masterEmail: "",
         smtpUser: "",
         smtpPass: "",
@@ -738,7 +742,7 @@
 
     // ======================== STANDALONE CLOUD ENGINE (FOR GITHUB PAGES LIVE PREVIEW) ========================
     function getCloudDB() {
-      const raw = localStorage.getItem("agency_gmail_cloud_db_v1");
+      const raw = localStorage.getItem("mailhub_cloud_db_v2");
       if (raw) {
         try { return JSON.parse(raw); } catch (e) {}
       }
@@ -746,18 +750,18 @@
         users: [
           {
             id: "usr-admin-01",
-            agencyName: "Prime Agency Hub",
-            fullName: "Agency Owner",
-            email: "admin@agency.com",
+            agencyName: "MailHub Pro",
+            fullName: "Account Owner",
+            email: "admin@mailhub.pro",
             password: "admin123",
-            plan: "Agency Pro (150+ Accounts)",
+            plan: "Pro Plan (150+ Accounts)",
             paymentMethod: "Card (**** 4242)",
             paymentRef: "PAID-ACTIVE",
             isPaid: true
           }
         ],
         settings: {
-          portalDomain: "portal.agencygmailhub.com",
+          portalDomain: "portal.mailhub.pro",
           masterEmail: "",
           smtpUser: "",
           smtpPass: "",
@@ -802,12 +806,12 @@
           }
         ]
       };
-      localStorage.setItem("agency_gmail_cloud_db_v1", JSON.stringify(initialDB));
+      localStorage.setItem("mailhub_cloud_db_v2", JSON.stringify(initialDB));
       return initialDB;
     }
 
     function saveCloudDB(db) {
-      localStorage.setItem("agency_gmail_cloud_db_v1", JSON.stringify(db));
+      localStorage.setItem("mailhub_cloud_db_v2", JSON.stringify(db));
     }
 
     async function apiCall(path, method = "GET", bodyObj = null) {
@@ -839,7 +843,7 @@
         const email = (b.email || "").toLowerCase().trim();
         const pass = (b.password || "").trim();
         const user = db.users.find(u => u.email.toLowerCase() === email && u.password === pass);
-        if (!user) return { ok: false, error: "Invalid Email or Password! Use admin@agency.com / admin123 or Sign Up." };
+        if (!user) return { ok: false, error: "Invalid Email or Password! Use admin@mailhub.pro / admin123 or Sign Up." };
         return { ok: true, user };
       }
 
@@ -850,8 +854,8 @@
         }
         const newUser = {
           id: "usr-" + Math.random().toString(36).slice(2, 9),
-          agencyName: b.agencyName || "My Agency",
-          fullName: b.fullName || "Agency Owner",
+          agencyName: b.agencyName || "My Workspace",
+          fullName: b.fullName || "Account Owner",
           email: email,
           password: b.password,
           plan: b.plan,
@@ -960,7 +964,7 @@
             senderEmail: senders[idx].email,
             subject: subjects[idx],
             snippet: `Hello ${target.name}, an important update has arrived in your Gmail inbox. Click notification on Mobile or PC to view immediately.`,
-            body: `Hello ${target.name} (${target.email}),\n\nWe have sent an important update regarding your account:\nSubject: ${subjects[idx]}\n\nYou can reply directly from this Agency Portal or click 'Open Client's Isolated Chrome Inbox' to view inside the client browser session.\n\nBest regards,\n${senders[idx].name}`,
+            body: `Hello ${target.name} (${target.email}),\n\nWe have sent an important update regarding your account:\nSubject: ${subjects[idx]}\n\nYou can reply directly from this Portal or click 'Open Isolated Chrome Inbox' to view inside the dedicated browser session.\n\nBest regards,\n${senders[idx].name}`,
             date: new Date().toISOString(),
             isRead: false
           };
@@ -998,13 +1002,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get("mode") === "app") {
       document.getElementById("portalModeBadge").innerText = "📲 Mobile / Desktop App Mode";
-      document.getElementById("authHeaderTitle").innerText = "Agency Gmail App Login";
-      document.getElementById("authHeaderSub").innerText = "Sign in with your Agency Account to access the live Client Inbox App";
+      document.getElementById("authHeaderTitle").innerText = "MailHub App Login";
+      document.getElementById("authHeaderSub").innerText = "Sign in with your Account to access the live Multi-Gmail App";
     }
 
     function initAuthSession() {
       try {
-        const saved = localStorage.getItem("agency_portal_user");
+        const saved = localStorage.getItem("mailhub_portal_user");
         if (saved) {
           state.currentUser = JSON.parse(saved);
           applyLoggedInUser();
@@ -1015,9 +1019,9 @@
     function applyLoggedInUser() {
       if (!state.currentUser) return;
       document.getElementById("authPortalScreen").style.display = "none";
-      document.getElementById("agencyBrandTitle").innerText = state.currentUser.agencyName || "Agency Portal";
+      document.getElementById("agencyBrandTitle").innerText = state.currentUser.agencyName || "MailHub Pro";
       document.getElementById("agencyUserBadge").innerText = state.currentUser.email;
-      document.getElementById("agencyPlanBadge").innerText = state.currentUser.plan || "Agency Pro";
+      document.getElementById("agencyPlanBadge").innerText = state.currentUser.plan || "Pro Plan";
     }
 
     function switchAuthTab(tab) {
@@ -1049,7 +1053,7 @@
       }
 
       state.currentUser = data.user;
-      localStorage.setItem("agency_portal_user", JSON.stringify(data.user));
+      localStorage.setItem("mailhub_portal_user", JSON.stringify(data.user));
       applyLoggedInUser();
       await fetchState();
     }
@@ -1064,7 +1068,7 @@
       errBox.style.display = "none";
 
       if (!agencyName || !email || !password) {
-        errBox.innerText = "Please fill Agency Name, Email, and Password.";
+        errBox.innerText = "Please fill Workspace Name, Email, and Password.";
         errBox.style.display = "block";
         return;
       }
@@ -1108,14 +1112,14 @@
       }
 
       state.currentUser = data.user;
-      localStorage.setItem("agency_portal_user", JSON.stringify(data.user));
+      localStorage.setItem("mailhub_portal_user", JSON.stringify(data.user));
       applyLoggedInUser();
       await fetchState();
-      showToast("🎉 Agency Account Activated!", `Welcome ${agencyName}! Payment verified via ${paymentMethod}.`, () => {});
+      showToast("🎉 Account Activated!", `Welcome ${agencyName}! Payment verified via ${paymentMethod}.`, () => {});
     }
 
     function logoutPortal() {
-      localStorage.removeItem("agency_portal_user");
+      localStorage.removeItem("mailhub_portal_user");
       state.currentUser = null;
       document.getElementById("authPortalScreen").style.display = "flex";
     }
@@ -1175,7 +1179,7 @@
       document.getElementById("mobClientCount").innerText = state.clients.length;
       document.getElementById("mobUnreadCount").innerText = totalUnread;
 
-      const dom = "https://" + (state.settings.portalDomain || "portal.agencygmailhub.com").replace(/^https?:\/\//, "");
+      const dom = "https://" + (state.settings.portalDomain || "portal.mailhub.pro").replace(/^https?:\/\//, "");
       document.getElementById("domainBadgeText").innerText = dom;
       document.getElementById("subDomainText").innerText = dom;
       document.getElementById("portalDomainDisplay").innerText = dom;
@@ -1504,7 +1508,7 @@
       const lines = [];
       for (let i = 1; i <= 25; i++) {
         const num = String(i).padStart(2, "0");
-        lines.push(`Client ${num} - Agency Account, client${num}.demo@gmail.com, app_pass_${num}`);
+        lines.push(`Account ${num} - Workspace Mail, client${num}.demo@gmail.com, app_pass_${num}`);
       }
       document.getElementById("bulkCsvInput").value = lines.join("\n");
     }
@@ -1538,7 +1542,7 @@
       document.getElementById("notifPermLabel").innerText = "Permission: " + perm.toUpperCase();
       if (perm === "granted") {
         playAlertSound();
-        new Notification("✅ Agency Notifications Active!", { body: "Mobile & PC Push notifications are now enabled." });
+        new Notification("✅ MailHub Notifications Active!", { body: "Mobile & PC Push notifications are now enabled." });
       }
     }
 
@@ -1573,7 +1577,7 @@
     function openAddClientModal() { document.getElementById("modalAddClient").classList.add("open"); }
     function openAppLinkModal() { document.getElementById("modalAppLink").classList.add("open"); }
     function openSettingsModal() {
-      document.getElementById("cfgPortalDomain").value = state.settings.portalDomain || "portal.agencygmailhub.com";
+      document.getElementById("cfgPortalDomain").value = state.settings.portalDomain || "portal.mailhub.pro";
       document.getElementById("cfgMasterEmail").value = state.settings.masterEmail || "";
       document.getElementById("cfgSmtpUser").value = state.settings.smtpUser || "";
       document.getElementById("cfgSmtpPass").value = state.settings.smtpPass || "";
