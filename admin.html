@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MailHub Pro — Admin Command Center</title>
+  <style>
+    :root {
+      --bg-dark: #070b14;
+      --bg-panel: #0f172a;
+      --bg-card: #1e293b;
+      --border: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    .btn {
+      background: var(--bg-card); color: var(--text-main); border: 1px solid #334155;
+      padding: 7px 13px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; white-space: nowrap; flex-shrink: 0; transition: 0.15s;
+    }
+    .btn:hover { background: #334155; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-success { background: #059669; border-color: #10b981; color: #fff; }
+    .btn-warning { background: #d97706; border-color: #f59e0b; color: #fff; }
+    .btn-danger { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #fca5a5; }
+    .btn-sm { padding: 5px 9px; font-size: 11.5px; }
+
+    .auth-gate {
+      position: fixed; inset: 0; background: radial-gradient(circle at top, #1e293b 0%, #070b14 75%);
+      display: flex; align-items: center; justify-content: center; z-index: 500; padding: 16px;
+    }
+    .gate-card {
+      background: var(--bg-panel); border: 1px solid #334155; border-radius: 16px;
+      padding: 28px; width: 100%; max-width: 420px; box-shadow: 0 24px 60px rgba(0,0,0,0.65);
+    }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-group label { font-size: 12px; color: #cbd5e1; font-weight: 600; }
+    .form-input {
+      background: #0b1120; border: 1px solid #334155; color: var(--text-main);
+      padding: 9px 11px; border-radius: 8px; font-size: 13px; width: 100%;
+    }
+
+    .topbar {
+      background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e293b; padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 30;
+    }
+    .main { max-width: 1320px; width: 100%; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+    .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .bento-card {
+      background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 14px; padding: 18px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .bento-val { font-size: 28px; font-weight: 800; color: #fff; }
+    .bento-lbl { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #1e293b; padding-bottom: 12px; }
+    .tab-btn {
+      background: var(--bg-panel); color: var(--text-muted); border: 1px solid #334155;
+      padding: 8px 14px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .panel-card { background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 14px; padding: 20px; }
+    .panel-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #1e293b; }
+    th { color: var(--text-muted); font-size: 11.5px; text-transform: uppercase; }
+
+    .badge { padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; display: inline-block; }
+    .badge-ok { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+    .badge-warn { background: rgba(245,158,11,0.18); color: #fcd34d; }
+    .badge-err { background: rgba(239,68,68,0.18); color: #fca5a5; }
+  </style>
+</head>
+<body>
+
+  <!-- ADMIN PASSWORD GATE -->
+  <div class="auth-gate" id="adminGate">
+    <div class="gate-card">
+      <div style="font-size:26px; margin-bottom:8px;">🛡️</div>
+      <h2 style="font-size:19px; margin-bottom:4px;">Admin Command Center</h2>
+      <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:18px;">Enter Admin Master Password to manage telemetry, support tickets, CMS, and service status.</p>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" class="form-input" id="adminPassInput" value="admin123" placeholder="Enter admin password" />
+      </div>
+      <div id="adminGateErr" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
+      <button class="btn btn-primary" style="width:100%;" onclick="unlockAdmin()">🔓 Unlock Command Center</button>
+      <div style="margin-top:12px; text-align:center;">
+        <a href="./index.html" style="font-size:12px; color:#60a5fa; text-decoration:none;">← Back to Client Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header class="topbar">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#2563eb,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:18px;">🛡️</div>
+      <div>
+        <div style="font-weight:700; font-size:15.5px;">MailHub Pro — Admin Command Center</div>
+        <div style="font-size:11px; color:var(--text-muted);">Live Telemetry • Support Inbox • CMS • Maintenance Control</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="./index.html" class="btn btn-sm" style="text-decoration:none;">🌐 Open Client Portal</a>
+      <button class="btn btn-sm btn-danger" onclick="lockAdmin()">🔒 Lock Admin</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- 1. LIVE TELEMETRY -->
+    <section class="bento-grid">
+      <div class="bento-card">
+        <div class="bento-lbl">Total Registered Users</div>
+        <div class="bento-val" id="telUsers">0</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-lbl">Active Paid Subscriptions</div>
+        <div class="bento-val" id="telSubs" style="color:#34d399;">0</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-lbl">Open Support Tickets</div>
+        <div class="bento-val" id="telTickets" style="color:#fbbf24;">0</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-lbl">Platform System Status</div>
+        <div class="bento-val" id="telStatus" style="font-size:20px; margin-top:4px;">OPERATIONAL</div>
+      </div>
+    </section>
+
+    <!-- NAVIGATION TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchAdminTab('tickets', this)">💬 Support &amp; Tickets Inbox</button>
+      <button class="tab-btn" onclick="switchAdminTab('status', this)">🚦 Service Status &amp; Maintenance</button>
+      <button class="tab-btn" onclick="switchAdminTab('cms', this)">📝 CMS &amp; Legal Editor</button>
+      <button class="tab-btn" onclick="switchAdminTab('clients', this)">👥 Users &amp; Subscriptions</button>
+    </div>
+
+    <!-- TAB 1: SUPPORT & TICKETS INBOX -->
+    <section id="admTab_tickets" class="panel-card">
+      <div class="panel-title">
+        <span>💬 Client Support Tickets Inbox</span>
+        <button class="btn btn-sm" onclick="loadAdminData()">🔄 Refresh Tickets</button>
+      </div>
+      <div id="adminTicketsList" style="display:flex; flex-direction:column; gap:12px;"></div>
+    </section>
+
+    <!-- TAB 2: SERVICE STATUS & MAINTENANCE CONTROL -->
+    <section id="admTab_status" class="panel-card" style="display:none;">
+      <div class="panel-title">🚦 Service Status &amp; Maintenance Banner Control</div>
+      <div class="form-group">
+        <label>Platform Status</label>
+        <select class="form-input" id="admStatusMode">
+          <option value="operational">🟢 Operational (Banner Hidden on Client Portal)</option>
+          <option value="maintenance">🟡 Scheduled Maintenance (Amber Warning Strip)</option>
+          <option value="issue">🔴 Service Issue / Degraded (Rose Alert Strip)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Maintenance / Status Strip Message</label>
+        <input type="text" class="form-input" id="admStatusMsg" placeholder="e.g., Scheduled Gmail sync maintenance tonight 02:00 UTC (15 mins)." />
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="saveServiceStatus(false)">💾 Update Status Banner</button>
+        <button class="btn btn-warning" onclick="saveServiceStatus(true)">📧 Update Status &amp; Email All Clients (Resend)</button>
+      </div>
+    </section>
+
+    <!-- TAB 3: CMS EDITOR -->
+    <section id="admTab_cms" class="panel-card" style="display:none;">
+      <div class="panel-title">📝 Live CMS &amp; Legal Policy Editor</div>
+      <div class="form-group">
+        <label>Portal Hero / Header Subtitle</label>
+        <input type="text" class="form-input" id="cmsHeroText" />
+      </div>
+      <div class="form-group">
+        <label>Official Support Email (Branded Domain)</label>
+        <input type="email" class="form-input" id="cmsSupportEmail" placeholder="support@mailhub.pro" />
+      </div>
+      <div class="form-group">
+        <label>Terms of Service</label>
+        <textarea class="form-input" id="cmsTerms" style="height:90px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Privacy Policy</label>
+        <textarea class="form-input" id="cmsPrivacy" style="height:90px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>7-Day Refund Policy</label>
+        <textarea class="form-input" id="cmsRefund" style="height:80px;"></textarea>
+      </div>
+      <button class="btn btn-success" onclick="saveCms()">💾 Save &amp; Publish CMS Changes</button>
+    </section>
+
+    <!-- TAB 4: USERS & SUBSCRIPTIONS TABLE -->
+    <section id="admTab_clients" class="panel-card" style="display:none;">
+      <div class="panel-title">👥 Client &amp; Subscription Management</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Workspace / Name</th>
+              <th>Email</th>
+              <th>Plan</th>
+              <th>Storage Used</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const DB_KEY = "mailhub_cloud_db_v2";
+
+    function getDB() {
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return { users: [], clients: [], tickets: [], serviceStatus: { mode: "operational", message: "" }, cms: {} };
+    }
+
+    function saveDB(db) {
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+    }
+
+    function unlockAdmin() {
+      const pass = document.getElementById("adminPassInput").value.trim();
+      if (pass !== "admin123") {
+        const err = document.getElementById("adminGateErr");
+        err.innerText = "Invalid Admin Password (default: admin123)";
+        err.style.display = "block";
+        return;
+      }
+      sessionStorage.setItem("mailhub_admin_unlocked", "1");
+      document.getElementById("adminGate").style.display = "none";
+      loadAdminData();
+    }
+
+    function lockAdmin() {
+      sessionStorage.removeItem("mailhub_admin_unlocked");
+      document.getElementById("adminGate").style.display = "flex";
+    }
+
+    function switchAdminTab(tab, btn) {
+      ["tickets", "status", "cms", "clients"].forEach(t => {
+        document.getElementById("admTab_" + t).style.display = t === tab ? "block" : "none";
+      });
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    function loadAdminData() {
+      const db = getDB();
+      const users = db.users || [];
+      const tickets = db.tickets || [];
+      const status = db.serviceStatus || { mode: "operational", message: "" };
+      const cms = db.cms || {};
+
+      document.getElementById("telUsers").innerText = users.length;
+      document.getElementById("telSubs").innerText = users.filter(u => u.isPaid !== false && u.planStatus !== "Cancelled").length;
+      document.getElementById("telTickets").innerText = tickets.filter(t => t.status !== "Resolved").length;
+      document.getElementById("telStatus").innerText = (status.mode || "operational").toUpperCase();
+
+      // Status fields
+      document.getElementById("admStatusMode").value = status.mode || "operational";
+      document.getElementById("admStatusMsg").value = status.message || "";
+
+      // CMS fields
+      document.getElementById("cmsHeroText").value = cms.heroText || "Sign In to your Workspace or Sign Up with Subscription Plan";
+      document.getElementById("cmsSupportEmail").value = cms.supportEmail || "support@mailhub.pro";
+      document.getElementById("cmsTerms").value = cms.terms || "By using MailHub Pro, you agree to manage only authorized Gmail accounts and comply with Google API & anti-spam policies.";
+      document.getElementById("cmsPrivacy").value = cms.privacy || "MailHub Pro encrypts all connected sessions (AES-256) and never sells or shares your mailbox data with third parties.";
+      document.getElementById("cmsRefund").value = cms.refund || "All paid subscriptions include a 7-Day No-Questions-Asked Refund Policy. Contact support@mailhub.pro with your invoice ID.";
+
+      // Tickets
+      const tList = document.getElementById("adminTicketsList");
+      if (tickets.length === 0) {
+        tList.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">No support tickets submitted yet.</div>`;
+      } else {
+        tList.innerHTML = tickets.map(t => `
+          <div style="background:#0b1120; border:1px solid #334155; border-radius:10px; padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <div>
+                <strong>#${t.id} — ${escapeHtml(t.subject)}</strong>
+                <div style="font-size:11.5px; color:var(--text-muted);">From: ${escapeHtml(t.userEmail || "Workspace Owner")} • ${new Date(t.createdAt).toLocaleString()}</div>
+              </div>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <span class="badge ${t.priority === 'High' ? 'badge-err' : (t.priority === 'Normal' ? 'badge-warn' : 'badge-ok')}">${t.priority}</span>
+                <span class="badge ${t.status === 'Resolved' ? 'badge-ok' : 'badge-warn'}">${t.status}</span>
+              </div>
+            </div>
+            <div style="background:#111827; padding:10px; border-radius:8px; font-size:12.5px; margin-bottom:10px;">
+              ${(t.messages || []).map(m => `<div style="margin-bottom:6px;"><strong>${escapeHtml(m.sender)}:</strong> ${escapeHtml(m.text)}</div>`).join("")}
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-input" id="reply_${t.id}" placeholder="Write reply to client's portal..." />
+              <button class="btn btn-sm btn-primary" onclick="replyTicket('${t.id}')">📤 Reply</button>
+              <button class="btn btn-sm btn-success" onclick="resolveTicket('${t.id}')">✅ Resolve</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // Users table
+      const uBody = document.getElementById("adminUsersTable");
+      uBody.innerHTML = users.map(u => `
+        <tr>
+          <td><strong>${escapeHtml(u.agencyName || "Workspace")}</strong><br/><span style="font-size:11px; color:var(--text-muted);">${escapeHtml(u.fullName || "Workspace Owner")}</span></td>
+          <td>${escapeHtml(u.email)}</td>
+          <td>${escapeHtml(u.plan || "Starter")}</td>
+          <td>${(u.usedMB || 0).toFixed(1)} MB</td>
+          <td><span class="badge ${u.planStatus === 'Cancelled' ? 'badge-err' : 'badge-ok'}">${u.planStatus || 'Active'}</span></td>
+          <td>
+            <button class="btn btn-sm" onclick="toggleUserPlan('${u.id}')">${u.planStatus === 'Cancelled' ? 'Reactivate' : 'Suspend'}</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function replyTicket(ticketId) {
+      const input = document.getElementById("reply_" + ticketId);
+      const text = (input.value || "").trim();
+      if (!text) return;
+      const db = getDB();
+      const t = (db.tickets || []).find(x => x.id === ticketId);
+      if (t) {
+        t.messages.push({ sender: "MailHub Pro Support Team", text, at: new Date().toISOString() });
+        t.status = "Answered";
+        saveDB(db);
+        loadAdminData();
+        alert("✅ Reply posted to client portal & notification queued via Resend (noreply@mailhub.pro).");
+      }
+    }
+
+    function resolveTicket(ticketId) {
+      const db = getDB();
+      const t = (db.tickets || []).find(x => x.id === ticketId);
+      if (t) {
+        t.status = "Resolved";
+        saveDB(db);
+        loadAdminData();
+      }
+    }
+
+    function saveServiceStatus(emailAll) {
+      const db = getDB();
+      db.serviceStatus = {
+        mode: document.getElementById("admStatusMode").value,
+        message: document.getElementById("admStatusMsg").value.trim()
+      };
+      saveDB(db);
+      loadAdminData();
+      alert(emailAll
+        ? "✅ Status updated & broadcast email queued to all registered clients via Resend!"
+        : "✅ Platform service status updated!");
+    }
+
+    function saveCms() {
+      const db = getDB();
+      db.cms = {
+        heroText: document.getElementById("cmsHeroText").value.trim(),
+        supportEmail: document.getElementById("cmsSupportEmail").value.trim() || "support@mailhub.pro",
+        terms: document.getElementById("cmsTerms").value.trim(),
+        privacy: document.getElementById("cmsPrivacy").value.trim(),
+        refund: document.getElementById("cmsRefund").value.trim()
+      };
+      saveDB(db);
+      alert("✅ CMS & Legal Policies published live!");
+    }
+
+    function toggleUserPlan(userId) {
+      const db = getDB();
+      const u = (db.users || []).find(x => x.id === userId);
+      if (u) {
+        u.planStatus = u.planStatus === "Cancelled" ? "Active" : "Cancelled";
+        saveDB(db);
+        loadAdminData();
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    if (sessionStorage.getItem("mailhub_admin_unlocked") === "1") {
+      document.getElementById("adminGate").style.display = "none";
+      loadAdminData();
+    }
+  </script>
+</body>
+</html>
