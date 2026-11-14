@@ -206,11 +206,11 @@ namespace MultiGmailManager
                 new AgencyUser
                 {
                     id = "usr-admin-01",
-                    agencyName = "Prime Agency Hub",
-                    fullName = "Agency Owner",
-                    email = "admin@agency.com",
+                    agencyName = "MailHub Pro",
+                    fullName = "Account Owner",
+                    email = "admin@mailhub.pro",
                     password = "admin123",
-                    plan = "Agency Pro (150+ Accounts)",
+                    plan = "Pro Plan (150+ Accounts)",
                     paymentMethod = "Card (**** 4242)",
                     paymentRef = "PAID-ACTIVE",
                     isPaid = true,
@@ -223,7 +223,7 @@ namespace MultiGmailManager
         {
             return new HubSettings
             {
-                portalDomain = "portal.agencygmailhub.com",
+                portalDomain = "portal.mailhub.pro",
                 masterEmail = "",
                 smtpUser = "",
                 smtpPass = "",
