@@ -1366,10 +1366,116 @@
       const db = getDB();
       const inv = db.invoices.find(x => x.id === invId);
       if (!inv) return;
-      const html = `<html><body style="font-family:Arial;padding:30px;"><h2>MailHub by Aamiq — Invoice ${inv.id}</h2><p>Date: ${inv.date}</p><p>Account: ${currentUser.email}</p><p>Plan: ${inv.plan}</p><p>Amount: ${inv.amount}</p><p>Status: ${inv.status}</p></body></html>`;
+      const logoUrl = new URL("aamiq-logo.png", window.location.href).href;
+      const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Invoice ${escapeHtml(inv.id)} — MailHub by Aamiq</title>
+<style>
+  @page { size: A4; margin: 18mm; }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  body { margin: 0; padding: 36px; background: #ffffff; color: #111827; position: relative; min-height: 100vh; }
+  .watermark {
+    position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%) rotate(-32deg);
+    font-size: 56px; font-weight: 900; letter-spacing: 6px; color: rgba(15, 23, 42, 0.055);
+    pointer-events: none; user-select: none; white-space: nowrap; z-index: 0;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 90vh; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e5e7eb; padding-bottom: 22px; margin-bottom: 28px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand img { height: 46px; width: auto; filter: brightness(0.18) contrast(1.2); }
+  .brand-title { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; color: #0f172a; }
+  .brand-sub { font-size: 11px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #b45309; }
+  .stmt-right { text-align: right; }
+  .stmt-title { font-size: 20px; font-weight: 700; color: #111827; }
+  .stmt-meta { font-size: 12px; color: #6b7280; margin-top: 4px; line-height: 1.5; }
+  .info-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 34px; font-size: 13px; line-height: 1.6; }
+  .card-right { font-weight: 700; font-size: 13px; color: #111827; text-align: right; }
+  .sec-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #111827; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+  th { text-align: left; font-size: 12px; font-weight: 700; color: #374151; border-bottom: 1.5px solid #d1d5db; padding: 10px 6px; }
+  td { font-size: 13px; color: #111827; padding: 14px 6px; border-bottom: 1px solid #f3f4f6; }
+  .num { text-align: right; font-weight: 600; }
+  .badge-paid { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; }
+  .footer { margin-top: auto; padding-top: 24px; border-top: 1px solid #e5e7eb; font-size: 10px; color: #6b7280; line-height: 1.55; }
+  .footer-bottom { display: flex; justify-content: space-between; margin-top: 14px; font-size: 11px; color: #374151; font-weight: 600; }
+  .print-btn { margin-bottom: 18px; padding: 8px 16px; background: #0f172a; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  @media print { .print-btn { display: none; } body { padding: 0; } }
+</style>
+</head>
+<body>
+  <div class="watermark">MAILHUB BY AAMIQ • ${escapeHtml(inv.status).toUpperCase()}</div>
+  <div class="wrap">
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <div class="header">
+      <div class="brand">
+        <img src="${logoUrl}" alt="Aamiq Logo" />
+        <div>
+          <div class="brand-title">MAILHUB</div>
+          <div class="brand-sub">by Aamiq</div>
+        </div>
+      </div>
+      <div class="stmt-right">
+        <div class="stmt-title">Transaction Statement</div>
+        <div class="stmt-meta">
+          Invoice ID: <strong>${escapeHtml(inv.id)}</strong><br/>
+          Generated on ${escapeHtml(inv.date)}<br/>
+          MailHub by Aamiq (mailhub.aamiq.online)
+        </div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div>
+        <strong>${escapeHtml(currentUser.name || "Workspace Owner")}</strong><br/>
+        ${escapeHtml(currentUser.email)}<br/>
+        Workspace: MailHub by Aamiq<br/>
+        Support: support@aamiq.online
+      </div>
+      <div class="card-right">
+        CARD **** 4242<br/>
+        <span class="badge-paid">${escapeHtml(inv.status)}</span>
+      </div>
+    </div>
+
+    <div class="sec-title">Transaction</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Plan</th>
+          <th class="num">Amount</th>
+          <th class="num">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>${escapeHtml(inv.date)}</td>
+          <td>MAILHUB BY AAMIQ — SUBSCRIPTION (${escapeHtml(inv.id)})</td>
+          <td>${escapeHtml(inv.plan)}</td>
+          <td class="num">${escapeHtml(inv.amount)}</td>
+          <td class="num">${escapeHtml(inv.status)}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      MailHub by Aamiq (mailhub.aamiq.online) is a multi-mailbox workspace platform operated under the Aamiq software suite.
+      This statement confirms subscription billing processed for the workspace account listed above. For billing inquiries,
+      invoice corrections, or 7-day refund/grace-period assistance, contact support@aamiq.online with your Invoice ID.
+      <div class="footer-bottom">
+        <span>© 2026 MailHub by Aamiq • mailhub.aamiq.online</span>
+        <span>Page 1 of 1</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
-      a.download = `${inv.id}.html`;
+      a.download = `${inv.id}-MailHub-by-Aamiq.html`;
       a.click();
     }
 
