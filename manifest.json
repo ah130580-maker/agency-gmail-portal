@@ -1,7 +1,7 @@
 {
-  "name": "Agency Multi-Gmail Portal & App Hub (150+ Accounts)",
-  "short_name": "AgencyGmailHub",
-  "description": "Manage 100-150 Client Gmail Accounts with Instant Mobile, PC & Email Notifications",
+  "name": "Multi-Gmail Portal & App Hub (150+ Accounts)",
+  "short_name": "MailHub",
+  "description": "Manage 100-150+ Gmail Accounts with Instant Mobile, PC & Email Notifications",
   "start_url": "./?mode=app",
   "scope": "./",
   "display": "standalone",
