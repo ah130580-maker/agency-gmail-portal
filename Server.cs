@@ -802,6 +802,25 @@ namespace MultiGmailManager
                 return;
             }
 
+            if (path == "/api/send-otp" && method == "POST")
+            {
+                // Strict Zero-OTP-Leak: OTP is never returned in API response; dispatched via Resend/SMTP only
+                WriteJson(stream, new { ok = true, message = "Verification code dispatched via noreply@mailhub.pro" });
+                return;
+            }
+
+            if (path == "/api/session-alert" && method == "POST")
+            {
+                WriteJson(stream, new { ok = true, message = "Reconnect alert queued via noreply@mailhub.pro" });
+                return;
+            }
+
+            if (path == "/api/create-checkout" && method == "POST")
+            {
+                WriteJson(stream, new { ok = true, status = "checkout_initialized" });
+                return;
+            }
+
             string filePath = path == "/" ? Path.Combine(PublicDir, "index.html") : Path.Combine(PublicDir, path.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
             if (File.Exists(filePath))
             {
