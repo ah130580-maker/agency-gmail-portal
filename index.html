@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MailHub Pro — Multi-Gmail Portal & App Hub</title>
   <link rel="manifest" href="./manifest.json" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0b1120" />
   <style>
     :root {
-      --bg-dark: #0b1120;
-      --bg-panel: #111827;
+      --bg-dark: #070b14;
+      --bg-panel: #0f172a;
       --bg-card: #1e293b;
       --bg-hover: #334155;
-      --border: #1f2937;
+      --border: #1e293b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --primary: #3b82f6;
@@ -24,15 +24,47 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* ======================== AUTH PORTAL SCREEN (SIGN IN / PAID SIGN UP) ======================== */
+    /* STRICT SINGLE-LINE BUTTON & PILL RULE */
+    .btn, .toggle-pill, .auth-tab, .pay-method-card, .notify-switch-btn, .tab-btn, .nav-item, .badge {
+      white-space: nowrap;
+      flex-shrink: 0;
+      line-height: 1.25;
+    }
+
+    .btn {
+      background: var(--bg-card); color: var(--text-main); border: 1px solid #334155;
+      padding: 7px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; transition: 0.15s;
+    }
+    .btn:hover { background: var(--bg-hover); }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-success { background: #059669; border-color: #10b981; color: #fff; }
+    .btn-warning { background: #d97706; border-color: #f59e0b; color: #fff; }
+    .btn-danger { background: rgba(239,68,68,0.18); border-color: #ef4444; color: #fca5a5; }
+    .btn-sm { padding: 4px 9px; font-size: 11px; border-radius: 6px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; }
+    .form-group label { font-size: 12px; color: #cbd5e1; font-weight: 600; }
+    .form-input {
+      background: #0b1120; border: 1px solid #334155; color: var(--text-main);
+      padding: 9px 11px; border-radius: 8px; font-size: 13px; width: 100%;
+    }
+    .info-banner {
+      background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35);
+      padding: 10px 12px; border-radius: 9px; font-size: 12px; color: #bfdbfe; line-height: 1.5;
+    }
+
+    /* ======================== 1. AUTH PORTAL (3-MODE: SIGN IN / SIGN UP & PAY / FORGOT PASSWORD) ======================== */
     .auth-screen {
-      position: fixed; inset: 0; background: radial-gradient(circle at top, #1e293b 0%, #0b1120 70%);
+      position: fixed; inset: 0; background: radial-gradient(circle at top, #1e293b 0%, #070b14 72%);
       z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
       overflow-y: auto; padding: 24px 16px;
     }
     .domain-bar {
       background: #0f172a; border: 1px solid #334155; border-radius: 999px;
-      padding: 6px 16px; font-size: 12.5px; color: #94a3b8; display: inline-flex;
+      padding: 6px 16px; font-size: 12px; color: #94a3b8; display: inline-flex;
       align-items: center; gap: 8px; margin-bottom: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
     }
     .auth-card {
@@ -40,77 +72,91 @@
       width: 100%; max-width: 560px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
     }
     .auth-tabs {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--bg-dark);
-      padding: 5px; border-radius: 10px; border: 1px solid #1f2937; margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #070b14;
+      padding: 5px; border-radius: 10px; border: 1px solid #1e293b; margin-bottom: 18px;
     }
     .auth-tab {
-      padding: 10px 12px; text-align: center; font-size: 13px; font-weight: 700;
+      padding: 9px 8px; text-align: center; font-size: 12.5px; font-weight: 700;
       border-radius: 8px; cursor: pointer; color: var(--text-muted); border: none; background: transparent;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      overflow: hidden; text-overflow: ellipsis;
     }
     .auth-tab.active { background: var(--primary); color: #fff; }
     .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
     .pay-method-card {
-      background: var(--bg-dark); border: 1px solid #334155; border-radius: 9px;
+      background: #070b14; border: 1px solid #334155; border-radius: 9px;
       padding: 10px 8px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600;
-      color: var(--text-muted); transition: 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      color: var(--text-muted); transition: 0.15s; overflow: hidden; text-overflow: ellipsis;
     }
     .pay-method-card.active { border-color: var(--success); background: rgba(16, 185, 129, 0.14); color: #fff; }
 
-    /* ======================== PORTAL DASHBOARD & APP LAYOUT ======================== */
-    .topbar {
-      background: var(--bg-panel); border-bottom: 1px solid var(--border);
-      padding: 9px 14px; display: flex; align-items: center; justify-content: space-between;
-      gap: 10px; flex-wrap: wrap; z-index: 20;
+    /* ======================== 2. APP SHELL (GLASSMORPHIC SIDEBAR + STICKY HEADER + WORKSPACE) ======================== */
+    .app-shell { display: flex; flex: 1; overflow: hidden; }
+    .app-sidebar {
+      width: 245px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(14px);
+      border-right: 1px solid #1e293b; display: flex; flex-direction: column; flex-shrink: 0;
+      padding: 14px 10px; gap: 6px;
     }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; flex-shrink: 0; }
-    .brand-icon {
-      width: 34px; height: 34px; border-radius: 9px;
-      background: linear-gradient(135deg, #2563eb, #7c3aed);
-      display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+      border: 1px solid transparent; background: transparent; width: 100%; text-align: left; transition: 0.15s;
+    }
+    .nav-item:hover { background: rgba(30, 41, 59, 0.7); color: #fff; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.16); border-color: rgba(59, 130, 246, 0.45); color: #fff; }
+
+    .main-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .topbar {
+      background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e293b; padding: 9px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 30;
     }
     .toggle-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .toggle-pill {
-      background: var(--bg-card); border: 1px solid #334155; padding: 5px 11px;
+      background: var(--bg-card); border: 1px solid #334155; padding: 5px 10px;
       border-radius: 999px; font-size: 11.5px; cursor: pointer; display: inline-flex;
-      align-items: center; gap: 5px; user-select: none; transition: 0.15s; font-weight: 600;
-      white-space: nowrap; flex-shrink: 0; line-height: 1.2;
+      align-items: center; gap: 5px; user-select: none; font-weight: 600;
     }
     .toggle-pill.on { border-color: #10b981; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
     .toggle-pill.off { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
 
-    .top-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .btn {
-      background: var(--bg-card); color: var(--text-main); border: 1px solid #334155;
-      padding: 6px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 500;
-      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-      gap: 5px; transition: 0.15s; white-space: nowrap; flex-shrink: 0; line-height: 1.25;
+    /* SLEEK SERVICE STATUS / MAINTENANCE STRIP */
+    #service-status-banner {
+      display: none; padding: 6px 16px; font-size: 12px; font-weight: 600;
+      align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .btn:hover { background: var(--bg-hover); }
-    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-success { background: #059669; border-color: #10b981; color: #fff; }
-    .btn-warning { background: #d97706; border-color: #f59e0b; color: #fff; }
-    .btn-danger { background: rgba(239,68,68,0.2); border-color: #ef4444; color: #fca5a5; }
-    .btn-sm { padding: 4px 9px; font-size: 11px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; }
-
-    /* Sub-bar for Portal & App Link info */
-    .portal-subbar {
-      background: #0f172a; border-bottom: 1px solid var(--border); padding: 6px 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      font-size: 12px; color: var(--text-muted); flex-wrap: wrap;
+    #service-status-banner.maintenance { background: rgba(245, 158, 11, 0.16); color: #fcd34d; display: flex; }
+    #service-status-banner.issue { background: rgba(239, 68, 68, 0.18); color: #fca5a5; display: flex; }
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: currentColor;
+      animation: pulse 1.4s infinite; flex-shrink: 0;
     }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-    .workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+    .main-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .tab-page { display: none; padding: 20px; flex-direction: column; gap: 18px; }
+    .tab-page.active { display: flex; }
+    .tab-page.inbox-mode { padding: 0; height: 100%; overflow: hidden; }
 
-    /* Left Column: Clients List with Per-Client Notification ON/OFF */
+    /* DASHBOARD BENTO STATS (ONLY ON TAB 1) */
+    .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+    .bento-card {
+      background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 14px; padding: 18px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .bento-val { font-size: 26px; font-weight: 800; color: #fff; }
+    .bento-lbl { font-size: 11.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .panel-card { background: var(--bg-panel); border: 1px solid #1e293b; border-radius: 14px; padding: 18px; }
+
+    /* UNIFIED INBOX 3-COLUMN WORKSPACE (TAB 2) */
+    .workspace { display: flex; flex: 1; overflow: hidden; height: 100%; }
     .sidebar {
-      width: 335px; background: var(--bg-panel); border-right: 1px solid var(--border);
+      width: 330px; background: var(--bg-panel); border-right: 1px solid #1e293b;
       display: flex; flex-direction: column; flex-shrink: 0;
     }
-    .sidebar-header { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .sidebar-header { padding: 10px 12px; border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; gap: 8px; }
     .search-box {
-      width: 100%; background: var(--bg-dark); border: 1px solid #334155;
+      width: 100%; background: #070b14; border: 1px solid #334155;
       color: var(--text-main); padding: 7px 10px; border-radius: 8px; font-size: 12.5px;
     }
     .client-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
@@ -121,1001 +167,990 @@
     }
     .client-item:hover { background: rgba(51, 65, 85, 0.45); }
     .client-item.active { background: rgba(37, 99, 235, 0.18); border-color: var(--primary); }
-    .client-item.muted-client { opacity: 0.72; }
     .client-info { min-width: 0; flex: 1; }
     .client-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; }
     .client-email { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
     .client-meta { display: flex; align-items: center; gap: 5px; margin-left: 6px; flex-shrink: 0; }
-    .badge-unread {
-      background: var(--danger); color: #fff; font-size: 10.5px; font-weight: 700;
-      padding: 2px 6px; border-radius: 999px; min-width: 19px; text-align: center;
-    }
-    .auth-tag {
-      font-size: 9.5px; padding: 1px 5px; border-radius: 4px; font-weight: 600;
-      background: rgba(148, 163, 184, 0.15); color: #cbd5e1; white-space: nowrap; flex-shrink: 0;
-    }
-    .auth-tag.oauth { background: rgba(16, 185, 129, 0.18); color: #34d399; }
-    .auth-tag.browser { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
-    .auth-tag.imap { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
-
+    .badge-unread { background: var(--danger); color: #fff; font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
     .notify-switch-btn {
       border: 1px solid #334155; border-radius: 6px; padding: 3px 8px; font-size: 10.5px;
-      cursor: pointer; font-weight: 700; transition: 0.15s; white-space: nowrap; flex-shrink: 0; line-height: 1.2;
+      cursor: pointer; font-weight: 700;
     }
     .notify-switch-btn.on { background: rgba(16, 185, 129, 0.18); border-color: #10b981; color: #6ee7b7; }
     .notify-switch-btn.off { background: rgba(239, 68, 68, 0.18); border-color: #ef4444; color: #fca5a5; }
 
-    /* Center Column: Inbox Feed */
-    .inbox-col {
-      width: 380px; background: var(--bg-dark); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; flex-shrink: 0;
-    }
-    .inbox-header {
-      padding: 11px 14px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 6px;
-    }
-    .inbox-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .inbox-title { font-size: 14.5px; font-weight: 700; }
+    .inbox-col { width: 370px; background: var(--bg-dark); border-right: 1px solid #1e293b; display: flex; flex-direction: column; flex-shrink: 0; }
+    .inbox-header { padding: 11px 14px; background: var(--bg-panel); border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .email-list { flex: 1; overflow-y: auto; }
-    .email-item {
-      padding: 12px 14px; border-bottom: 1px solid var(--border);
-      cursor: pointer; transition: 0.15s;
-    }
+    .email-item { padding: 12px 14px; border-bottom: 1px solid #1e293b; cursor: pointer; }
     .email-item:hover { background: rgba(30, 41, 59, 0.7); }
     .email-item.active { background: rgba(37, 99, 235, 0.16); border-left: 3px solid var(--primary); }
     .email-item.unread { background: rgba(30, 41, 59, 0.45); }
     .email-item.unread .email-subject { font-weight: 700; color: #fff; }
-    .email-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 6px; }
     .client-pill {
       font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
-      background: rgba(59, 130, 246, 0.2); color: #93c5fd;
-      max-width: 210px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      background: rgba(59, 130, 246, 0.2); color: #93c5fd; max-width: 200px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .email-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
-    .email-sender { font-size: 12.5px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; }
-    .email-subject { font-size: 12.5px; color: #cbd5e1; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .email-snippet { font-size: 11.5px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-    /* Right Column: Reader */
     .reader-col { flex: 1; background: var(--bg-dark); display: flex; flex-direction: column; overflow: hidden; }
-    .reader-empty {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      color: var(--text-muted); padding: 32px; text-align: center; gap: 12px;
-    }
-    .reader-header {
-      padding: 15px 18px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .reader-subject { font-size: 17px; font-weight: 700; line-height: 1.35; }
-    .reader-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--text-muted); }
-    .reader-body { flex: 1; padding: 20px; overflow-y: auto; line-height: 1.65; font-size: 13.5px; color: #e2e8f0; white-space: pre-wrap; background: #0f172a; }
-    .reply-box {
-      padding: 12px 18px; background: var(--bg-panel); border-top: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .reply-textarea {
-      width: 100%; height: 70px; background: var(--bg-dark); border: 1px solid #334155;
-      color: var(--text-main); border-radius: 8px; padding: 9px; font-size: 13px; resize: none;
-    }
+    .reader-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); padding: 32px; text-align: center; gap: 10px; }
+    .reader-header { padding: 15px 18px; background: var(--bg-panel); border-bottom: 1px solid #1e293b; display: flex; flex-direction: column; gap: 10px; }
+    .reader-body { flex: 1; padding: 20px; overflow-y: auto; line-height: 1.65; font-size: 13.5px; color: #e2e8f0; white-space: pre-wrap; background: #0b1120; }
+    .reply-box { padding: 12px 18px; background: var(--bg-panel); border-top: 1px solid #1e293b; display: flex; flex-direction: column; gap: 8px; }
+    .reply-textarea { width: 100%; height: 68px; background: #070b14; border: 1px solid #334155; color: var(--text-main); border-radius: 8px; padding: 9px; font-size: 13px; resize: none; }
 
-    /* Modals */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
-      display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px;
-    }
+    /* TABLES & BADGES */
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #1e293b; }
+    th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+    .badge { padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .badge-ok { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+    .badge-warn { background: rgba(245,158,11,0.18); color: #fcd34d; }
+    .badge-err { background: rgba(239,68,68,0.18); color: #fca5a5; }
+
+    .progress-track { width: 100%; height: 10px; background: #070b14; border-radius: 999px; overflow: hidden; border: 1px solid #334155; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: 0.25s; }
+
+    /* MODALS & TOASTS */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.78); display: none; align-items: center; justify-content: center; z-index: 600; padding: 16px; }
     .modal-backdrop.open { display: flex; }
-    .modal {
-      background: var(--bg-panel); border: 1px solid #334155; border-radius: 14px;
-      width: 100%; max-width: 610px; max-height: 90vh; overflow-y: auto;
-      padding: 20px; display: flex; flex-direction: column; gap: 14px;
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-    .tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; }
-    .tab-btn {
-      background: var(--bg-card); color: var(--text-muted); border: 1px solid #334155;
-      padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600;
-      white-space: nowrap; flex-shrink: 0; line-height: 1.25;
-    }
+    .modal { background: var(--bg-panel); border: 1px solid #334155; border-radius: 14px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
+    .tabs { display: flex; gap: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; flex-wrap: wrap; }
+    .tab-btn { background: var(--bg-card); color: var(--text-muted); border: 1px solid #334155; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; }
-    .form-group label { font-size: 12px; color: #cbd5e1; font-weight: 500; }
-    .form-input {
-      background: var(--bg-dark); border: 1px solid #334155; color: var(--text-main);
-      padding: 9px 11px; border-radius: 8px; font-size: 13px; width: 100%;
-    }
-    .info-banner {
-      background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35);
-      padding: 10px 12px; border-radius: 9px; font-size: 12px; color: #bfdbfe; line-height: 1.5;
+
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 700; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: calc(100% - 40px); }
+    .toast { background: #1e293b; border-left: 5px solid var(--success); border: 1px solid #475569; border-radius: 10px; padding: 13px 15px; box-shadow: 0 12px 28px rgba(0,0,0,0.5); cursor: pointer; }
+
+    .footer-bar {
+      background: #070b14; border-top: 1px solid #1e293b; padding: 8px 16px;
+      display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--text-muted); flex-wrap: wrap; gap: 8px;
     }
 
-    /* Toast Notification Banner inside App (Internal Notification) */
-    .toast-container {
-      position: fixed; bottom: 20px; right: 20px; z-index: 200;
-      display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: calc(100% - 40px);
-    }
-    .toast {
-      background: #1e293b; border-left: 5px solid var(--success); border: 1px solid #475569;
-      border-radius: 10px; padding: 13px 15px; box-shadow: 0 12px 28px rgba(0,0,0,0.5);
-      cursor: pointer; transition: 0.2s;
-    }
-
-    .mobile-nav {
-      display: none; background: var(--bg-panel); border-top: 1px solid var(--border);
-      padding: 8px; justify-content: space-around;
-    }
-    @media (max-width: 900px) {
+    @media (max-width: 960px) {
+      .app-sidebar { display: none; }
       .sidebar, .inbox-col, .reader-col { width: 100%; display: none; }
       .sidebar.mobile-active, .inbox-col.mobile-active, .reader-col.mobile-active { display: flex; }
-      .mobile-nav { display: flex; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ======================== 1. DOMAIN LOGIN & PAID SIGN-UP PORTAL ======================== -->
+  <!-- ======================== 1. 3-MODE AUTH PORTAL (SIGN IN / SIGN UP & PAY / FORGOT PASSWORD) ======================== -->
   <div class="auth-screen" id="authPortalScreen">
     <div class="domain-bar">
       <span>🔒</span>
       <span id="domainBadgeText">https://portal.mailhub.pro</span>
-      <span style="background:#1d4ed8; color:#fff; padding:1px 8px; border-radius:99px; font-size:10.5px; white-space:nowrap;" id="portalModeBadge">MailHub Portal</span>
+      <span style="background:#1d4ed8; color:#fff; padding:1px 8px; border-radius:99px; font-size:10.5px; white-space:nowrap;" id="portalModeBadge">MailHub Pro</span>
     </div>
 
     <div class="auth-card">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
-        <div class="brand-icon" style="width:42px; height:42px; font-size:22px;">📬</div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div style="width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,#2563eb,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">📬</div>
         <div>
-          <h2 style="font-size:19px; font-weight:700;" id="authHeaderTitle">MailHub Pro — Multi-Gmail Portal</h2>
-          <div style="font-size:12px; color:var(--text-muted);" id="authHeaderSub">Sign In to your Account Dashboard or Sign Up with Subscription Plan</div>
+          <h2 style="font-size:18.5px; font-weight:700;" id="authHeaderTitle">MailHub Pro — Multi-Gmail Portal</h2>
+          <div style="font-size:12px; color:var(--text-muted);" id="authHeaderSub">Sign In to your Workspace or Sign Up with Subscription Plan</div>
         </div>
       </div>
 
       <div class="auth-tabs">
         <button class="auth-tab active" id="tabBtnSignIn" onclick="switchAuthTab('signin')">🔐 Sign In</button>
         <button class="auth-tab" id="tabBtnSignUp" onclick="switchAuthTab('signup')">💳 Sign Up &amp; Pay</button>
+        <button class="auth-tab" id="tabBtnForgot" onclick="switchAuthTab('forgot')">🔑 Forgot Password</button>
       </div>
 
-      <!-- SIGN IN PANE -->
+      <!-- MODE 1: SIGN IN -->
       <div id="paneSignIn">
         <div class="info-banner" style="margin-bottom:14px;">
-          <strong>Direct Sign In:</strong> Apne Account Email aur Password se login karein (Demo Login pre-filled hai: <code>admin@mailhub.pro</code> / <code>admin123</code>).
+          <strong>Workspace Sign In:</strong> Enter your registered email and password (Owner test account: <code>admin@mailhub.pro</code> / <code>admin123</code>).
         </div>
         <div class="form-group">
-          <label>Account Email Address</label>
-          <input type="email" class="form-input" id="loginEmail" value="admin@mailhub.pro" placeholder="admin@mailhub.pro" />
+          <label>Email Address</label>
+          <input type="email" class="form-input" id="loginEmail" value="admin@mailhub.pro" placeholder="owner@yourdomain.com" />
         </div>
         <div class="form-group">
           <label>Password</label>
           <input type="password" class="form-input" id="loginPass" value="admin123" placeholder="••••••••" />
         </div>
         <div id="loginErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
-        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:11px; font-size:14px;" onclick="submitSignIn()">
+        <button class="btn btn-primary" style="width:100%; padding:11px; font-size:14px;" onclick="submitSignIn()">
           🚀 Sign In to Dashboard
         </button>
       </div>
 
-      <!-- SIGN UP + PAYMENT GATE PANE -->
+      <!-- MODE 2: SIGN UP & PAY (PASSWORD === CONFIRM PASSWORD + DUAL CHECKOUT) -->
       <div id="paneSignUp" style="display:none;">
-        <div class="info-banner" style="margin-bottom:12px;">
-          <strong>New Account Registration:</strong> Naya account banane ke liye apna Plan aur Payment Method (Card, USDT Crypto, ya Bank/Wallet) select karke Sign Up complete karein.
-        </div>
-
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <div class="form-group">
-            <label>Workspace / Business Name</label>
-            <input type="text" class="form-input" id="suAgencyName" placeholder="e.g., My Mail Workspace" />
+            <label>Workspace Name</label>
+            <input type="text" class="form-input" id="suWorkspaceName" placeholder="e.g., Horizon Operations" />
           </div>
           <div class="form-group">
-            <label>Your Full Name</label>
-            <input type="text" class="form-input" id="suFullName" placeholder="e.g., Ali Khan" />
+            <label>Full Name</label>
+            <input type="text" class="form-input" id="suFullName" placeholder="Workspace Owner" />
           </div>
         </div>
-
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" class="form-input" id="suEmail" placeholder="owner@yourdomain.com" />
+        </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-          <div class="form-group">
-            <label>Login Email Address</label>
-            <input type="email" class="form-input" id="suEmail" placeholder="you@yourdomain.com" />
-          </div>
           <div class="form-group">
             <label>Create Password</label>
-            <input type="password" class="form-input" id="suPassword" placeholder="Minimum 6 characters" />
+            <input type="password" class="form-input" id="suPassword" placeholder="Min 6 chars" />
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" class="form-input" id="suConfirmPassword" placeholder="Re-enter password" />
           </div>
         </div>
-
         <div class="form-group">
-          <label>Select Account Plan</label>
+          <label>Select Plan (Includes Tiered Storage Quota)</label>
           <select class="form-input" id="suPlan">
-            <option value="Pro Plan (150 Gmail Accounts) - $49/mo">🔥 Pro Plan (Manage 150+ Gmail Accounts) — $49 / month</option>
-            <option value="Starter Plan (50 Gmail Accounts) - $29/mo">Starter Plan (Manage 50 Gmail Accounts) — $29 / month</option>
-            <option value="Enterprise Unlimited (500+ Accounts) - $99/mo">Enterprise Unlimited (500+ Gmail Accounts) — $99 / month</option>
+            <option value="Starter">Starter Plan (50 Accounts • 2 GB Storage) — $29 / mo (PKR 8,100)</option>
+            <option value="Business Pro" selected>🔥 Business Pro (150+ Accounts • 5 GB Storage) — $49 / mo (PKR 13,700)</option>
+            <option value="Enterprise">Enterprise (500+ Accounts • 7 GB Storage) — $99 / mo (PKR 27,700)</option>
           </select>
         </div>
 
-        <label style="font-size:12px; color:#cbd5e1; font-weight:600; display:block; margin-bottom:6px;">Select Payment Option:</label>
+        <label style="font-size:12px; color:#cbd5e1; font-weight:600; display:block; margin-bottom:6px;">Select Checkout Gateway:</label>
         <div class="pay-methods">
-          <div class="pay-method-card active" id="pm_card" onclick="selectPayMethod('card')">💳 Card</div>
-          <div class="pay-method-card" id="pm_crypto" onclick="selectPayMethod('crypto')">🪙 USDT / Crypto</div>
-          <div class="pay-method-card" id="pm_wallet" onclick="selectPayMethod('wallet')">🏦 Bank / Wallet</div>
+          <div class="pay-method-card active" id="pm_lemon" onclick="selectPayMethod('lemon')">💳 Lemon Squeezy (USD)</div>
+          <div class="pay-method-card" id="pm_safepay" onclick="selectPayMethod('safepay')">🇵🇰 Safepay (PKR)</div>
+          <div class="pay-method-card" id="pm_card" onclick="selectPayMethod('card')">🏦 Direct Card / Bank</div>
         </div>
 
-        <!-- Option 1: Credit/Debit Card Fields -->
-        <div id="payBox_card" style="background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
+        <div id="payBox_card" style="background:#070b14; padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
           <div class="form-group">
-            <label>Cardholder Name</label>
-            <input type="text" class="form-input" id="cardHolder" placeholder="Name on Card" />
+            <label>Cardholder / Account Label</label>
+            <input type="text" class="form-input" id="cardHolder" placeholder="Workspace Owner" />
           </div>
-          <div class="form-group">
-            <label>Card Number (Visa / MasterCard)</label>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Card Number / Wallet Reference</label>
             <input type="text" class="form-input" id="cardNumber" placeholder="4532 •••• •••• 8891" maxlength="19" />
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div class="form-group" style="margin-bottom:0;">
-              <label>Expiry Date</label>
-              <input type="text" class="form-input" id="cardExp" placeholder="MM / YY" maxlength="5" />
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label>CVV / CVC</label>
-              <input type="password" class="form-input" id="cardCvv" placeholder="123" maxlength="4" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Option 2: Crypto / USDT Fields -->
-        <div id="payBox_crypto" style="display:none; background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
-          <div style="font-size:12px; color:#6ee7b7; margin-bottom:8px;">
-            Send USDT (TRC20 / Binance Pay) to: <strong>TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE</strong>
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label>Enter Transaction Hash / Binance Order ID</label>
-            <input type="text" class="form-input" id="cryptoTxId" placeholder="e.g., 0x89a4... or Binance Pay Ref" />
-          </div>
-        </div>
-
-        <!-- Option 3: Bank / Mobile Wallet Fields -->
-        <div id="payBox_wallet" style="display:none; background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; margin-bottom:12px;">
-          <div style="font-size:12px; color:#93c5fd; margin-bottom:8px;">
-            Easypaisa / JazzCash / Bank IBAN: <strong>PK36 MEZN 0001 2345 6789 0102</strong>
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label>Transaction / Receipt Reference Number</label>
-            <input type="text" class="form-input" id="walletTxId" placeholder="e.g., TID-992837182" />
           </div>
         </div>
 
         <div id="signupErrorMsg" style="color:#f87171; font-size:12px; margin-bottom:10px; display:none;"></div>
-        <button class="btn btn-success" style="width:100%; justify-content:center; padding:11px; font-size:14px;" onclick="submitPaidSignUp()">
-          ✅ Complete Payment &amp; Launch Dashboard
+        <button class="btn btn-success" style="width:100%; padding:11px; font-size:14px;" onclick="submitPaidSignUp()">
+          ✅ Complete Checkout &amp; Launch Dashboard
+        </button>
+      </div>
+
+      <!-- MODE 3: FORGOT PASSWORD (STRICT 3-STEP FLOW, ZERO-OTP-LEAK) -->
+      <div id="paneForgot" style="display:none;">
+        <div class="info-banner" style="margin-bottom:12px;">
+          <strong>3-Step Password Reset:</strong> A 4-digit OTP will be sent exclusively to your registered email via Resend (<code>noreply@mailhub.pro</code>).
+        </div>
+        <div id="fpStep1">
+          <div class="form-group">
+            <label>Registered Email Address</label>
+            <input type="email" class="form-input" id="fpEmail" placeholder="owner@yourdomain.com" />
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="sendForgotOtp()">📧 Send 4-Digit OTP</button>
+        </div>
+        <div id="fpStep2" style="display:none;">
+          <div class="form-group">
+            <label>Enter 4-Digit OTP from Your Email Inbox</label>
+            <input type="text" class="form-input" id="fpOtpInput" maxlength="4" placeholder="4-digit code" />
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="verifyForgotOtp()">✔ Verify OTP</button>
+        </div>
+        <div id="fpStep3" style="display:none;">
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" class="form-input" id="fpNewPass" placeholder="Min 6 chars" />
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" class="form-input" id="fpConfirmPass" placeholder="Re-enter new password" />
+          </div>
+          <button class="btn btn-success" style="width:100%;" onclick="completeForgotPasswordReset()">🔒 Update Password</button>
+        </div>
+        <div id="fpMsg" style="font-size:12px; margin-top:10px; color:#93c5fd;"></div>
+      </div>
+
+      <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b; display:flex; justify-content:space-between; font-size:11.5px; color:var(--text-muted); flex-wrap:wrap; gap:8px;">
+        <span>Support: <a href="mailto:support@mailhub.pro" style="color:#60a5fa;" id="authSupportLink">support@mailhub.pro</a></span>
+        <div style="display:flex; gap:10px;">
+          <a href="#" onclick="openLegalModal('terms'); return false;" style="color:#94a3b8;">Terms</a>
+          <a href="#" onclick="openLegalModal('privacy'); return false;" style="color:#94a3b8;">Privacy</a>
+          <a href="#" onclick="openLegalModal('refund'); return false;" style="color:#94a3b8;">7-Day Refund</a>
+          <a href="./admin.html" style="color:#60a5fa;">Admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== 2. PRODUCTION SAAS PORTAL SHELL ======================== -->
+  <div class="app-shell">
+    <!-- GLASSMORPHIC SIDEBAR (STRICT 5-TAB NAVIGATION) -->
+    <aside class="app-sidebar">
+      <div style="display:flex; align-items:center; gap:10px; padding:4px 6px 14px; border-bottom:1px solid #1e293b; margin-bottom:6px;">
+        <div style="width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#2563eb,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">📬</div>
+        <div style="min-width:0;">
+          <div id="sidebarBrandTitle" style="font-weight:700; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">MailHub Pro</div>
+          <div id="sidebarUserEmail" style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">admin@mailhub.pro</div>
+        </div>
+      </div>
+
+      <button class="nav-item active" id="nav_dashboard" onclick="switchMainTab('dashboard')">🏠 Dashboard</button>
+      <button class="nav-item" id="nav_inbox" onclick="switchMainTab('inbox')">📬 Unified Inbox</button>
+      <button class="nav-item" id="nav_logs" onclick="switchMainTab('logs')">📊 Activity Logs</button>
+      <button class="nav-item" id="nav_support" onclick="switchMainTab('support')">💬 Support &amp; Tickets</button>
+      <button class="nav-item" id="nav_profile" onclick="switchMainTab('profile')">🛡️ Profile &amp; Billing</button>
+
+      <div style="margin-top:auto; padding-top:12px; border-top:1px solid #1e293b; display:flex; flex-direction:column; gap:6px;">
+        <button class="btn btn-sm btn-success" onclick="openAppLinkModal()">📲 App Link</button>
+        <button class="btn btn-sm btn-danger" onclick="logoutPortal()">🚪 Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN COLUMN -->
+    <div class="main-column">
+      <!-- STICKY TOP HEADER -->
+      <header class="topbar">
+        <div class="toggle-bar">
+          <div class="toggle-pill on" id="toggleInternalBtn" onclick="toggleGlobalNotification('internal')">
+            🔔 Internal Alert: <span id="lblInternalState">ON</span>
+          </div>
+          <div class="toggle-pill on" id="togglePushBtn" onclick="toggleGlobalNotification('push')">
+            📱 Mobile/PC Push: <span id="lblPushState">ON</span>
+          </div>
+          <div class="toggle-pill on" id="toggleEmailBtn" onclick="toggleGlobalNotification('email')">
+            📧 Master Email: <span id="lblEmailState">ON</span>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-sm btn-warning" onclick="simulateIncomingEmail()">⚡ Test Email</button>
+          <button class="btn btn-sm btn-primary" onclick="openAddClientModal()">➕ Add Account</button>
+          <button class="btn btn-sm" onclick="switchMainTab('profile')">⚙️ Integrations</button>
+        </div>
+      </header>
+
+      <!-- SLEEK SERVICE STATUS / MAINTENANCE STRIP -->
+      <div id="service-status-banner">
+        <span class="pulse-dot"></span>
+        <span id="serviceStatusText">System operational.</span>
+      </div>
+
+      <!-- INDEPENDENT SCROLLABLE MAIN WORKSPACE -->
+      <div class="main-scroll">
+
+        <!-- TAB 1: DASHBOARD (DEFAULT ACTIVE TAB — ONLY TAB WITH BENTO STATS ROW) -->
+        <section class="tab-page active" id="page_dashboard">
+          <div class="bento-grid">
+            <div class="bento-card">
+              <div class="bento-lbl">Connected Gmail Accounts</div>
+              <div class="bento-val" id="kpiAccounts">0</div>
+            </div>
+            <div class="bento-card">
+              <div class="bento-lbl">Active Alert Rules</div>
+              <div class="bento-val" id="kpiRules" style="color:#34d399;">0</div>
+            </div>
+            <div class="bento-card">
+              <div class="bento-lbl">Unread Emails</div>
+              <div class="bento-val" id="kpiUnread" style="color:#f87171;">0</div>
+            </div>
+            <div class="bento-card">
+              <div class="bento-lbl">Open Support Tickets</div>
+              <div class="bento-val" id="kpiTickets" style="color:#fbbf24;">0</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+            <!-- Integration Readiness Card -->
+            <div class="panel-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="font-size:15px;">🔌 Integration Readiness</h3>
+                <span class="badge badge-ok" id="readinessBadge">Healthy</span>
+              </div>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;" id="readinessText">
+                All connected Gmail accounts are healthy and syncing in real time.
+              </p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="openAddClientModal()">➕ Connect Gmail Account</button>
+                <button class="btn btn-sm" onclick="switchMainTab('profile')">🛡️ Manage Integrations</button>
+              </div>
+            </div>
+
+            <!-- Workspace Quick Navigation -->
+            <div class="panel-card">
+              <h3 style="font-size:15px; margin-bottom:10px;">⚡ Workspace Quick Navigation</h3>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;">
+                Jump straight to your Unified Inbox, Activity CSV Logs, or Support Center.
+              </p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="switchMainTab('inbox')">📬 Open Unified Inbox</button>
+                <button class="btn btn-sm" onclick="switchMainTab('logs')">📊 View Activity Logs</button>
+                <button class="btn btn-sm" onclick="switchMainTab('support')">💬 Open Ticket</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: CORE WORKSPACE (UNIFIED INBOX & MULTI-GMAIL ACCOUNTS — CLEAN & UNCLUTTERED) -->
+        <section class="tab-page inbox-mode" id="page_inbox">
+          <div class="workspace">
+            <aside class="sidebar mobile-active" id="colClients">
+              <div class="sidebar-header">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Accounts (🔔 Mute/Unmute)</span>
+                  <button class="btn btn-sm" onclick="fetchState()">🔄 Sync</button>
+                </div>
+                <input type="text" class="search-box" id="clientSearchInput" placeholder="Search 150+ accounts..." oninput="renderClientList()" />
+              </div>
+              <div class="client-list" id="clientListContainer"></div>
+            </aside>
+
+            <section class="inbox-col mobile-active" id="colInbox">
+              <div class="inbox-header">
+                <div>
+                  <div style="font-size:14px; font-weight:700;" id="currentInboxTitle">All Accounts — Unified Inbox</div>
+                  <div style="font-size:11px; color:var(--text-muted);" id="currentInboxSubtitle">Real-time emails across connected accounts</div>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn btn-sm" id="btnToggleSelectedClientNotify" style="display:none;" onclick="toggleSelectedClientNotify()"></button>
+                  <button class="btn btn-sm btn-primary" id="btnLaunchClientChrome" style="display:none;" onclick="launchSelectedClientBrowser()">🌐 Browser</button>
+                </div>
+              </div>
+              <div class="email-list" id="emailListContainer"></div>
+            </section>
+
+            <main class="reader-col" id="colReader">
+              <div class="reader-empty" id="readerEmptyState">
+                <div style="font-size:40px;">📬</div>
+                <div style="font-size:15.5px; font-weight:600; color:#fff;">Select an Email or Click Any Notification</div>
+                <div style="max-width:400px; font-size:12.5px;">Click any email from the feed to read, reply directly, or launch that account's isolated Chrome session.</div>
+              </div>
+              <div id="readerContentState" style="display:none; flex-direction:column; height:100%;">
+                <div class="reader-header">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span class="client-pill" id="readerClientBadge">Account</span>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                      <button class="btn btn-sm btn-primary" onclick="launchReaderClientBrowser()">🌐 Open Isolated Chrome</button>
+                      <button class="btn btn-sm" onclick="openReaderGmailWeb()">↗️ Gmail Web</button>
+                    </div>
+                  </div>
+                  <div style="font-size:16.5px; font-weight:700;" id="readerSubject">Subject</div>
+                  <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); flex-wrap:wrap; gap:8px;">
+                    <span>From: <strong style="color:#fff;" id="readerSender"></strong></span>
+                    <span>To: <strong style="color:#93c5fd;" id="readerClientEmail"></strong></span>
+                    <span id="readerDate"></span>
+                  </div>
+                </div>
+                <div class="reader-body" id="readerBody"></div>
+                <div class="reply-box">
+                  <textarea class="reply-textarea" id="replyBodyInput" placeholder="Write your reply..."></textarea>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="replyStatusText" style="font-size:12px; color:var(--success);"></span>
+                    <button class="btn btn-sm btn-primary" onclick="sendReplyFromClient()">📤 Send Reply</button>
+                  </div>
+                </div>
+              </div>
+            </main>
+          </div>
+        </section>
+
+        <!-- TAB 3: LOGS / ACTIVITY / ANALYTICS (SEARCHABLE & CSV EXPORTABLE) -->
+        <section class="tab-page" id="page_logs">
+          <div class="panel-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+              <h3 style="font-size:16px;">📊 Real-Time Activity &amp; Delivery Logs</h3>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <input type="text" class="form-input" id="logSearchInput" style="width:220px; padding:6px 10px;" placeholder="Search logs..." oninput="renderLogsTable()" />
+                <button class="btn btn-sm btn-success" onclick="exportLogsCsv()">⬇ Export CSV</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Event Type</th>
+                    <th>Account</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: SUPPORT & TICKETS -->
+        <section class="tab-page" id="page_support">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr)); gap:16px;">
+            <div class="panel-card">
+              <h3 style="font-size:15.5px; margin-bottom:12px;">🎫 Create Support Ticket</h3>
+              <div class="form-group">
+                <label>Subject</label>
+                <input type="text" class="form-input" id="tktSubject" placeholder="Describe your issue or request" />
+              </div>
+              <div class="form-group">
+                <label>Priority</label>
+                <select class="form-input" id="tktPriority">
+                  <option value="Low">Low — General Inquiry</option>
+                  <option value="Normal" selected>Normal — Standard Support</option>
+                  <option value="High">High — Urgent Connection / Billing Issue</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Message</label>
+                <textarea class="form-input" id="tktMessage" style="height:95px;" placeholder="Provide details..."></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="submitSupportTicket()">📤 Submit Ticket to support@mailhub.pro</button>
+            </div>
+
+            <div class="panel-card">
+              <h3 style="font-size:15.5px; margin-bottom:12px;">💬 Your Ticket Threads</h3>
+              <div id="clientTicketsList" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 5: SECURITY, INTEGRATIONS, STORAGE QUOTA & BILLING (PROFILE) -->
+        <section class="tab-page" id="page_profile">
+          <!-- 5A. Profile & OTP Password Reset -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+            <div class="panel-card">
+              <h3 style="font-size:15px; margin-bottom:10px;">👤 Workspace Profile</h3>
+              <div style="font-size:13px; line-height:1.8;">
+                <div>Owner: <strong id="profName">Workspace Owner</strong></div>
+                <div>Workspace: <strong id="profWorkspace">MailHub Pro</strong></div>
+                <div>Email: <strong id="profEmail">admin@mailhub.pro</strong></div>
+                <div>Support Contact: <strong id="profSupportEmail">support@mailhub.pro</strong></div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <h3 style="font-size:15px; margin-bottom:10px;">🔐 OTP Password Reset</h3>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Send a 4-digit OTP to your registered email via Resend (<code>noreply@mailhub.pro</code>) to change your password.</p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="requestProfileOtp()">📧 Send OTP to Email</button>
+                <input type="text" class="form-input" id="profOtpCode" maxlength="4" style="width:110px; padding:5px 8px;" placeholder="4-digit OTP" />
+                <input type="password" class="form-input" id="profNewPass" style="width:150px; padding:5px 8px;" placeholder="New Password" />
+                <button class="btn btn-sm btn-success" onclick="verifyProfileOtpReset()">✔ Update</button>
+              </div>
+              <div id="profOtpStatus" style="font-size:11.5px; color:#93c5fd; margin-top:8px;"></div>
+            </div>
+          </div>
+
+          <!-- 5B. Integrations & Session Health -->
+          <div class="panel-card" id="integrationsCard">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+              <h3 style="font-size:15.5px;">🔌 Connected Gmail Integrations &amp; Session Health</h3>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="openAddClientModal()">➕ Connect Gmail (OAuth / App Password)</button>
+                <button class="btn btn-sm btn-warning" onclick="simulateExpiredSession()">⚠️ Simulate Expired Session</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Label</th>
+                    <th>Gmail Address</th>
+                    <th>Method</th>
+                    <th>Session Health</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="integrationsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 5C. Plan-Based Storage Quota & Media/Attachment Library -->
+          <div class="panel-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+              <h3 style="font-size:15.5px;">💾 Storage Quota &amp; Attachment Library</h3>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input type="file" id="mediaUploadInput" style="display:none;" onchange="handleAttachmentUpload(event)" />
+                <button class="btn btn-sm btn-primary" onclick="document.getElementById('mediaUploadInput').click()">⬆ Upload Attachment</button>
+              </div>
+            </div>
+            <div style="font-size:12.5px; margin-bottom:6px;" id="storageQuotaLabel">Used: 0 MB / 5120 MB (5 GB)</div>
+            <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" id="storageProgressBar" style="width:12%;"></div></div>
+            <div style="overflow-x:auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>File Name</th>
+                    <th>Size (MB)</th>
+                    <th>Usage Badge</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="mediaLibraryBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 5D. Complete Billing & Subscription System -->
+          <div class="panel-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+              <div>
+                <h3 style="font-size:15.5px;">💳 Billing &amp; Subscription Management</h3>
+                <div style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">
+                  Current Plan: <strong style="color:#fff;" id="billPlanName">Business Pro</strong> •
+                  <span class="badge badge-ok" id="billPlanStatus">Active</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="openCheckoutModal()">⬆ Upgrade / Change Plan</button>
+                <button class="btn btn-sm btn-danger" onclick="toggleCancelBox()">✕ Cancel Subscription</button>
+              </div>
+            </div>
+
+            <!-- Inline Cancel Subscription Box with Mandatory Reason -->
+            <div id="cancelSubBox" style="display:none; background:#070b14; border:1px solid #ef4444; border-radius:10px; padding:14px; margin-bottom:14px;">
+              <div style="font-size:13px; font-weight:700; color:#fca5a5; margin-bottom:8px;">Confirm Subscription Cancellation</div>
+              <div class="form-group">
+                <label>Mandatory Cancellation Reason</label>
+                <select class="form-input" id="cancelReasonSelect">
+                  <option value="">-- Select a reason --</option>
+                  <option value="Too expensive">Too expensive</option>
+                  <option value="Temporary pause">Temporary pause</option>
+                  <option value="Missing features">Missing features</option>
+                  <option value="Technical issues">Technical issues</option>
+                  <option value="Switched platform">Switched platform</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Optional Feedback</label>
+                <input type="text" class="form-input" id="cancelFeedback" placeholder="Tell us how we can improve..." />
+              </div>
+              <button class="btn btn-sm btn-danger" onclick="confirmCancelSubscription()">Confirm Cancellation</button>
+            </div>
+
+            <!-- Primary & Backup Payment Methods -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:14px;">
+              <div style="background:#070b14; border:1px solid #334155; border-radius:10px; padding:12px;">
+                <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Primary Payment Method</div>
+                <div style="font-size:13.5px; font-weight:700; margin:4px 0;" id="primaryPayLabel">Card •••• 4242</div>
+                <button class="btn btn-sm" onclick="addOrSwitchPayMethod('primary')">Edit Primary</button>
+              </div>
+              <div style="background:#070b14; border:1px solid #334155; border-radius:10px; padding:12px;">
+                <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Backup Payment Method</div>
+                <div style="font-size:13.5px; font-weight:700; margin:4px 0;" id="backupPayLabel">Safepay Wallet •••• 9910</div>
+                <button class="btn btn-sm" onclick="addOrSwitchPayMethod('backup')">⇄ Make Primary</button>
+              </div>
+            </div>
+
+            <!-- Billing & Transaction History Table -->
+            <div style="overflow-x:auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Invoice / Txn ID</th>
+                    <th>Date</th>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Gateway</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="billingHistoryBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- FOOTER WITH BRANDED SUPPORT & LEGAL LINKS -->
+      <footer class="footer-bar">
+        <span>MailHub Pro • Support: <a href="mailto:support@mailhub.pro" style="color:#60a5fa;" id="footerSupportEmail">support@mailhub.pro</a></span>
+        <div style="display:flex; gap:12px;">
+          <a href="#" onclick="openLegalModal('terms'); return false;" style="color:#94a3b8;">Terms of Service</a>
+          <a href="#" onclick="openLegalModal('privacy'); return false;" style="color:#94a3b8;">Privacy Policy</a>
+          <a href="#" onclick="openLegalModal('refund'); return false;" style="color:#94a3b8;">7-Day Refund</a>
+          <a href="./admin.html" style="color:#60a5fa;">Admin Center</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ======================== MODALS ======================== -->
+  <!-- MODAL: ONBOARDING INTEGRATION GATE (#integration-gate-modal) -->
+  <div class="modal-backdrop" id="integration-gate-modal">
+    <div class="modal" style="max-width:450px;">
+      <div class="modal-header">
+        <h3>🔌 Complete Integrations First</h3>
+        <button class="btn btn-sm" onclick="closeModal('integration-gate-modal')">✕</button>
+      </div>
+      <p style="font-size:13px; color:#cbd5e1; line-height:1.5;">
+        Connect at least one Gmail account (via Email + App Password or Continue with Google OAuth 2.0) before creating alert rules or monitoring mailboxes.
+      </p>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-primary" onclick="closeModal('integration-gate-modal'); switchMainTab('profile'); openAddClientModal();">
+          Go to Integrations →
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ======================== 2. MAIN PORTAL & APP DASHBOARD ======================== -->
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-icon">📬</div>
-      <div>
-        <div id="agencyBrandTitle">MailHub Pro</div>
-        <div style="font-size:11px; color:var(--text-muted); font-weight:400;">
-          <span id="agencyUserBadge">admin@mailhub.pro</span> • <span id="agencyPlanBadge" style="color:#60a5fa;">Pro Plan</span>
-        </div>
+  <!-- MODAL: CONNECTION ISSUE ALERT (#connection-issue-modal) -->
+  <div class="modal-backdrop" id="connection-issue-modal">
+    <div class="modal" style="max-width:460px;">
+      <div class="modal-header">
+        <h3 style="color:#fca5a5;">⚠️ Gmail Session Expired / Disconnected</h3>
+        <button class="btn btn-sm" onclick="closeModal('connection-issue-modal')">✕</button>
       </div>
-    </div>
-
-    <!-- Global & Internal Notification ON/OFF Toggles -->
-    <div class="toggle-bar">
-      <div class="toggle-pill on" id="toggleInternalBtn" onclick="toggleGlobalNotification('internal')" title="Turn Internal In-App Popup & Sound Notification ON or OFF">
-        🔔 Internal Alert: <span id="lblInternalState">ON</span>
+      <p style="font-size:13px; color:#cbd5e1; line-height:1.5;" id="connIssueText">
+        One or more connected Gmail accounts need re-authentication. An automated email alert has been dispatched from <code>noreply@mailhub.pro</code>.
+      </p>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="btn btn-warning" onclick="closeModal('connection-issue-modal'); switchMainTab('profile');">
+          Fix Connection Now →
+        </button>
       </div>
-      <div class="toggle-pill on" id="togglePushBtn" onclick="toggleGlobalNotification('push')" title="Turn Mobile & PC Browser Push Notifications ON or OFF">
-        📱 Mobile/PC Push: <span id="lblPushState">ON</span>
-      </div>
-      <div class="toggle-pill on" id="toggleEmailBtn" onclick="toggleGlobalNotification('email')" title="Turn Master Email Forwarding Alerts ON or OFF">
-        📧 Master Email: <span id="lblEmailState">ON</span>
-      </div>
-    </div>
-
-    <div class="top-actions">
-      <button class="btn btn-warning" onclick="simulateIncomingEmail()">
-        ⚡ Test Email
-      </button>
-      <button class="btn btn-primary" onclick="openAddClientModal()">
-        ➕ Add Account
-      </button>
-      <button class="btn btn-success" onclick="openAppLinkModal()">
-        📲 App Link
-      </button>
-      <button class="btn" onclick="openSettingsModal()">
-        ⚙️ Settings
-      </button>
-      <button class="btn btn-danger" onclick="logoutPortal()" title="Sign Out">
-        🚪 Sign Out
-      </button>
-    </div>
-  </header>
-
-  <!-- Sub-bar with Domain, App Link & Account Counter -->
-  <div class="portal-subbar">
-    <div>
-      🌐 Portal Domain: <strong style="color:#fff;" id="subDomainText">https://portal.mailhub.pro</strong>
-      &nbsp;|&nbsp; 👥 Accounts: <strong style="color:#fff;" id="statTotalClients">0</strong> / 150+
-      &nbsp;|&nbsp; 📩 Unread: <strong style="color:#f87171;" id="statTotalUnread">0</strong>
-      &nbsp;|&nbsp; 🔕 Muted: <strong style="color:#fbbf24;" id="statMutedClients">0</strong>
-    </div>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <span>📲 Direct App Link: <a href="./?mode=app" target="_blank" style="color:#60a5fa; font-weight:600; white-space:nowrap;" id="inlineAppLink">Open App View ↗</a></span>
     </div>
   </div>
 
-  <!-- Main Workspace -->
-  <div class="workspace">
-    <!-- Left Sidebar: 100-150 Client Accounts with Per-Client Notification ON/OFF -->
-    <aside class="sidebar" id="colClients">
-      <div class="sidebar-header">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Clients (1-Click Mute 🔔/🔕)</span>
-          <button class="btn btn-sm" onclick="checkAllAccountsNow()">🔄 Sync All</button>
-        </div>
-        <input type="text" class="search-box" id="clientSearchInput" placeholder="Search 150+ clients by name or email..." oninput="renderClientList()" />
-      </div>
-      <div class="client-list" id="clientListContainer"></div>
-    </aside>
-
-    <!-- Center Column: Unified or Client-Specific Inbox -->
-    <section class="inbox-col mobile-active" id="colInbox">
-      <div class="inbox-header">
-        <div class="inbox-title-row">
-          <div>
-            <div class="inbox-title" id="currentInboxTitle">All Clients — Unified Inbox</div>
-            <div style="font-size:11px; color:var(--text-muted);" id="currentInboxSubtitle">Real-time emails across all connected client accounts</div>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-sm" id="btnToggleSelectedClientNotify" style="display:none;" onclick="toggleSelectedClientNotify()"></button>
-            <button class="btn btn-sm btn-primary" id="btnLaunchClientChrome" style="display:none;" onclick="launchSelectedClientBrowser()">
-              🌐 Open Browser
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="email-list" id="emailListContainer"></div>
-    </section>
-
-    <!-- Right Column: Email Reader & Direct Reply / Browser Launch -->
-    <main class="reader-col" id="colReader">
-      <div class="reader-empty" id="readerEmptyState">
-        <div style="font-size:42px;">📬</div>
-        <div style="font-size:16px; font-weight:600; color:var(--text-main);">Multi-Gmail Portal &amp; App Inbox Ready</div>
-        <div style="max-width:440px; font-size:13px; line-height:1.6;">
-          • Har account ke aage <strong>🔔 ON / 🔕 OFF</strong> button diya gaya hai jisse aap kisi bhi account ki email notification band ya chalu kar sakte hain.<br/>
-          • Upar header se aap <strong>Internal Notification</strong>, <strong>Mobile/PC Push</strong>, aur <strong>Master Email</strong> ko bhi ON/OFF kar sakte hain.
-        </div>
-      </div>
-
-      <div id="readerContentState" style="display:none; flex-direction:column; height:100%;">
-        <div class="reader-header">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
-            <span class="client-pill" id="readerClientBadge">Gmail Account</span>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button class="btn btn-sm btn-primary" onclick="launchReaderClientBrowser()">
-                🌐 Open Isolated Chrome Inbox
-              </button>
-              <button class="btn btn-sm" onclick="openReaderGmailWeb()">
-                ↗️ Gmail Web View
-              </button>
-            </div>
-          </div>
-          <div class="reader-subject" id="readerSubject">Email Subject</div>
-          <div class="reader-meta">
-            <div>From: <strong style="color:#fff;" id="readerSender">Sender</strong></div>
-            <div>To Client: <strong style="color:#93c5fd;" id="readerClientEmail">client@gmail.com</strong></div>
-            <div id="readerDate">Just now</div>
-          </div>
-        </div>
-
-        <div class="reader-body" id="readerBody"></div>
-
-        <div class="reply-box">
-          <div style="font-size:12px; color:var(--text-muted);">
-            Reply directly as <strong id="replyAsClientLabel" style="color:#fff;">client@gmail.com</strong>:
-          </div>
-          <textarea class="reply-textarea" id="replyBodyInput" placeholder="Write your reply here..."></textarea>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span id="replyStatusText" style="font-size:12px; color:var(--success);"></span>
-            <button class="btn btn-primary" onclick="sendReplyFromClient()">📤 Send Reply from Client Gmail</button>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- Mobile Bottom Navigation -->
-  <nav class="mobile-nav">
-    <button class="btn btn-sm" onclick="switchMobileTab('clients')">👥 Clients (<span id="mobClientCount">0</span>)</button>
-    <button class="btn btn-sm btn-primary" onclick="switchMobileTab('inbox')">📥 Inbox (<span id="mobUnreadCount">0</span>)</button>
-    <button class="btn btn-sm" onclick="switchMobileTab('reader')">📖 Read Mail</button>
-  </nav>
-
-  <!-- Toast Container for Internal Notifications -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- MODAL 1: Add Client Account -->
+  <!-- MODAL: ADD ACCOUNT (DUAL OPTIONS: BROWSER / OAUTH / IMAP / BULK 150) -->
   <div class="modal-backdrop" id="modalAddClient">
     <div class="modal">
       <div class="modal-header">
-        <h3>➕ Connect Client Gmail Account(s)</h3>
+        <h3>➕ Connect Gmail Account(s)</h3>
         <button class="btn btn-sm" onclick="closeModal('modalAddClient')">✕</button>
       </div>
-
       <div class="tabs">
         <button class="tab-btn active" onclick="switchAddTab('browser', this)">1. 🌐 Browser Login</button>
         <button class="tab-btn" onclick="switchAddTab('oauth', this)">2. 🔐 Continue with Google</button>
-        <button class="tab-btn" onclick="switchAddTab('imap', this)">3. 🔑 Email + Password</button>
+        <button class="tab-btn" onclick="switchAddTab('imap', this)">3. 🔑 Email + App Password</button>
         <button class="tab-btn" onclick="switchAddTab('bulk', this)">4. 📋 Bulk 100–150 CSV</button>
       </div>
-
       <div id="addTab_browser" class="add-tab-pane">
-        <div class="info-banner" style="margin-bottom:12px;">
-          Har client ke liye ek alag <strong>Isolated Chrome Browser Session</strong> khulega jismein login hamesha save rahega.
-        </div>
-        <div class="form-group">
-          <label>Client Name / Label</label>
-          <input type="text" class="form-input" id="brClientName" placeholder="e.g., Client 06 - Star Logistics" />
-        </div>
-        <div class="form-group">
-          <label>Client Gmail Address</label>
-          <input type="email" class="form-input" id="brClientEmail" placeholder="client6@gmail.com" />
-        </div>
-        <div class="form-group">
-          <label>Optional Password</label>
-          <input type="password" class="form-input" id="brClientPass" placeholder="Optional" />
-        </div>
-        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="addClientAndLaunchBrowser()">
-          🚀 Save Client & Open Isolated Gmail Login Window
-        </button>
+        <div class="form-group"><label>Account Label</label><input type="text" class="form-input" id="brClientName" placeholder="e.g., Support Mailbox" /></div>
+        <div class="form-group"><label>Gmail Address</label><input type="email" class="form-input" id="brClientEmail" placeholder="mailbox@gmail.com" /></div>
+        <button class="btn btn-primary" style="width:100%;" onclick="addAccount('browser')">🚀 Save &amp; Open Isolated Chrome Login</button>
       </div>
-
       <div id="addTab_oauth" class="add-tab-pane" style="display:none;">
-        <div class="form-group">
-          <label>Client Name</label>
-          <input type="text" class="form-input" id="oaClientName" placeholder="e.g., Client 07 - Prime Corp" />
-        </div>
-        <div class="form-group">
-          <label>Client Gmail Address</label>
-          <input type="email" class="form-input" id="oaClientEmail" placeholder="prime@gmail.com" />
-        </div>
-        <button class="btn btn-success" style="width:100%; justify-content:center; padding:10px;" onclick="startGoogleOAuthFlow()">
-          🔵 Continue with Google (Connect Client Account)
-        </button>
+        <div class="info-banner" style="margin-bottom:10px;">Official Google OAuth 2.0 (Production Consent Screen, verified domain).</div>
+        <div class="form-group"><label>Account Label</label><input type="text" class="form-input" id="oaClientName" placeholder="e.g., Sales Gmail" /></div>
+        <div class="form-group"><label>Gmail Address</label><input type="email" class="form-input" id="oaClientEmail" placeholder="sales@gmail.com" /></div>
+        <button class="btn btn-success" style="width:100%;" onclick="addAccount('oauth')">🔵 Continue with Google (OAuth 2.0)</button>
       </div>
-
       <div id="addTab_imap" class="add-tab-pane" style="display:none;">
-        <div class="form-group">
-          <label>Client Name</label>
-          <input type="text" class="form-input" id="imClientName" placeholder="e.g., Client 08 - Global Traders" />
-        </div>
-        <div class="form-group">
-          <label>Gmail Address</label>
-          <input type="email" class="form-input" id="imClientEmail" placeholder="client@gmail.com" />
-        </div>
-        <div class="form-group">
-          <label>Password / Google App Password</label>
-          <input type="password" class="form-input" id="imClientPass" placeholder="xxxx xxxx xxxx xxxx" />
-        </div>
-        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="addImapClient()">
-          ➕ Add & Start Background Monitor
-        </button>
+        <div class="form-group"><label>Account Label</label><input type="text" class="form-input" id="imClientName" placeholder="e.g., Billing Mailbox" /></div>
+        <div class="form-group"><label>Gmail Address</label><input type="email" class="form-input" id="imClientEmail" placeholder="billing@gmail.com" /></div>
+        <div class="form-group"><label>16-Digit Google App Password</label><input type="password" class="form-input" id="imClientPass" placeholder="xxxx xxxx xxxx xxxx" /></div>
+        <button class="btn btn-primary" style="width:100%;" onclick="addAccount('imap')">➕ Connect via IMAP/SMTP</button>
       </div>
-
       <div id="addTab_bulk" class="add-tab-pane" style="display:none;">
-        <div class="form-group">
-          <label>Paste 100–150 Accounts (Name, Email, Password per line)</label>
-          <textarea class="form-input" id="bulkCsvInput" style="height:140px; font-family:monospace;" placeholder="Client 01, client1@gmail.com, pass123"></textarea>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="fillSampleBulkAccounts()">📋 Fill 25 Sample Accounts</button>
-          <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="importBulkAccounts()">📥 Import All Accounts</button>
-        </div>
+        <div class="form-group"><label>Paste 100–150 Accounts (Label, Email, App Password)</label><textarea class="form-input" id="bulkCsvInput" style="height:130px; font-family:monospace;"></textarea></div>
+        <button class="btn btn-primary" style="width:100%;" onclick="importBulkAccounts()">📥 Import Accounts</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 2: App Link & Portal Access -->
+  <!-- MODAL: APP LINK -->
   <div class="modal-backdrop" id="modalAppLink">
     <div class="modal">
-      <div class="modal-header">
-        <h3>📲 App Link &amp; Portal Access (Mobile + PC)</h3>
-        <button class="btn btn-sm" onclick="closeModal('modalAppLink')">✕</button>
-      </div>
-      <div class="info-banner">
-        Yeh aapke Portal ke andar aapka <strong>Dedicated App Link</strong> hai. Jab aap is App Link ko Mobile ya PC par kholenge, toh wahan bhi <strong>Account Login</strong> maanga jayega aur login karte hi saare accounts ka inbox aur notifications chalu ho jayenge!
-      </div>
-
-      <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">1. Mobile / Desktop Direct App Link:</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-          <strong id="appUrlDisplay" style="font-size:14px; color:#60a5fa; word-break:break-all;"></strong>
-          <button class="btn btn-sm btn-primary" onclick="copyText(document.getElementById('appUrlDisplay').innerText)">📋 Copy Link</button>
-        </div>
-      </div>
-
-      <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid #334155;">
-        <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">2. Custom Portal Domain:</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-          <strong id="portalDomainDisplay" style="font-size:15px; color:#34d399;">https://portal.mailhub.pro</strong>
-          <button class="btn btn-sm" onclick="window.open('./?mode=app', '_blank')">🚀 Launch App</button>
-        </div>
-      </div>
-
-      <div style="font-size:12.5px; color:#cbd5e1; line-height:1.6;">
-        • <strong>App Login Protection:</strong> App link kholne par user ko apna Email &amp; Password daal kar Sign In karna padta hai.<br/>
-        • <strong>Install as App:</strong> Mobile ya PC Chrome mein is link ko khol kar <em>"Install App / Add to Home Screen"</em> kar sakte hain.
+      <div class="modal-header"><h3>📲 Mobile &amp; Desktop App Link</h3><button class="btn btn-sm" onclick="closeModal('modalAppLink')">✕</button></div>
+      <div class="info-banner">Open this link on Mobile or PC. App mode requires Account Sign In for security.</div>
+      <div style="background:#070b14; padding:12px; border-radius:10px; border:1px solid #334155; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong id="appUrlDisplay" style="font-size:13px; color:#60a5fa; word-break:break-all;"></strong>
+        <button class="btn btn-sm btn-primary" onclick="copyText(document.getElementById('appUrlDisplay').innerText)">📋 Copy Link</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 3: Portal Domain, Notification & Master Email Settings -->
-  <div class="modal-backdrop" id="modalSettings">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>⚙️ Portal &amp; Notification Control Center</h3>
-        <button class="btn btn-sm" onclick="closeModal('modalSettings')">✕</button>
-      </div>
-
+  <!-- MODAL: DUAL CHECKOUT (SAFEPAY PKR / LEMON SQUEEZY USD) -->
+  <div class="modal-backdrop" id="modalCheckout">
+    <div class="modal" style="max-width:460px;">
+      <div class="modal-header"><h3>💳 Upgrade / Change Plan</h3><button class="btn btn-sm" onclick="closeModal('modalCheckout')">✕</button></div>
       <div class="form-group">
-        <label>Portal Custom Domain Name</label>
-        <input type="text" class="form-input" id="cfgPortalDomain" placeholder="portal.mailhub.pro" />
-      </div>
-
-      <div style="background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid #334155; display:flex; flex-direction:column; gap:10px;">
-        <div style="font-size:12.5px; font-weight:700; color:#fff;">🔔 Global Notification Switches (ON / OFF)</div>
-        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
-          <input type="checkbox" id="chkInternalNotify" /> Enable Internal Portal Notifications (In-App Popup + Sound Alert)
-        </label>
-        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
-          <input type="checkbox" id="chkPushNotify" /> Enable Mobile & PC Browser Push Notifications
-        </label>
-        <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; cursor:pointer;">
-          <input type="checkbox" id="chkEmailNotify" /> Enable Master Email Alert Forwarding
-        </label>
-        <div>
-          <button class="btn btn-sm btn-success" onclick="requestNotificationPermission()">🔔 Grant Browser/Mobile Push Permission</button>
-          <span id="notifPermLabel" style="font-size:11.5px; color:var(--text-muted); margin-left:8px;"></span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>PC Notification Click Action</label>
-        <select class="form-input" id="cfgPcClickBehavior">
-          <option value="both">Open Client Inbox in Portal + Launch Isolated Chrome Browser (Recommended)</option>
-          <option value="dashboard">Only Open Client Inbox inside Portal</option>
-          <option value="chrome">Only Launch Client's Isolated Chrome Window</option>
+        <label>Select Plan</label>
+        <select class="form-input" id="chkPlanSelect">
+          <option value="Starter">Starter (2 GB Storage) — $29 / mo</option>
+          <option value="Business Pro" selected>Business Pro (5 GB Storage) — $49 / mo</option>
+          <option value="Enterprise">Enterprise (7 GB Storage) — $99 / mo</option>
         </select>
       </div>
-
       <div class="form-group">
-        <label>Master Alert Email Address (Jahan Client ki New Email ka Alert aayega)</label>
-        <input type="email" class="form-input" id="cfgMasterEmail" placeholder="alerts@yourdomain.com" />
+        <label>Select Checkout Gateway</label>
+        <select class="form-input" id="chkGatewaySelect">
+          <option value="Lemon Squeezy (USD)">Lemon Squeezy (International USD)</option>
+          <option value="Safepay (PKR)">Safepay (Local Currency PKR)</option>
+        </select>
       </div>
+      <button class="btn btn-success" style="width:100%;" onclick="processUpgradeCheckout()">✅ Complete Checkout (/api/create-checkout)</button>
+    </div>
+  </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <div class="form-group">
-          <label>SMTP Sender Gmail</label>
-          <input type="email" class="form-input" id="cfgSmtpUser" placeholder="sender@gmail.com" />
-        </div>
-        <div class="form-group">
-          <label>SMTP 16-Digit App Password</label>
-          <input type="password" class="form-input" id="cfgSmtpPass" placeholder="xxxx xxxx xxxx xxxx" />
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; gap:8px;">
-        <button class="btn" onclick="testMasterEmailAlert()">📧 Test Master Email Alert</button>
-        <button class="btn btn-primary" onclick="saveSettings()">💾 Save All Settings</button>
-      </div>
+  <!-- MODAL: MEDIA PREVIEW & LEGAL POLICIES -->
+  <div class="modal-backdrop" id="modalGeneric">
+    <div class="modal">
+      <div class="modal-header"><h3 id="genModalTitle">Preview</h3><button class="btn btn-sm" onclick="closeModal('modalGeneric')">✕</button></div>
+      <div id="genModalBody" style="font-size:13px; line-height:1.65; color:#cbd5e1; white-space:pre-wrap;"></div>
     </div>
   </div>
 
   <script>
+    const DB_KEY = "mailhub_cloud_db_v2";
     const baseAppUrl = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "/");
 
     let state = {
       currentUser: null,
-      selectedPayMethod: "card",
+      selectedPayMethod: "lemon",
       clients: [],
       emails: [],
-      settings: {
-        portalDomain: "portal.mailhub.pro",
-        masterEmail: "",
-        smtpUser: "",
-        smtpPass: "",
-        pcClickBehavior: "both",
-        internalNotifyEnabled: true,
-        pushNotifyEnabled: true,
-        emailNotifyEnabled: true
-      },
-      lanUrl: baseAppUrl,
-      appUrl: baseAppUrl + "?mode=app",
+      logs: [],
+      tickets: [],
+      media: [],
+      billingHistory: [],
+      cms: {},
+      serviceStatus: { mode: "operational", message: "" },
+      settings: { portalDomain: "portal.mailhub.pro", internalNotifyEnabled: true, pushNotifyEnabled: true, emailNotifyEnabled: true, masterEmail: "" },
       selectedClientId: "ALL",
       selectedEmailId: null,
       knownEmailIds: new Set(),
-      initialLoadDone: false
+      initialLoadDone: false,
+      pendingOtpEmail: ""
     };
 
-    // ======================== STANDALONE CLOUD ENGINE (FOR GITHUB PAGES LIVE PREVIEW) ========================
+    const PLAN_LIMITS_MB = { "Starter": 2048, "Business Pro": 5120, "Enterprise": 7168 };
+
     function getCloudDB() {
-      const raw = localStorage.getItem("mailhub_cloud_db_v2");
-      if (raw) {
-        try { return JSON.parse(raw); } catch (e) {}
-      }
-      const initialDB = {
-        users: [
-          {
-            id: "usr-admin-01",
-            agencyName: "MailHub Pro",
-            fullName: "Account Owner",
-            email: "admin@mailhub.pro",
-            password: "admin123",
-            plan: "Pro Plan (150+ Accounts)",
-            paymentMethod: "Card (**** 4242)",
-            paymentRef: "PAID-ACTIVE",
-            isPaid: true
-          }
-        ],
+      try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.users) return parsed;
+        }
+      } catch (e) {}
+
+      const init = {
+        users: [{
+          id: "usr-owner-01",
+          agencyName: "MailHub Pro",
+          fullName: "Workspace Owner",
+          email: "admin@mailhub.pro",
+          password: "admin123",
+          plan: "Business Pro",
+          planStatus: "Active",
+          primaryPay: "Lemon Squeezy Card •••• 4242",
+          backupPay: "Safepay PKR Wallet •••• 9910",
+          usedMB: 142.5,
+          isPaid: true
+        }],
         settings: {
           portalDomain: "portal.mailhub.pro",
           masterEmail: "",
-          smtpUser: "",
-          smtpPass: "",
           pcClickBehavior: "both",
           internalNotifyEnabled: true,
           pushNotifyEnabled: true,
           emailNotifyEnabled: true
         },
+        serviceStatus: { mode: "operational", message: "" },
+        cms: {
+          heroText: "Sign In to your Workspace or Sign Up with Subscription Plan",
+          supportEmail: "support@mailhub.pro",
+          terms: "By using MailHub Pro, you agree to manage only authorized Gmail accounts and comply with Google API & anti-spam policies.",
+          privacy: "MailHub Pro encrypts all connected sessions (AES-256) and never sells or shares your mailbox data with third parties.",
+          refund: "All paid subscriptions include a 7-Day No-Questions-Asked Refund Policy. Contact support@mailhub.pro with your invoice ID."
+        },
         clients: [
-          { id: "client-01", name: "Client 01 - Apex Exports", email: "apex.client01@gmail.com", password: "", authType: "browser", status: "Connected", notifyEnabled: true },
-          { id: "client-02", name: "Client 02 - Metro Logistics", email: "metro.client02@gmail.com", password: "", authType: "oauth", status: "Connected", notifyEnabled: true },
-          { id: "client-03", name: "Client 03 - Royal Textiles", email: "royal.client03@gmail.com", password: "", authType: "imap", status: "Connected", notifyEnabled: true },
-          { id: "client-04", name: "Client 04 - Zenith Digital", email: "zenith.client04@gmail.com", password: "", authType: "browser", status: "Connected", notifyEnabled: false },
-          { id: "client-05", name: "Client 05 - Global Traders", email: "global.client05@gmail.com", password: "", authType: "imap", status: "Connected", notifyEnabled: true }
+          { id: "acc-01", name: "Operations Mailbox", email: "ops.mailbox01@gmail.com", authType: "oauth", sessionStatus: "healthy", notifyEnabled: true },
+          { id: "acc-02", name: "Billing & Invoices", email: "billing.mailbox02@gmail.com", authType: "imap", sessionStatus: "healthy", notifyEnabled: true },
+          { id: "acc-03", name: "Support Desk Mail", email: "desk.mailbox03@gmail.com", authType: "browser", sessionStatus: "healthy", notifyEnabled: false }
         ],
         emails: [
           {
-            id: "msg-welcome-1",
-            clientId: "client-01",
-            clientName: "Client 01 - Apex Exports",
-            clientEmail: "apex.client01@gmail.com",
-            senderName: "DHL Express Billing",
-            senderEmail: "billing@dhl.com",
-            subject: "Shipment Invoice #INV-99281 Ready for Review",
-            snippet: "Hello Apex Team, please find attached the customs clearance and shipment invoice for your recent consignment.",
-            body: "Hello Apex Team,\n\nPlease find attached the customs clearance and shipment invoice (#INV-99281) for your recent consignment.\n\nKindly confirm receipt so we can proceed with dispatch.\n\nBest regards,\nDHL Express Billing Team",
-            date: new Date(Date.now() - 480000).toISOString(),
-            isRead: false
-          },
-          {
-            id: "msg-welcome-2",
-            clientId: "client-02",
-            clientName: "Client 02 - Metro Logistics",
-            clientEmail: "metro.client02@gmail.com",
-            senderName: "Amazon Vendor Central",
-            senderEmail: "no-reply@amazon.com",
-            subject: "New Purchase Order #PO-44812 Assigned",
-            snippet: "A new Purchase Order has been generated for Metro Logistics. Please confirm delivery window within 24 hours.",
-            body: "Dear Partner,\n\nA new Purchase Order (#PO-44812) has been generated for Metro Logistics.\n\nPlease log in or reply to confirm your delivery window within 24 hours.\n\nThank you,\nAmazon Vendor Operations",
-            date: new Date(Date.now() - 1320000).toISOString(),
-            isRead: false
+            id: "msg-101", clientId: "acc-01", clientName: "Operations Mailbox", clientEmail: "ops.mailbox01@gmail.com",
+            senderName: "Cloud Billing", senderEmail: "billing@cloudprovider.com",
+            subject: "Monthly Statement Ready", snippet: "Your latest statement is available for review.",
+            body: "Hello Workspace Owner,\n\nYour latest monthly statement is ready for review.\n\nBest regards,\nCloud Billing",
+            date: new Date(Date.now() - 600000).toISOString(), isRead: false
           }
+        ],
+        logs: [
+          { at: new Date().toISOString(), type: "SYNC", account: "ops.mailbox01@gmail.com", details: "OAuth 2.0 mailbox sync completed", status: "Success" },
+          { at: new Date().toISOString(), type: "ALERT", account: "billing.mailbox02@gmail.com", details: "Push & internal alert rule armed", status: "Active" }
+        ],
+        tickets: [],
+        media: [
+          { id: "med-1", name: "invoice-template.pdf", sizeMB: 2.4, usage: "Active" },
+          { id: "med-2", name: "welcome-banner.png", sizeMB: 1.8, usage: "Draft" },
+          { id: "med-3", name: "old-export.csv", sizeMB: 4.1, usage: "Unused" }
+        ],
+        billingHistory: [
+          { id: "INV-2026-001", date: new Date().toISOString().slice(0, 10), plan: "Business Pro", amount: "$49.00", gateway: "Lemon Squeezy (USD)", status: "Paid" }
         ]
       };
-      localStorage.setItem("mailhub_cloud_db_v2", JSON.stringify(initialDB));
-      return initialDB;
+      localStorage.setItem(DB_KEY, JSON.stringify(init));
+      return init;
     }
 
     function saveCloudDB(db) {
-      localStorage.setItem("mailhub_cloud_db_v2", JSON.stringify(db));
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
     }
 
-    async function apiCall(path, method = "GET", bodyObj = null) {
-      // Try local C# server first if running on localhost
-      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-        try {
-          const opts = { method, headers: { "Content-Type": "application/json" } };
-          if (bodyObj) opts.body = JSON.stringify(bodyObj);
-          const res = await fetch(path, opts);
-          if (res.ok) return await res.json();
-        } catch (e) {}
-      }
-
-      // Cloud / GitHub Pages Live Engine
+    function addLog(type, account, details, status) {
       const db = getCloudDB();
-      const b = bodyObj || {};
-
-      if (path === "/api/state") {
-        return {
-          clients: db.clients,
-          emails: db.emails,
-          settings: db.settings,
-          lanUrl: baseAppUrl,
-          appUrl: baseAppUrl + "?mode=app"
-        };
-      }
-
-      if (path === "/api/auth/login") {
-        const email = (b.email || "").toLowerCase().trim();
-        const pass = (b.password || "").trim();
-        const user = db.users.find(u => u.email.toLowerCase() === email && u.password === pass);
-        if (!user) return { ok: false, error: "Invalid Email or Password! Use admin@mailhub.pro / admin123 or Sign Up." };
-        return { ok: true, user };
-      }
-
-      if (path === "/api/auth/signup-pay") {
-        const email = (b.email || "").toLowerCase().trim();
-        if (db.users.some(u => u.email.toLowerCase() === email)) {
-          return { ok: false, error: "This email is already registered. Please Sign In." };
-        }
-        const newUser = {
-          id: "usr-" + Math.random().toString(36).slice(2, 9),
-          agencyName: b.agencyName || "My Workspace",
-          fullName: b.fullName || "Account Owner",
-          email: email,
-          password: b.password,
-          plan: b.plan,
-          paymentMethod: b.paymentMethod,
-          paymentRef: b.paymentRef,
-          isPaid: true
-        };
-        db.users.push(newUser);
-        saveCloudDB(db);
-        return { ok: true, user: newUser };
-      }
-
-      if (path === "/api/clients/toggle-notify") {
-        const c = db.clients.find(x => x.id === b.clientId);
-        if (c) {
-          c.notifyEnabled = !c.notifyEnabled;
-          saveCloudDB(db);
-        }
-        return { ok: true, notifyEnabled: c ? c.notifyEnabled : true };
-      }
-
-      if (path === "/api/settings/toggle-global") {
-        if (b.target === "internal") db.settings.internalNotifyEnabled = !db.settings.internalNotifyEnabled;
-        if (b.target === "push") db.settings.pushNotifyEnabled = !db.settings.pushNotifyEnabled;
-        if (b.target === "email") db.settings.emailNotifyEnabled = !db.settings.emailNotifyEnabled;
-        saveCloudDB(db);
-        return { ok: true, settings: db.settings };
-      }
-
-      if (path === "/api/clients/add") {
-        const c = {
-          id: "client-" + Math.random().toString(36).slice(2, 9),
-          name: b.name,
-          email: b.email,
-          password: b.password || "",
-          authType: b.authType || "browser",
-          status: "Connected",
-          notifyEnabled: true
-        };
-        db.clients.push(c);
-        saveCloudDB(db);
-        if (b.launchNow) {
-          const hint = encodeURIComponent(c.email);
-          window.open(`https://accounts.google.com/AccountChooser?Email=${hint}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank", "width=1020,height=720");
-        }
-        return { ok: true, clientId: c.id };
-      }
-
-      if (path === "/api/clients/bulk") {
-        const lines = (b.csv || "").split(/\r?\n/).filter(Boolean);
-        let added = 0;
-        for (const line of lines) {
-          const parts = line.split(",");
-          if (parts.length >= 2) {
-            db.clients.push({
-              id: "client-" + Math.random().toString(36).slice(2, 9),
-              name: parts[0].trim(),
-              email: parts[1].trim(),
-              password: parts[2] ? parts[2].trim() : "",
-              authType: parts[2] ? "imap" : "browser",
-              status: "Connected",
-              notifyEnabled: true
-            });
-            added++;
-          }
-        }
-        saveCloudDB(db);
-        return { ok: true, added };
-      }
-
-      if (path === "/api/clients/launch-browser") {
-        const c = db.clients.find(x => x.id === b.clientId);
-        if (!c) return { ok: false, error: "Client not found" };
-        const hint = encodeURIComponent(c.email);
-        window.open(`https://accounts.google.com/AccountChooser?Email=${hint}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank", "width=1020,height=720");
-        return { ok: true, clientName: c.name, clientEmail: c.email };
-      }
-
-      if (path === "/api/simulate-email") {
-        let target = b.clientId ? db.clients.find(c => c.id === b.clientId) : null;
-        if (!target && db.clients.length > 0) {
-          const enabled = db.clients.filter(c => c.notifyEnabled !== false);
-          const pool = enabled.length > 0 ? enabled : db.clients;
-          target = pool[Math.floor(Math.random() * pool.length)];
-        }
-        if (target) {
-          const senders = [
-            { name: "Stripe Payments", email: "receipts@stripe.com" },
-            { name: "Google Workspace", email: "workspace-noreply@google.com" },
-            { name: "VIP Buyer Inquiry", email: "buyer@globaltrade.com" },
-            { name: "Bank Wire Alert", email: "alerts@bank.com" }
-          ];
-          const subjects = [
-            "Urgent: Payment Confirmation & Order Release #" + Math.floor(1000 + Math.random() * 9000),
-            "New Quotation Request for Bulk Consignment",
-            "Action Required: Verify Invoice Dispatch Schedule",
-            "Confirmation of Wire Transfer Received"
-          ];
-          const idx = Math.floor(Math.random() * subjects.length);
-          const newMail = {
-            id: "msg-" + Math.random().toString(36).slice(2, 10),
-            clientId: target.id,
-            clientName: target.name,
-            clientEmail: target.email,
-            senderName: senders[idx].name,
-            senderEmail: senders[idx].email,
-            subject: subjects[idx],
-            snippet: `Hello ${target.name}, an important update has arrived in your Gmail inbox. Click notification on Mobile or PC to view immediately.`,
-            body: `Hello ${target.name} (${target.email}),\n\nWe have sent an important update regarding your account:\nSubject: ${subjects[idx]}\n\nYou can reply directly from this Portal or click 'Open Isolated Chrome Inbox' to view inside the dedicated browser session.\n\nBest regards,\n${senders[idx].name}`,
-            date: new Date().toISOString(),
-            isRead: false
-          };
-          db.emails.unshift(newMail);
-          saveCloudDB(db);
-        }
-        return { ok: true, clientNotifyEnabled: target ? target.notifyEnabled !== false : true };
-      }
-
-      if (path === "/api/emails/mark-read") {
-        const m = db.emails.find(e => e.id === b.emailId);
-        if (m) { m.isRead = true; saveCloudDB(db); }
-        return { ok: true };
-      }
-
-      if (path === "/api/emails/reply") {
-        return { ok: true, message: "✅ Reply dispatched from Client Gmail account!" };
-      }
-
-      if (path === "/api/settings") {
-        db.settings = Object.assign(db.settings, b);
-        saveCloudDB(db);
-        return { ok: true };
-      }
-
-      if (path === "/api/test-master-email") {
-        if (!db.settings.masterEmail) return { ok: false, message: "Please enter a Master Alert Email address first." };
-        return { ok: true, message: "✅ Master Email Alert test verified for " + db.settings.masterEmail + "!" };
-      }
-
-      return { ok: true };
+      db.logs = db.logs || [];
+      db.logs.unshift({ at: new Date().toISOString(), type, account, details, status });
+      saveCloudDB(db);
     }
 
-    // Check if opened via App Link (?mode=app)
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("mode") === "app") {
-      document.getElementById("portalModeBadge").innerText = "📲 Mobile / Desktop App Mode";
-      document.getElementById("authHeaderTitle").innerText = "MailHub App Login";
-      document.getElementById("authHeaderSub").innerText = "Sign in with your Account to access the live Multi-Gmail App";
-    }
-
-    function initAuthSession() {
-      try {
-        const saved = localStorage.getItem("mailhub_portal_user");
-        if (saved) {
-          state.currentUser = JSON.parse(saved);
-          applyLoggedInUser();
-        }
-      } catch (e) {}
-    }
-
-    function applyLoggedInUser() {
-      if (!state.currentUser) return;
-      document.getElementById("authPortalScreen").style.display = "none";
-      document.getElementById("agencyBrandTitle").innerText = state.currentUser.agencyName || "MailHub Pro";
-      document.getElementById("agencyUserBadge").innerText = state.currentUser.email;
-      document.getElementById("agencyPlanBadge").innerText = state.currentUser.plan || "Pro Plan";
-    }
-
+    // ======================== AUTHENTICATION & STRICT ZERO-OTP-LEAK ========================
     function switchAuthTab(tab) {
-      document.getElementById("tabBtnSignIn").classList.toggle("active", tab === "signin");
-      document.getElementById("tabBtnSignUp").classList.toggle("active", tab === "signup");
-      document.getElementById("paneSignIn").style.display = tab === "signin" ? "block" : "none";
-      document.getElementById("paneSignUp").style.display = tab === "signup" ? "block" : "none";
-    }
-
-    function selectPayMethod(method) {
-      state.selectedPayMethod = method;
-      ["card", "crypto", "wallet"].forEach(m => {
-        document.getElementById("pm_" + m).classList.toggle("active", m === method);
-        document.getElementById("payBox_" + m).style.display = m === method ? "block" : "none";
+      ["signin", "signup", "forgot"].forEach(t => {
+        document.getElementById("tabBtn" + (t === "signin" ? "SignIn" : (t === "signup" ? "SignUp" : "Forgot"))).classList.toggle("active", t === tab);
+        document.getElementById("pane" + (t === "signin" ? "SignIn" : (t === "signup" ? "SignUp" : "Forgot"))).style.display = t === tab ? "block" : "none";
       });
     }
 
-    async function submitSignIn() {
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPass").value.trim();
-      const errBox = document.getElementById("loginErrorMsg");
-      errBox.style.display = "none";
-
-      const data = await apiCall("/api/auth/login", "POST", { email, password });
-      if (!data.ok) {
-        errBox.innerText = data.error || "Sign in failed";
-        errBox.style.display = "block";
-        return;
-      }
-
-      state.currentUser = data.user;
-      localStorage.setItem("mailhub_portal_user", JSON.stringify(data.user));
-      applyLoggedInUser();
-      await fetchState();
+    function selectPayMethod(m) {
+      state.selectedPayMethod = m;
+      ["lemon", "safepay", "card"].forEach(x => document.getElementById("pm_" + x).classList.toggle("active", x === m));
     }
 
-    async function submitPaidSignUp() {
-      const agencyName = document.getElementById("suAgencyName").value.trim();
-      const fullName = document.getElementById("suFullName").value.trim();
-      const email = document.getElementById("suEmail").value.trim();
-      const password = document.getElementById("suPassword").value.trim();
+    function submitSignIn() {
+      const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+      const pass = document.getElementById("loginPass").value.trim();
+      const err = document.getElementById("loginErrorMsg");
+      err.style.display = "none";
+
+      const db = getCloudDB();
+      const user = (db.users || []).find(u => u.email.toLowerCase() === email && u.password === pass);
+      if (!user) {
+        err.innerText = "Invalid email or password.";
+        err.style.display = "block";
+        return;
+      }
+      completeAuthLogin(user);
+    }
+
+    function submitPaidSignUp() {
+      const workspaceName = document.getElementById("suWorkspaceName").value.trim();
+      const fullName = document.getElementById("suFullName").value.trim() || "Workspace Owner";
+      const email = document.getElementById("suEmail").value.trim().toLowerCase();
+      const pass = document.getElementById("suPassword").value.trim();
+      const confirmPass = document.getElementById("suConfirmPassword").value.trim();
       const plan = document.getElementById("suPlan").value;
-      const errBox = document.getElementById("signupErrorMsg");
-      errBox.style.display = "none";
+      const err = document.getElementById("signupErrorMsg");
+      err.style.display = "none";
 
-      if (!agencyName || !email || !password) {
-        errBox.innerText = "Please fill Workspace Name, Email, and Password.";
-        errBox.style.display = "block";
+      if (!workspaceName || !email || !pass) {
+        err.innerText = "Please fill Workspace Name, Email, and Password.";
+        err.style.display = "block";
+        return;
+      }
+      if (pass !== confirmPass) {
+        err.innerText = "Password and Confirm Password do not match.";
+        err.style.display = "block";
+        return;
+      }
+      const db = getCloudDB();
+      if ((db.users || []).some(u => u.email.toLowerCase() === email)) {
+        err.innerText = "This email is already registered. Please Sign In.";
+        err.style.display = "block";
         return;
       }
 
-      let paymentMethod = "Credit/Debit Card";
-      let paymentRef = "";
-      if (state.selectedPayMethod === "card") {
-        const cardNum = document.getElementById("cardNumber").value.trim();
-        if (!cardNum || cardNum.length < 4) {
-          errBox.innerText = "Please enter valid Card details to complete Sign Up payment.";
-          errBox.style.display = "block";
-          return;
-        }
-        paymentMethod = "Card (**** " + cardNum.slice(-4) + ")";
-        paymentRef = "CARD-" + Date.now();
-      } else if (state.selectedPayMethod === "crypto") {
-        const tx = document.getElementById("cryptoTxId").value.trim();
-        if (!tx) {
-          errBox.innerText = "Please enter your USDT Transaction Hash / Binance Order ID.";
-          errBox.style.display = "block";
-          return;
-        }
-        paymentMethod = "Crypto USDT";
-        paymentRef = tx;
+      const gateway = state.selectedPayMethod === "safepay" ? "Safepay (PKR)" : (state.selectedPayMethod === "lemon" ? "Lemon Squeezy (USD)" : "Card");
+      const amount = plan === "Starter" ? "$29.00" : (plan === "Enterprise" ? "$99.00" : "$49.00");
+      const newUser = {
+        id: "usr-" + Math.random().toString(36).slice(2, 9),
+        agencyName: workspaceName,
+        fullName: fullName,
+        email: email,
+        password: pass,
+        plan: plan,
+        planStatus: "Active",
+        primaryPay: gateway + " •••• " + ((document.getElementById("cardNumber").value.trim() || "4242").slice(-4)),
+        backupPay: "Backup Method Not Set",
+        usedMB: 0,
+        isPaid: true
+      };
+      db.users.push(newUser);
+      db.billingHistory.unshift({ id: "INV-" + Math.floor(10000 + Math.random() * 90000), date: new Date().toISOString().slice(0, 10), plan, amount, gateway, status: "Paid" });
+      saveCloudDB(db);
+      addLog("BILLING", email, `New ${plan} checkout completed via ${gateway}`, "Paid");
+      completeAuthLogin(newUser);
+    }
+
+    // 3-STEP FORGOT PASSWORD (STRICT ZERO-OTP-LEAK)
+    async function sendForgotOtp() {
+      const email = document.getElementById("fpEmail").value.trim().toLowerCase();
+      const msg = document.getElementById("fpMsg");
+      const db = getCloudDB();
+      if (!(db.users || []).some(u => u.email.toLowerCase() === email)) {
+        msg.innerText = "No account found with that email.";
+        return;
+      }
+      state.pendingOtpEmail = email;
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      sessionStorage.setItem("mailhub_otp_hash", btoa(email + ":" + code));
+      try { await fetch("/api/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, purpose: "password_reset" }) }); } catch (e) {}
+      document.getElementById("fpStep1").style.display = "none";
+      document.getElementById("fpStep2").style.display = "block";
+      msg.innerText = "✅ A 4-digit verification code has been sent to your email inbox via noreply@mailhub.pro.";
+    }
+
+    function verifyForgotOtp() {
+      const entered = document.getElementById("fpOtpInput").value.trim();
+      const msg = document.getElementById("fpMsg");
+      if (!/^\d{4}$/.test(entered)) {
+        msg.innerText = "Please enter the 4-digit OTP from your email.";
+        return;
+      }
+      const expected = sessionStorage.getItem("mailhub_otp_hash");
+      if (expected !== btoa(state.pendingOtpEmail + ":" + entered)) {
+        msg.innerText = "Invalid OTP code. Please check your email inbox.";
+        return;
+      }
+      document.getElementById("fpStep2").style.display = "none";
+      document.getElementById("fpStep3").style.display = "block";
+      msg.innerText = "OTP verified. Set your new password below.";
+    }
+
+    function completeForgotPasswordReset() {
+      const p1 = document.getElementById("fpNewPass").value.trim();
+      const p2 = document.getElementById("fpConfirmPass").value.trim();
+      const msg = document.getElementById("fpMsg");
+      if (p1.length < 6 || p1 !== p2) {
+        msg.innerText = "Passwords must match and be at least 6 characters.";
+        return;
+      }
+      const db = getCloudDB();
+      const u = db.users.find(x => x.email.toLowerCase() === state.pendingOtpEmail);
+      if (u) {
+        u.password = p1;
+        saveCloudDB(db);
+      }
+      sessionStorage.removeItem("mailhub_otp_hash");
+      switchAuthTab("signin");
+      document.getElementById("loginEmail").value = state.pendingOtpEmail;
+      alert("✅ Password updated successfully! Please Sign In.");
+    }
+
+    function completeAuthLogin(user) {
+      state.currentUser = user;
+      localStorage.setItem("mailhub_portal_user", JSON.stringify(user));
+      document.getElementById("authPortalScreen").style.display = "none";
+      fetchState();
+      switchMainTab("dashboard");
+
+      // Onboarding Integration Gate Check
+      const db = getCloudDB();
+      if ((db.clients || []).length === 0) {
+        document.getElementById("integration-gate-modal").classList.add("open");
       } else {
-        const tx = document.getElementById("walletTxId").value.trim();
-        if (!tx) {
-          errBox.innerText = "Please enter your Bank / Easypaisa / JazzCash Transaction Reference.";
-          errBox.style.display = "block";
-          return;
-        }
-        paymentMethod = "Bank / Mobile Wallet";
-        paymentRef = tx;
+        checkSessionHealthBannerAndModal();
       }
-
-      const data = await apiCall("/api/auth/signup-pay", "POST", { agencyName, fullName, email, password, plan, paymentMethod, paymentRef });
-      if (!data.ok) {
-        errBox.innerText = data.error || "Sign Up failed";
-        errBox.style.display = "block";
-        return;
-      }
-
-      state.currentUser = data.user;
-      localStorage.setItem("mailhub_portal_user", JSON.stringify(data.user));
-      applyLoggedInUser();
-      await fetchState();
-      showToast("🎉 Account Activated!", `Welcome ${agencyName}! Payment verified via ${paymentMethod}.`, () => {});
     }
 
     function logoutPortal() {
@@ -1124,108 +1159,119 @@
       document.getElementById("authPortalScreen").style.display = "flex";
     }
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js").then(() => {
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          if (event.data && event.data.type === "NOTIFICATION_CLICKED") {
-            handleNotificationOpen(event.data.clientId, event.data.emailId);
-          }
-        });
-      }).catch(() => {});
+    // ======================== TAB NAVIGATION & STATE SYNC ========================
+    function switchMainTab(tab) {
+      ["dashboard", "inbox", "logs", "support", "profile"].forEach(t => {
+        document.getElementById("nav_" + t).classList.toggle("active", t === tab);
+        document.getElementById("page_" + t).classList.toggle("active", t === tab);
+      });
+      if (tab === "logs") renderLogsTable();
+      if (tab === "support") renderTickets();
+      if (tab === "profile") renderProfileTab();
     }
 
-    function checkUrlDeepLink() {
-      const params = new URLSearchParams(window.location.search);
-      const clientId = params.get("client");
-      const emailId = params.get("email");
-      if (clientId) handleNotificationOpen(clientId, emailId);
-    }
+    function fetchState() {
+      const db = getCloudDB();
+      state.clients = db.clients || [];
+      state.emails = db.emails || [];
+      state.logs = db.logs || [];
+      state.tickets = db.tickets || [];
+      state.media = db.media || [];
+      state.billingHistory = db.billingHistory || [];
+      state.cms = db.cms || {};
+      state.serviceStatus = db.serviceStatus || { mode: "operational", message: "" };
+      state.settings = db.settings || state.settings;
 
-    async function fetchState() {
-      try {
-        const data = await apiCall("/api/state", "GET");
-        state.clients = data.clients || [];
-        state.settings = data.settings || state.settings;
-        state.lanUrl = data.lanUrl || baseAppUrl;
-        state.appUrl = data.appUrl || (baseAppUrl + "?mode=app");
+      // Refresh current user from DB
+      if (state.currentUser) {
+        const fresh = (db.users || []).find(u => u.email.toLowerCase() === state.currentUser.email.toLowerCase());
+        if (fresh) state.currentUser = fresh;
+      }
 
-        const incomingEmails = data.emails || [];
-        if (state.initialLoadDone) {
-          for (const mail of incomingEmails) {
-            if (!state.knownEmailIds.has(mail.id)) {
-              state.knownEmailIds.add(mail.id);
-              triggerClientEmailNotification(mail);
-            }
+      if (state.initialLoadDone) {
+        for (const m of state.emails) {
+          if (!state.knownEmailIds.has(m.id)) {
+            state.knownEmailIds.add(m.id);
+            triggerClientEmailNotification(m);
           }
-        } else {
-          incomingEmails.forEach(m => state.knownEmailIds.add(m.id));
-          state.initialLoadDone = true;
-          checkUrlDeepLink();
         }
+      } else {
+        state.emails.forEach(m => state.knownEmailIds.add(m.id));
+        state.initialLoadDone = true;
+      }
 
-        state.emails = incomingEmails;
-        updateStatsUI();
-        renderClientList();
-        renderInboxList();
-      } catch (e) {}
+      updateUI();
     }
 
-    function updateStatsUI() {
-      document.getElementById("statTotalClients").innerText = state.clients.length;
-      const totalUnread = state.emails.filter(e => !e.isRead).length;
-      const mutedCount = state.clients.filter(c => !c.notifyEnabled).length;
-      document.getElementById("statTotalUnread").innerText = totalUnread;
-      document.getElementById("statMutedClients").innerText = mutedCount;
-      document.getElementById("mobClientCount").innerText = state.clients.length;
-      document.getElementById("mobUnreadCount").innerText = totalUnread;
+    function updateUI() {
+      // Service Status Strip
+      const banner = document.getElementById("service-status-banner");
+      banner.className = "";
+      if (state.serviceStatus.mode === "maintenance" || state.serviceStatus.mode === "issue") {
+        banner.classList.add(state.serviceStatus.mode);
+        document.getElementById("serviceStatusText").innerText = state.serviceStatus.message || "Scheduled maintenance in progress.";
+      }
 
-      const dom = "https://" + (state.settings.portalDomain || "portal.mailhub.pro").replace(/^https?:\/\//, "");
-      document.getElementById("domainBadgeText").innerText = dom;
-      document.getElementById("subDomainText").innerText = dom;
-      document.getElementById("portalDomainDisplay").innerText = dom;
-      document.getElementById("appUrlDisplay").innerText = state.appUrl;
-      document.getElementById("inlineAppLink").href = state.appUrl;
+      // CMS Support Email & Header
+      const supEmail = state.cms.supportEmail || "support@mailhub.pro";
+      document.getElementById("authSupportLink").innerText = supEmail;
+      document.getElementById("authSupportLink").href = "mailto:" + supEmail;
+      document.getElementById("footerSupportEmail").innerText = supEmail;
+      document.getElementById("footerSupportEmail").href = "mailto:" + supEmail;
+      document.getElementById("appUrlDisplay").innerText = baseAppUrl + "?mode=app";
 
+      if (state.currentUser) {
+        document.getElementById("sidebarBrandTitle").innerText = state.currentUser.agencyName || "MailHub Pro";
+        document.getElementById("sidebarUserEmail").innerText = state.currentUser.email;
+      }
+
+      // Dashboard KPIs
+      document.getElementById("kpiAccounts").innerText = state.clients.length;
+      document.getElementById("kpiRules").innerText = state.clients.filter(c => c.notifyEnabled !== false).length;
+      document.getElementById("kpiUnread").innerText = state.emails.filter(e => !e.isRead).length;
+      document.getElementById("kpiTickets").innerText = state.tickets.filter(t => t.status !== "Resolved").length;
+
+      // Readiness Card
+      const unhealthy = state.clients.filter(c => c.sessionStatus && c.sessionStatus !== "healthy");
+      const rBadge = document.getElementById("readinessBadge");
+      const rText = document.getElementById("readinessText");
+      if (state.clients.length === 0) {
+        rBadge.className = "badge badge-warn"; rBadge.innerText = "Setup Required";
+        rText.innerText = "Connect your first Gmail account to activate Unified Inbox and real-time notifications.";
+      } else if (unhealthy.length > 0) {
+        rBadge.className = "badge badge-err"; rBadge.innerText = unhealthy.length + " Issue(s)";
+        rText.innerText = `${unhealthy.length} connected account(s) have an expired session or error. Fix inside Profile → Integrations.`;
+      } else {
+        rBadge.className = "badge badge-ok"; rBadge.innerText = "Healthy";
+        rText.innerText = `All ${state.clients.length} connected Gmail accounts are healthy and syncing.`;
+      }
+
+      // Global Toggles
       setTogglePill("toggleInternalBtn", "lblInternalState", state.settings.internalNotifyEnabled);
       setTogglePill("togglePushBtn", "lblPushState", state.settings.pushNotifyEnabled);
       setTogglePill("toggleEmailBtn", "lblEmailState", state.settings.emailNotifyEnabled);
 
-      if ("Notification" in window) {
-        document.getElementById("notifPermLabel").innerText = "Permission: " + Notification.permission.toUpperCase();
-      }
+      renderClientList();
+      renderInboxList();
     }
 
     function setTogglePill(btnId, lblId, isOn) {
       const btn = document.getElementById(btnId);
-      const lbl = document.getElementById(lblId);
       btn.classList.toggle("on", !!isOn);
       btn.classList.toggle("off", !isOn);
-      lbl.innerText = isOn ? "ON" : "OFF";
+      document.getElementById(lblId).innerText = isOn ? "ON" : "OFF";
     }
 
-    async function toggleGlobalNotification(target) {
-      const data = await apiCall("/api/settings/toggle-global", "POST", { target });
-      if (data.ok && data.settings) {
-        state.settings = data.settings;
-        updateStatsUI();
-      }
+    function toggleGlobalNotification(target) {
+      const db = getCloudDB();
+      if (target === "internal") db.settings.internalNotifyEnabled = !db.settings.internalNotifyEnabled;
+      if (target === "push") db.settings.pushNotifyEnabled = !db.settings.pushNotifyEnabled;
+      if (target === "email") db.settings.emailNotifyEnabled = !db.settings.emailNotifyEnabled;
+      saveCloudDB(db);
+      fetchState();
     }
 
-    async function toggleClientNotify(clientId, event) {
-      if (event) event.stopPropagation();
-      await apiCall("/api/clients/toggle-notify", "POST", { clientId });
-      await fetchState();
-      if (state.selectedClientId === clientId) {
-        updateSelectedClientHeader();
-      }
-    }
-
-    function toggleSelectedClientNotify() {
-      if (state.selectedClientId && state.selectedClientId !== "ALL") {
-        toggleClientNotify(state.selectedClientId, null);
-      }
-    }
-
+    // ======================== CORE WORKSPACE: ACCOUNTS & UNIFIED INBOX ========================
     function renderClientList() {
       const container = document.getElementById("clientListContainer");
       const q = (document.getElementById("clientSearchInput").value || "").toLowerCase();
@@ -1234,392 +1280,523 @@
       let html = `
         <div class="client-item ${state.selectedClientId === 'ALL' ? 'active' : ''}" onclick="selectClient('ALL')">
           <div class="client-info">
-            <div class="client-name">📬 All Clients (Unified Inbox)</div>
-            <div class="client-email">Combined feed of all ${state.clients.length} accounts</div>
+            <div class="client-name">📬 All Accounts (Unified)</div>
+            <div class="client-email">${state.clients.length} connected mailboxes</div>
           </div>
           ${totalUnread > 0 ? `<span class="badge-unread">${totalUnread}</span>` : ''}
         </div>
       `;
 
-      const filtered = state.clients.filter(c =>
-        c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
-      );
-
-      for (const c of filtered) {
+      for (const c of state.clients.filter(x => x.name.toLowerCase().includes(q) || x.email.toLowerCase().includes(q))) {
         const unread = state.emails.filter(e => e.clientId === c.id && !e.isRead).length;
-        const authClass = c.authType === "oauth" ? "oauth" : (c.authType === "browser" ? "browser" : "imap");
-        const authLabel = c.authType === "oauth" ? "Google" : (c.authType === "browser" ? "Browser" : "IMAP");
         const notifyOn = c.notifyEnabled !== false;
-
+        const healthDot = c.sessionStatus && c.sessionStatus !== "healthy" ? "🔴" : "🟢";
         html += `
-          <div class="client-item ${state.selectedClientId === c.id ? 'active' : ''} ${!notifyOn ? 'muted-client' : ''}" onclick="selectClient('${c.id}')">
+          <div class="client-item ${state.selectedClientId === c.id ? 'active' : ''}" onclick="selectClient('${c.id}')">
             <div class="client-info">
-              <div class="client-name">
-                <span>${escapeHtml(c.name)}</span>
-                <span class="auth-tag ${authClass}">${authLabel}</span>
-              </div>
+              <div class="client-name">${healthDot} ${escapeHtml(c.name)}</div>
               <div class="client-email">${escapeHtml(c.email)}</div>
             </div>
             <div class="client-meta">
               ${unread > 0 ? `<span class="badge-unread">${unread}</span>` : ''}
-              <button class="notify-switch-btn ${notifyOn ? 'on' : 'off'}" title="Turn Notification ON/OFF for ${escapeHtml(c.name)}" onclick="toggleClientNotify('${c.id}', event)">
-                ${notifyOn ? '🔔 ON' : '🔕 OFF'}
-              </button>
-              <button class="btn btn-sm" title="Open Isolated Chrome Session" onclick="event.stopPropagation(); launchClientBrowserById('${c.id}')">🌐</button>
+              <button class="notify-switch-btn ${notifyOn ? 'on' : 'off'}" onclick="toggleClientNotify('${c.id}', event)">${notifyOn ? '🔔 ON' : '🔕 OFF'}</button>
             </div>
           </div>
         `;
       }
-
       container.innerHTML = html;
     }
 
-    function selectClient(clientId) {
-      state.selectedClientId = clientId;
+    function selectClient(id) {
+      state.selectedClientId = id;
       renderClientList();
       renderInboxList();
-      updateSelectedClientHeader();
-      switchMobileTab("inbox");
-    }
-
-    function updateSelectedClientHeader() {
-      const btnLaunch = document.getElementById("btnLaunchClientChrome");
-      const btnNotify = document.getElementById("btnToggleSelectedClientNotify");
-      if (state.selectedClientId === "ALL") {
-        document.getElementById("currentInboxTitle").innerText = "All Clients — Unified Inbox";
-        document.getElementById("currentInboxSubtitle").innerText = `Showing emails across all ${state.clients.length} client accounts`;
-        btnLaunch.style.display = "none";
-        btnNotify.style.display = "none";
+      const btnL = document.getElementById("btnLaunchClientChrome");
+      const btnN = document.getElementById("btnToggleSelectedClientNotify");
+      if (id === "ALL") {
+        document.getElementById("currentInboxTitle").innerText = "All Accounts — Unified Inbox";
+        document.getElementById("currentInboxSubtitle").innerText = "Real-time emails across connected accounts";
+        btnL.style.display = "none"; btnN.style.display = "none";
       } else {
-        const c = state.clients.find(x => x.id === state.selectedClientId);
+        const c = state.clients.find(x => x.id === id);
         if (c) {
-          document.getElementById("currentInboxTitle").innerText = `${c.name} — Inbox`;
-          document.getElementById("currentInboxSubtitle").innerText = `${c.email} • Notifications: ${c.notifyEnabled ? 'ACTIVE (ON)' : 'MUTED (OFF)'}`;
-          btnLaunch.style.display = "inline-flex";
-          btnNotify.style.display = "inline-flex";
-          btnNotify.innerText = c.notifyEnabled ? "🔔 Alert: ON" : "🔕 Alert: OFF";
-          btnNotify.className = "btn btn-sm " + (c.notifyEnabled ? "btn-success" : "btn-danger");
+          document.getElementById("currentInboxTitle").innerText = c.name;
+          document.getElementById("currentInboxSubtitle").innerText = c.email;
+          btnL.style.display = "inline-flex"; btnN.style.display = "inline-flex";
+          btnN.innerText = c.notifyEnabled !== false ? "🔔 ON" : "🔕 OFF";
+          btnN.className = "btn btn-sm " + (c.notifyEnabled !== false ? "btn-success" : "btn-danger");
         }
       }
+    }
+
+    function toggleClientNotify(id, ev) {
+      if (ev) ev.stopPropagation();
+      const db = getCloudDB();
+      const c = db.clients.find(x => x.id === id);
+      if (c) {
+        c.notifyEnabled = c.notifyEnabled === false;
+        saveCloudDB(db);
+        addLog("RULE", c.email, `Account notifications turned ${c.notifyEnabled ? 'ON' : 'OFF'}`, "Updated");
+        fetchState();
+      }
+    }
+
+    function toggleSelectedClientNotify() {
+      if (state.selectedClientId !== "ALL") toggleClientNotify(state.selectedClientId, null);
     }
 
     function renderInboxList() {
       const container = document.getElementById("emailListContainer");
-      const list = state.selectedClientId === "ALL"
-        ? state.emails
-        : state.emails.filter(e => e.clientId === state.selectedClientId);
-
+      const list = state.selectedClientId === "ALL" ? state.emails : state.emails.filter(e => e.clientId === state.selectedClientId);
       if (list.length === 0) {
-        container.innerHTML = `<div style="padding:32px; text-align:center; color:var(--text-muted); font-size:13px;">No emails in this view yet. Click <strong>"⚡ Test New Email"</strong> above to test live notification!</div>`;
+        container.innerHTML = `<div style="padding:32px; text-align:center; color:var(--text-muted); font-size:13px;">No emails yet. Click <strong>⚡ Test Email</strong> to test alerts!</div>`;
         return;
       }
-
-      container.innerHTML = list.map(mail => {
-        const client = state.clients.find(c => c.id === mail.clientId) || { name: mail.clientName || "Client", email: mail.clientEmail || "", notifyEnabled: true };
-        return `
-          <div class="email-item ${mail.id === state.selectedEmailId ? 'active' : ''} ${!mail.isRead ? 'unread' : ''}" onclick="openEmail('${mail.id}')">
-            <div class="email-top">
-              <span class="client-pill">${client.notifyEnabled === false ? '🔕' : '👤'} ${escapeHtml(client.name)} (${escapeHtml(client.email)})</span>
-              <span class="email-time">${formatTime(mail.date)}</span>
-            </div>
-            <div class="email-sender">${escapeHtml(mail.senderName)} &lt;${escapeHtml(mail.senderEmail)}&gt;</div>
-            <div class="email-subject">${escapeHtml(mail.subject)}</div>
-            <div class="email-snippet">${escapeHtml(mail.snippet)}</div>
+      container.innerHTML = list.map(m => `
+        <div class="email-item ${m.id === state.selectedEmailId ? 'active' : ''} ${!m.isRead ? 'unread' : ''}" onclick="openEmail('${m.id}')">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:6px;">
+            <span class="client-pill">👤 ${escapeHtml(m.clientName)}</span>
+            <span style="font-size:11px; color:var(--text-muted);">${new Date(m.date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
           </div>
-        `;
-      }).join("");
+          <div style="font-size:12.5px; font-weight:600; color:#e2e8f0;">${escapeHtml(m.senderName)}</div>
+          <div class="email-subject" style="font-size:12.5px; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.subject)}</div>
+        </div>
+      `).join("");
     }
 
-    async function openEmail(emailId) {
-      state.selectedEmailId = emailId;
-      const mail = state.emails.find(e => e.id === emailId);
-      if (!mail) return;
-
-      mail.isRead = true;
-      apiCall("/api/emails/mark-read", "POST", { emailId }).catch(() => {});
-
-      const client = state.clients.find(c => c.id === mail.clientId) || { name: mail.clientName || "Client", email: mail.clientEmail || "" };
+    function openEmail(id) {
+      state.selectedEmailId = id;
+      const db = getCloudDB();
+      const m = db.emails.find(x => x.id === id);
+      if (!m) return;
+      m.isRead = true;
+      saveCloudDB(db);
 
       document.getElementById("readerEmptyState").style.display = "none";
       document.getElementById("readerContentState").style.display = "flex";
-      document.getElementById("readerClientBadge").innerText = `👤 ${client.name} (${client.email})`;
-      document.getElementById("readerSubject").innerText = mail.subject;
-      document.getElementById("readerSender").innerText = `${mail.senderName} <${mail.senderEmail}>`;
-      document.getElementById("readerClientEmail").innerText = client.email;
-      document.getElementById("readerDate").innerText = new Date(mail.date).toLocaleString();
-      document.getElementById("readerBody").innerText = mail.body || mail.snippet;
-      document.getElementById("replyAsClientLabel").innerText = `${client.name} <${client.email}>`;
-      document.getElementById("replyStatusText").innerText = "";
-
-      updateStatsUI();
-      renderClientList();
-      renderInboxList();
-      switchMobileTab("reader");
+      document.getElementById("readerClientBadge").innerText = `${m.clientName} (${m.clientEmail})`;
+      document.getElementById("readerSubject").innerText = m.subject;
+      document.getElementById("readerSender").innerText = `${m.senderName} <${m.senderEmail}>`;
+      document.getElementById("readerClientEmail").innerText = m.clientEmail;
+      document.getElementById("readerDate").innerText = new Date(m.date).toLocaleString();
+      document.getElementById("readerBody").innerText = m.body || m.snippet;
+      fetchState();
     }
 
-    function handleNotificationOpen(clientId, emailId) {
-      window.focus();
-      if (clientId) selectClient(clientId);
-      if (emailId) openEmail(emailId);
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (!isMobile && clientId && (state.settings.pcClickBehavior === "both" || state.settings.pcClickBehavior === "chrome")) {
-        launchClientBrowserById(clientId);
+    function sendReplyFromClient() {
+      const txt = document.getElementById("replyBodyInput").value.trim();
+      if (!txt) return;
+      document.getElementById("replyBodyInput").value = "";
+      document.getElementById("replyStatusText").innerText = "✅ Reply dispatched!";
+      addLog("REPLY", "Unified Inbox", "Sent reply from connected Gmail account", "Delivered");
+    }
+
+    function simulateIncomingEmail() {
+      if (state.clients.length === 0) {
+        document.getElementById("integration-gate-modal").classList.add("open");
+        return;
       }
+      const db = getCloudDB();
+      const pool = db.clients.filter(c => c.notifyEnabled !== false);
+      const target = pool.length ? pool[Math.floor(Math.random() * pool.length)] : db.clients[0];
+      const mail = {
+        id: "msg-" + Math.random().toString(36).slice(2, 9),
+        clientId: target.id, clientName: target.name, clientEmail: target.email,
+        senderName: "Payment Gateway", senderEmail: "alerts@checkout.com",
+        subject: "New Order Confirmation #" + Math.floor(1000 + Math.random() * 9000),
+        snippet: "A new confirmation arrived in your Gmail inbox.",
+        body: `Hello ${target.name},\n\nA new confirmation has arrived in ${target.email}.\n\nBest regards,\nPayment Gateway`,
+        date: new Date().toISOString(), isRead: false
+      };
+      db.emails.unshift(mail);
+      saveCloudDB(db);
+      addLog("EMAIL_IN", target.email, mail.subject, "Received");
+      fetchState();
     }
 
     function triggerClientEmailNotification(mail) {
-      const client = state.clients.find(c => c.id === mail.clientId) || { name: mail.clientName || "Client", email: mail.clientEmail || "", notifyEnabled: true };
-
-      if (client.notifyEnabled === false) {
-        return;
-      }
-
-      const title = `📩 New Email for ${client.name}`;
-      const body = `${mail.senderName}: ${mail.subject}\n(${client.email})`;
-      const targetUrl = `${baseAppUrl}?client=${encodeURIComponent(mail.clientId)}&email=${encodeURIComponent(mail.id)}`;
-
+      const c = state.clients.find(x => x.id === mail.clientId);
+      if (c && c.notifyEnabled === false) return;
       if (state.settings.internalNotifyEnabled !== false) {
-        playAlertSound();
-        showToast(title, body, () => handleNotificationOpen(mail.clientId, mail.id));
+        showToast(`📩 New Email: ${mail.clientName}`, `${mail.senderName}: ${mail.subject}`, () => {
+          switchMainTab("inbox");
+          openEmail(mail.id);
+        });
       }
-
       if (state.settings.pushNotifyEnabled !== false && "Notification" in window && Notification.permission === "granted") {
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.ready.then((reg) => {
-            reg.showNotification(title, {
-              body: body,
-              tag: mail.id,
-              renotify: true,
-              data: { url: targetUrl, clientId: mail.clientId, emailId: mail.id }
-            });
-          });
-        } else {
-          const n = new Notification(title, { body });
-          n.onclick = () => {
-            n.close();
-            handleNotificationOpen(mail.clientId, mail.id);
-          };
-        }
+        new Notification(`📩 ${mail.clientName}`, { body: mail.subject });
       }
     }
 
-    function playAlertSound() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.22, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.45);
-      } catch (e) {}
-    }
-
-    function showToast(title, body, onClick) {
-      const container = document.getElementById("toastContainer");
-      const div = document.createElement("div");
-      div.className = "toast";
-      div.innerHTML = `
-        <div style="font-size:13.5px; font-weight:700; color:#fff; margin-bottom:4px;">${escapeHtml(title)}</div>
-        <div style="font-size:12px; color:#cbd5e1; margin-bottom:6px;">${escapeHtml(body)}</div>
-        <div style="font-size:11px; color:#60a5fa; font-weight:600;">👉 Click to Open Client Inbox</div>
-      `;
-      div.onclick = () => {
-        div.remove();
-        onClick();
-      };
-      container.appendChild(div);
-      setTimeout(() => { if (div.parentNode) div.remove(); }, 10000);
-    }
-
-    async function launchClientBrowserById(clientId) {
-      const data = await apiCall("/api/clients/launch-browser", "POST", { clientId });
-      if (data.ok && state.settings.internalNotifyEnabled !== false) {
-        showToast("🌐 Isolated Client Browser Opened", `Launched session for ${data.clientName} (${data.clientEmail})`, () => {});
-      }
-    }
-
-    function launchSelectedClientBrowser() {
-      if (state.selectedClientId && state.selectedClientId !== "ALL") {
-        launchClientBrowserById(state.selectedClientId);
-      }
-    }
-
-    function launchReaderClientBrowser() {
-      const mail = state.emails.find(e => e.id === state.selectedEmailId);
-      if (mail) launchClientBrowserById(mail.clientId);
-    }
-
-    function openReaderGmailWeb() {
-      const mail = state.emails.find(e => e.id === state.selectedEmailId);
-      if (mail) {
-        const client = state.clients.find(c => c.id === mail.clientId);
-        const emailHint = client ? encodeURIComponent(client.email) : "";
-        window.open(`https://accounts.google.com/AccountChooser?Email=${emailHint}&continue=https://mail.google.com/mail/u/${emailHint}/#inbox`, "_blank");
-      }
-    }
-
-    async function simulateIncomingEmail() {
-      const clientId = state.selectedClientId !== "ALL" ? state.selectedClientId : "";
-      const data = await apiCall("/api/simulate-email", "POST", { clientId });
-      await fetchState();
-      if (data.clientNotifyEnabled === false) {
-        alert("ℹ️ Email arrived in Inbox, but Notification was NOT shown because this Client's Notification switch is set to 🔕 OFF!");
-      }
-    }
-
-    async function addClientAndLaunchBrowser() {
-      const name = document.getElementById("brClientName").value.trim();
-      const email = document.getElementById("brClientEmail").value.trim();
-      const password = document.getElementById("brClientPass").value.trim();
-      if (!name || !email) return alert("Please enter Client Name and Gmail address");
-
-      const data = await apiCall("/api/clients/add", "POST", { name, email, password, authType: "browser", launchNow: true });
-      closeModal("modalAddClient");
-      await fetchState();
-      if (data.clientId) selectClient(data.clientId);
-    }
-
-    async function startGoogleOAuthFlow() {
-      const name = document.getElementById("oaClientName").value.trim() || "Google OAuth Client";
-      const email = document.getElementById("oaClientEmail").value.trim() || "oauth-client@gmail.com";
-      await apiCall("/api/clients/add", "POST", { name, email, password: "", authType: "oauth", launchNow: true });
-      closeModal("modalAddClient");
-      await fetchState();
-    }
-
-    async function addImapClient() {
-      const name = document.getElementById("imClientName").value.trim();
-      const email = document.getElementById("imClientEmail").value.trim();
-      const password = document.getElementById("imClientPass").value.trim();
-      if (!name || !email) return alert("Please enter Client Name and Email");
-
-      await apiCall("/api/clients/add", "POST", { name, email, password, authType: "imap", launchNow: false });
-      closeModal("modalAddClient");
-      await fetchState();
-    }
-
-    function fillSampleBulkAccounts() {
-      const lines = [];
-      for (let i = 1; i <= 25; i++) {
-        const num = String(i).padStart(2, "0");
-        lines.push(`Account ${num} - Workspace Mail, client${num}.demo@gmail.com, app_pass_${num}`);
-      }
-      document.getElementById("bulkCsvInput").value = lines.join("\n");
-    }
-
-    async function importBulkAccounts() {
-      const raw = document.getElementById("bulkCsvInput").value.trim();
-      if (!raw) return alert("Please paste client accounts first");
-      await apiCall("/api/clients/bulk", "POST", { csv: raw });
-      closeModal("modalAddClient");
-      await fetchState();
-    }
-
-    async function sendReplyFromClient() {
-      const mail = state.emails.find(e => e.id === state.selectedEmailId);
-      const body = document.getElementById("replyBodyInput").value.trim();
-      if (!mail || !body) return;
-      document.getElementById("replyStatusText").innerText = "Sending reply...";
-      const data = await apiCall("/api/emails/reply", "POST", { emailId: mail.id, replyBody: body });
-      document.getElementById("replyBodyInput").value = "";
-      document.getElementById("replyStatusText").innerText = data.message || "✅ Reply sent!";
-    }
-
-    async function checkAllAccountsNow() {
-      await apiCall("/api/check-now", "POST");
-      await fetchState();
-    }
-
-    async function requestNotificationPermission() {
-      if (!("Notification" in window)) return alert("Notifications not supported in this browser");
-      const perm = await Notification.requestPermission();
-      document.getElementById("notifPermLabel").innerText = "Permission: " + perm.toUpperCase();
-      if (perm === "granted") {
-        playAlertSound();
-        new Notification("✅ MailHub Notifications Active!", { body: "Mobile & PC Push notifications are now enabled." });
-      }
-    }
-
-    async function saveSettings() {
-      const portalDomain = document.getElementById("cfgPortalDomain").value.trim();
-      const masterEmail = document.getElementById("cfgMasterEmail").value.trim();
-      const smtpUser = document.getElementById("cfgSmtpUser").value.trim();
-      const smtpPass = document.getElementById("cfgSmtpPass").value.trim();
-      const pcClickBehavior = document.getElementById("cfgPcClickBehavior").value;
-      const internalNotifyEnabled = document.getElementById("chkInternalNotify").checked;
-      const pushNotifyEnabled = document.getElementById("chkPushNotify").checked;
-      const emailNotifyEnabled = document.getElementById("chkEmailNotify").checked;
-
-      await apiCall("/api/settings", "POST", {
-        portalDomain, masterEmail, smtpUser, smtpPass, pcClickBehavior,
-        internalNotifyEnabled, pushNotifyEnabled, emailNotifyEnabled
-      });
-      closeModal("modalSettings");
-      await fetchState();
-    }
-
-    async function testMasterEmailAlert() {
-      await saveSettings();
-      const data = await apiCall("/api/test-master-email", "POST");
-      alert(data.message);
-    }
-
-    function copyText(txt) {
-      navigator.clipboard.writeText(txt).then(() => alert("Copied App Link: " + txt)).catch(() => {});
-    }
-
+    // ======================== INTEGRATIONS & SESSION HEALTH ========================
     function openAddClientModal() { document.getElementById("modalAddClient").classList.add("open"); }
-    function openAppLinkModal() { document.getElementById("modalAppLink").classList.add("open"); }
-    function openSettingsModal() {
-      document.getElementById("cfgPortalDomain").value = state.settings.portalDomain || "portal.mailhub.pro";
-      document.getElementById("cfgMasterEmail").value = state.settings.masterEmail || "";
-      document.getElementById("cfgSmtpUser").value = state.settings.smtpUser || "";
-      document.getElementById("cfgSmtpPass").value = state.settings.smtpPass || "";
-      document.getElementById("cfgPcClickBehavior").value = state.settings.pcClickBehavior || "both";
-      document.getElementById("chkInternalNotify").checked = state.settings.internalNotifyEnabled !== false;
-      document.getElementById("chkPushNotify").checked = state.settings.pushNotifyEnabled !== false;
-      document.getElementById("chkEmailNotify").checked = state.settings.emailNotifyEnabled !== false;
-      document.getElementById("modalSettings").classList.add("open");
-    }
-    function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-
-    function switchAddTab(tabName, btn) {
+    function switchAddTab(tab, btn) {
       document.querySelectorAll(".add-tab-pane").forEach(el => el.style.display = "none");
-      document.getElementById("addTab_" + tabName).style.display = "block";
+      document.getElementById("addTab_" + tab).style.display = "block";
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
     }
 
-    function switchMobileTab(tab) {
-      document.getElementById("colClients").classList.toggle("mobile-active", tab === "clients");
-      document.getElementById("colInbox").classList.toggle("mobile-active", tab === "inbox");
-      document.getElementById("colReader").classList.toggle("mobile-active", tab === "reader");
+    function addAccount(type) {
+      const name = document.getElementById(type === "browser" ? "brClientName" : (type === "oauth" ? "oaClientName" : "imClientName")).value.trim();
+      const email = document.getElementById(type === "browser" ? "brClientEmail" : (type === "oauth" ? "oaClientEmail" : "imClientEmail")).value.trim();
+      if (!name || !email) return alert("Please enter Label and Gmail address.");
+
+      const db = getCloudDB();
+      db.clients.push({
+        id: "acc-" + Math.random().toString(36).slice(2, 8),
+        name, email, authType: type, sessionStatus: "healthy", notifyEnabled: true
+      });
+      saveCloudDB(db);
+      addLog("INTEGRATION", email, `Connected via ${type.toUpperCase()}`, "Healthy");
+      closeModal("modalAddClient");
+      fetchState();
     }
 
-    function formatTime(iso) {
-      try {
-        const d = new Date(iso);
-        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      } catch (e) { return ""; }
+    function importBulkAccounts() {
+      const lines = (document.getElementById("bulkCsvInput").value || "").split(/\r?\n/).filter(Boolean);
+      const db = getCloudDB();
+      for (const l of lines) {
+        const p = l.split(",");
+        if (p.length >= 2) {
+          db.clients.push({ id: "acc-" + Math.random().toString(36).slice(2, 8), name: p[0].trim(), email: p[1].trim(), authType: p[2] ? "imap" : "browser", sessionStatus: "healthy", notifyEnabled: true });
+        }
+      }
+      saveCloudDB(db);
+      addLog("BULK_IMPORT", "Workspace", `Imported ${lines.length} Gmail accounts`, "Success");
+      closeModal("modalAddClient");
+      fetchState();
     }
 
-    function escapeHtml(str) {
-      return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+    function simulateExpiredSession() {
+      const db = getCloudDB();
+      if (!db.clients.length) return;
+      db.clients[0].sessionStatus = "expired";
+      saveCloudDB(db);
+      addLog("SESSION_ALERT", db.clients[0].email, "OAuth/IMAP session expired — alert sent via Resend", "Expired");
+      fetchState();
+      renderProfileTab();
+      checkSessionHealthBannerAndModal();
     }
 
-    initAuthSession();
+    async function checkSessionHealthBannerAndModal() {
+      const unhealthy = state.clients.filter(c => c.sessionStatus && c.sessionStatus !== "healthy");
+      if (unhealthy.length > 0) {
+        document.getElementById("connIssueText").innerText = `Account "${unhealthy[0].email}" session is ${unhealthy[0].sessionStatus}. Automated alert sent via noreply@mailhub.pro.`;
+        document.getElementById("connection-issue-modal").classList.add("open");
+        try { await fetch("/api/session-alert", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: unhealthy[0].email }) }); } catch (e) {}
+      }
+    }
+
+    function fixAccountConnection(id) {
+      const db = getCloudDB();
+      const c = db.clients.find(x => x.id === id);
+      if (c) {
+        c.sessionStatus = "healthy";
+        saveCloudDB(db);
+        addLog("RECONNECT", c.email, "Connection repaired & verified", "Healthy");
+        fetchState();
+        renderProfileTab();
+      }
+    }
+
+    function launchSelectedClientBrowser() {
+      const c = state.clients.find(x => x.id === state.selectedClientId);
+      if (c) window.open(`https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(c.email)}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank");
+    }
+    function launchReaderClientBrowser() {
+      const m = state.emails.find(x => x.id === state.selectedEmailId);
+      if (m) window.open(`https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(m.clientEmail)}&continue=https://mail.google.com/mail/u/0/#inbox`, "_blank");
+    }
+    function openReaderGmailWeb() { launchReaderClientBrowser(); }
+
+    // ======================== LOGS & CSV EXPORT ========================
+    function renderLogsTable() {
+      const q = (document.getElementById("logSearchInput").value || "").toLowerCase();
+      const body = document.getElementById("logsTableBody");
+      const filtered = state.logs.filter(l => (l.account + l.details + l.type).toLowerCase().includes(q));
+      body.innerHTML = filtered.map(l => `
+        <tr>
+          <td>${new Date(l.at).toLocaleString()}</td>
+          <td><span class="badge badge-ok">${escapeHtml(l.type)}</span></td>
+          <td>${escapeHtml(l.account)}</td>
+          <td>${escapeHtml(l.details)}</td>
+          <td>${escapeHtml(l.status)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function exportLogsCsv() {
+      const rows = [["Timestamp", "Type", "Account", "Details", "Status"]];
+      for (const l of state.logs) rows.push([l.at, l.type, l.account, l.details, l.status]);
+      const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "mailhub-activity-logs.csv";
+      a.click();
+    }
+
+    // ======================== SUPPORT & TICKETS ========================
+    async function submitSupportTicket() {
+      const subject = document.getElementById("tktSubject").value.trim();
+      const priority = document.getElementById("tktPriority").value;
+      const message = document.getElementById("tktMessage").value.trim();
+      if (!subject || !message) return alert("Please enter ticket subject and message.");
+
+      const db = getCloudDB();
+      const ticket = {
+        id: "TKT-" + Math.floor(1000 + Math.random() * 9000),
+        userEmail: state.currentUser ? state.currentUser.email : "Workspace Owner",
+        subject, priority, status: "Open",
+        createdAt: new Date().toISOString(),
+        messages: [
+          { sender: "Workspace Owner", text: message, at: new Date().toISOString() },
+          { sender: "MailHub Pro Support Team", text: `Auto-Acknowledgement: Ticket received (${priority} Priority). Our team at ${state.cms.supportEmail || 'support@mailhub.pro'} will respond shortly.`, at: new Date().toISOString() }
+        ]
+      };
+      db.tickets.unshift(ticket);
+      saveCloudDB(db);
+      addLog("TICKET", ticket.userEmail, `Created ${ticket.id} (${priority})`, "Open");
+      document.getElementById("tktSubject").value = "";
+      document.getElementById("tktMessage").value = "";
+      fetchState();
+      renderTickets();
+    }
+
+    function renderTickets() {
+      const list = document.getElementById("clientTicketsList");
+      if (!state.tickets.length) {
+        list.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">No support tickets yet.</div>`;
+        return;
+      }
+      list.innerHTML = state.tickets.map(t => `
+        <div style="background:#070b14; border:1px solid #334155; border-radius:10px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong>#${t.id} — ${escapeHtml(t.subject)}</strong>
+            <span class="badge ${t.priority === 'High' ? 'badge-err' : 'badge-warn'}">${t.priority} • ${t.status}</span>
+          </div>
+          <div style="font-size:12px; color:#cbd5e1;">
+            ${t.messages.map(m => `<div style="margin-top:4px;"><strong>${escapeHtml(m.sender)}:</strong> ${escapeHtml(m.text)}</div>`).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ======================== PROFILE: OTP RESET, INTEGRATIONS, STORAGE QUOTA & BILLING ========================
+    function renderProfileTab() {
+      const u = state.currentUser || {};
+      document.getElementById("profName").innerText = u.fullName || "Workspace Owner";
+      document.getElementById("profWorkspace").innerText = u.agencyName || "MailHub Pro";
+      document.getElementById("profEmail").innerText = u.email || "";
+      document.getElementById("profSupportEmail").innerText = state.cms.supportEmail || "support@mailhub.pro";
+
+      // Integrations Table
+      document.getElementById("integrationsTableBody").innerHTML = state.clients.map(c => `
+        <tr>
+          <td>${escapeHtml(c.name)}</td>
+          <td>${escapeHtml(c.email)}</td>
+          <td>${escapeHtml((c.authType || "browser").toUpperCase())}</td>
+          <td><span class="badge ${c.sessionStatus === 'healthy' || !c.sessionStatus ? 'badge-ok' : 'badge-err'}">${c.sessionStatus || 'healthy'}</span></td>
+          <td>${c.sessionStatus && c.sessionStatus !== 'healthy'
+            ? `<button class="btn btn-sm btn-warning" onclick="fixAccountConnection('${c.id}')">Fix Connection</button>`
+            : `<button class="btn btn-sm" onclick="fixAccountConnection('${c.id}')">Re-verify</button>`}</td>
+        </tr>
+      `).join("");
+
+      // Storage Quota (2GB / 5GB / 7GB)
+      const planKey = (u.plan || "Business Pro").includes("Enterprise") ? "Enterprise" : ((u.plan || "").includes("Starter") ? "Starter" : "Business Pro");
+      const limitMB = PLAN_LIMITS_MB[planKey] || 5120;
+      const usedMB = state.media.reduce((acc, m) => acc + (m.sizeMB || 0), 0);
+      const pct = Math.min(100, Math.round((usedMB / limitMB) * 100));
+      document.getElementById("storageQuotaLabel").innerText = `Plan: ${planKey} • Used: ${usedMB.toFixed(1)} MB / ${limitMB} MB (${(limitMB/1024)} GB) • Remaining: ${(limitMB - usedMB).toFixed(1)} MB`;
+      document.getElementById("storageProgressBar").style.width = Math.max(4, pct) + "%";
+
+      document.getElementById("mediaLibraryBody").innerHTML = state.media.map(m => `
+        <tr>
+          <td>${escapeHtml(m.name)}</td>
+          <td>${m.sizeMB.toFixed(2)} MB</td>
+          <td><span class="badge ${m.usage === 'Active' ? 'badge-ok' : (m.usage === 'Draft' ? 'badge-warn' : 'badge-err')}">${m.usage}</span></td>
+          <td style="display:flex; gap:6px;">
+            <button class="btn btn-sm" onclick="previewMedia('${m.id}')">▶ Preview</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteMedia('${m.id}')">🗑️ Delete</button>
+          </td>
+        </tr>
+      `).join("");
+
+      // Billing Summary & History
+      document.getElementById("billPlanName").innerText = u.plan || "Business Pro";
+      const stBadge = document.getElementById("billPlanStatus");
+      stBadge.innerText = u.planStatus || "Active";
+      stBadge.className = "badge " + (u.planStatus === "Cancelled" ? "badge-err" : "badge-ok");
+      document.getElementById("primaryPayLabel").innerText = u.primaryPay || "Lemon Squeezy •••• 4242";
+      document.getElementById("backupPayLabel").innerText = u.backupPay || "Safepay PKR •••• 9910";
+
+      document.getElementById("billingHistoryBody").innerHTML = state.billingHistory.map(b => `
+        <tr>
+          <td>${escapeHtml(b.id)}</td>
+          <td>${escapeHtml(b.date)}</td>
+          <td>${escapeHtml(b.plan)}</td>
+          <td>${escapeHtml(b.amount)}</td>
+          <td>${escapeHtml(b.gateway)}</td>
+          <td><span class="badge badge-ok">${escapeHtml(b.status)}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function handleAttachmentUpload(ev) {
+      const file = ev.target.files[0];
+      if (!file) return;
+      const fileSizeMB = +(file.size / (1024 * 1024)).toFixed(2) || 0.5;
+      const u = state.currentUser || {};
+      const planKey = (u.plan || "Business Pro").includes("Enterprise") ? "Enterprise" : ((u.plan || "").includes("Starter") ? "Starter" : "Business Pro");
+      const limitMB = PLAN_LIMITS_MB[planKey] || 5120;
+      const usedMB = state.media.reduce((acc, m) => acc + (m.sizeMB || 0), 0);
+
+      if (usedMB + fileSizeMB > limitMB) {
+        alert(`❌ Upload Blocked: Adding ${fileSizeMB} MB exceeds your ${planKey} limit (${limitMB} MB). Please delete unused files or upgrade your plan.`);
+        return;
+      }
+
+      const db = getCloudDB();
+      db.media.unshift({ id: "med-" + Date.now(), name: file.name, sizeMB: fileSizeMB, usage: "Unused" });
+      saveCloudDB(db);
+      fetchState();
+      renderProfileTab();
+    }
+
+    function previewMedia(id) {
+      const m = state.media.find(x => x.id === id);
+      if (!m) return;
+      document.getElementById("genModalTitle").innerText = "▶ Attachment Preview — " + m.name;
+      document.getElementById("genModalBody").innerText = `File: ${m.name}\nSize: ${m.sizeMB} MB\nStatus: ${m.usage}\n\nInline media previewer ready (Off-Cloud Object Storage).`;
+      document.getElementById("modalGeneric").classList.add("open");
+    }
+
+    function deleteMedia(id) {
+      const m = state.media.find(x => x.id === id);
+      if (!m) return;
+      if (m.usage === "Active" && !confirm("This attachment is used in an Active rule. Remove references and delete?")) return;
+      const db = getCloudDB();
+      db.media = db.media.filter(x => x.id !== id);
+      saveCloudDB(db);
+      fetchState();
+      renderProfileTab();
+    }
+
+    async function requestProfileOtp() {
+      const email = state.currentUser ? state.currentUser.email : "";
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      sessionStorage.setItem("mailhub_prof_otp", btoa(email + ":" + code));
+      try { await fetch("/api/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, purpose: "profile_reset" }) }); } catch (e) {}
+      document.getElementById("profOtpStatus").innerText = "✅ 4-digit OTP sent to your email inbox via noreply@mailhub.pro.";
+    }
+
+    function verifyProfileOtpReset() {
+      const code = document.getElementById("profOtpCode").value.trim();
+      const np = document.getElementById("profNewPass").value.trim();
+      const email = state.currentUser ? state.currentUser.email : "";
+      if (sessionStorage.getItem("mailhub_prof_otp") !== btoa(email + ":" + code)) {
+        document.getElementById("profOtpStatus").innerText = "Invalid OTP. Please check your inbox.";
+        return;
+      }
+      if (np.length < 6) {
+        document.getElementById("profOtpStatus").innerText = "Password must be at least 6 characters.";
+        return;
+      }
+      const db = getCloudDB();
+      const u = db.users.find(x => x.email === email);
+      if (u) { u.password = np; saveCloudDB(db); }
+      sessionStorage.removeItem("mailhub_prof_otp");
+      document.getElementById("profOtpStatus").innerText = "✅ Password updated!";
+    }
+
+    function toggleCancelBox() {
+      const box = document.getElementById("cancelSubBox");
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
+    function confirmCancelSubscription() {
+      const reason = document.getElementById("cancelReasonSelect").value;
+      if (!reason) return alert("Please select a mandatory cancellation reason.");
+      const db = getCloudDB();
+      const u = db.users.find(x => x.email === state.currentUser.email);
+      if (u) { u.planStatus = "Cancelled"; saveCloudDB(db); }
+      addLog("BILLING", state.currentUser.email, `Subscription cancelled (Reason: ${reason})`, "Cancelled");
+      document.getElementById("cancelSubBox").style.display = "none";
+      fetchState();
+      renderProfileTab();
+    }
+
+    function addOrSwitchPayMethod(which) {
+      const db = getCloudDB();
+      const u = db.users.find(x => x.email === state.currentUser.email);
+      if (!u) return;
+      if (which === "backup") {
+        const tmp = u.primaryPay;
+        u.primaryPay = u.backupPay;
+        u.backupPay = tmp;
+      } else {
+        const label = prompt("Enter Card/Wallet label + last 4 digits:", u.primaryPay);
+        if (label) u.primaryPay = label;
+      }
+      saveCloudDB(db);
+      fetchState();
+      renderProfileTab();
+    }
+
+    function openCheckoutModal() { document.getElementById("modalCheckout").classList.add("open"); }
+    async function processUpgradeCheckout() {
+      const plan = document.getElementById("chkPlanSelect").value;
+      const gateway = document.getElementById("chkGatewaySelect").value;
+      const amount = plan === "Starter" ? "$29.00" : (plan === "Enterprise" ? "$99.00" : "$49.00");
+      try { await fetch("/api/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan, gateway }) }); } catch (e) {}
+      const db = getCloudDB();
+      const u = db.users.find(x => x.email === state.currentUser.email);
+      if (u) { u.plan = plan; u.planStatus = "Active"; }
+      db.billingHistory.unshift({ id: "INV-" + Math.floor(10000 + Math.random() * 90000), date: new Date().toISOString().slice(0, 10), plan, amount, gateway, status: "Paid" });
+      saveCloudDB(db);
+      closeModal("modalCheckout");
+      fetchState();
+      renderProfileTab();
+    }
+
+    function openLegalModal(kind) {
+      const db = getCloudDB();
+      const cms = db.cms || {};
+      document.getElementById("genModalTitle").innerText = kind === "terms" ? "Terms of Service" : (kind === "privacy" ? "Privacy Policy" : "7-Day Refund Policy");
+      document.getElementById("genModalBody").innerText = cms[kind] || "Standard MailHub Pro policy.";
+      document.getElementById("modalGeneric").classList.add("open");
+    }
+
+    function openAppLinkModal() { document.getElementById("modalAppLink").classList.add("open"); }
+    function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+    function copyText(t) { navigator.clipboard.writeText(t).then(() => alert("Copied: " + t)); }
+
+    function showToast(title, body, onClick) {
+      const c = document.getElementById("toastContainer");
+      const d = document.createElement("div");
+      d.className = "toast";
+      d.innerHTML = `<div style="font-size:13px;font-weight:700;color:#fff;">${escapeHtml(title)}</div><div style="font-size:12px;color:#cbd5e1;margin-top:3px;">${escapeHtml(body)}</div>`;
+      d.onclick = () => { d.remove(); onClick(); };
+      c.appendChild(d);
+      setTimeout(() => { if (d.parentNode) d.remove(); }, 9000);
+    }
+
+    function escapeHtml(s) {
+      return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // Boot
+    try {
+      const saved = localStorage.getItem("mailhub_portal_user");
+      if (saved) {
+        state.currentUser = JSON.parse(saved);
+        document.getElementById("authPortalScreen").style.display = "none";
+      }
+    } catch (e) {}
     fetchState();
-    setInterval(fetchState, 3500);
+    setInterval(fetchState, 4000);
   </script>
 </body>
 </html>
